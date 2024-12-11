@@ -1,0 +1,27 @@
+# Node.js dependencies
+node_modules/
+
+# Build and output directories
+.output/
+.nuxt/
+.nitro/
+.cache/
+.dist/
+
+# Local data
+.data/
+
+# Logs
+logs/
+*.log
+
+# Systems and IDEs
+.DS_Store
+.idea/
+.fleet/
+
+# Environment variables
+env/
+.env
+.env.*
+!.env.example

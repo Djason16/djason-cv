@@ -1,0 +1,31 @@
+/* Root variables */
+:root {
+    /* Color variables */
+    --first-color: #F0F5F9;
+    --second-color: #C9D6DF;
+    --third-color: #52616B;
+    --fourth-color: #1E2022;
+    --fifth-color: #0D0D0D;
+
+    /* Text color variables */
+    --text-color-light: #ffffff;
+    --text-color-grey: #7a7a7a;
+    --text-color-dark: #1a1d1f;
+
+    /* Additional accent colors */
+    --accent-yellow: #F4D03F;
+    --accent-green: #58D68D;
+    --accent-red: #E74C3C;
+
+    /* Font variables */
+    --font-primary: "Barlow Condensed", "Roboto Condensed", roboto, oxygen, "Fira Sans", arial, sans-serif;
+
+    /* Font sizes */
+    --font-smaller: 0.6rem;
+    --font-small: 0.8rem;
+    --font-normal: 1rem;
+    --font-large: 1.2rem;
+    --font-xlarge: 1.5rem;
+    --font-xxlarge: 2rem;
+    --font-tall: 3rem;
+}
