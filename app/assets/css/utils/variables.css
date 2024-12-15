@@ -1,3 +1,21 @@
+/* Import Barlow Condensed font in WOFF and TTF formats */
+/* WOFF format is prioritized because it is optimized for the web, followed by TTF as a fallback */
+@font-face {
+    font-family: 'Barlow Condensed';
+    src: url('../../fonts/BarlowCondensed/BarlowCondensed-Regular.woff') format('woff'),
+        url('../../fonts/BarlowCondensed/BarlowCondensed-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Barlow Condensed';
+    src: url('../../fonts/BarlowCondensed/BarlowCondensed-Bold.woff') format('woff'),
+        url('../../fonts/BarlowCondensed/BarlowCondensed-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
 /* Root variables */
 :root {
     /* Color variables */

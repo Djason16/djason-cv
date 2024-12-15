@@ -34,26 +34,42 @@ const handleClick = async () => {
 
 // Method to scroll to the specified section by ID
 const scrollToSection = () => {
-    // Get the element by its ID (passed via props)
+    // Get the target element by its ID
     const element = document.getElementById(props.id);
 
-    // Get the header element and calculate its height
+    // Get the header element to calculate its height
     const header = document.querySelector("header");
+
+    // Calculate the header height or default to 0 if not found
     const headerHeight = header?.offsetHeight || 0;
-    const extraPadding = 40; // Padding to adjust the final scroll position
 
-    // If the element is found, calculate its position and scroll to it smoothly
+    // Extra padding for better visual spacing during scrolling
+    const extraPadding = 20;
+
     if (element) {
-        const position =
-            element.getBoundingClientRect().top + window.scrollY - headerHeight - extraPadding;
+        // Check if the header currently has the 'sticky' class
+        const isSticky = header.classList.contains("sticky");
 
-        // Smoothly scroll to the position
+        // If the header is sticky, use its height with additional padding
+        const stickyOffset = isSticky ? headerHeight + extraPadding : 0;
+
+        // Calculate the final scroll position
+        // If the header is sticky, only subtract the header height and extra padding
+        // If not sticky, subtract additional height to account for the difference
+        const position =
+            element.getBoundingClientRect().top +
+            window.scrollY -
+            headerHeight -
+            (isSticky ? extraPadding : headerHeight + extraPadding);
+
+        // Smoothly scroll to the calculated position
         window.scrollTo({
             top: position,
             behavior: "smooth",
         });
     } else {
-        console.error(`Element with ID "${props.id}" not found.`); // Log an error if the element is not found
+        // Log an error if the target element is not found
+        console.error(`Element with ID "${props.id}" not found.`);
     }
 };
 </script>

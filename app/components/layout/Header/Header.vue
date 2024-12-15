@@ -24,6 +24,8 @@ const handleScroll = () => {
 
 // Setup lifecycle hooks to add and remove scroll event listeners
 onMounted(() => {
+    // Ensure `isSticky` is applied on page load
+    handleScroll();
     // Add scroll event listener when the component is mounted
     window.addEventListener('scroll', handleScroll);
 });

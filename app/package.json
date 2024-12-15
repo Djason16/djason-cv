@@ -12,6 +12,7 @@
   "dependencies": {
     "cross-env": "^7.0.3",
     "gsap": "^3.12.5",
+    "intersection-observer": "^0.12.2",
     "nuxt": "^3.14.1592",
     "stripe": "^17.4.0",
     "vue": "latest",
