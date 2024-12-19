@@ -212,7 +212,7 @@ export default {
     legalTitle: "Mentions légales",
     legalIntro: "Retrouvez les informations légales relatives au site de {{name}}.",
     legalSection1Title: "1. Éditeur du site",
-    legalSection1Content: "Le site est édité par {{name}}. Pour toute question, veuillez contacter {{email}}.",
+    legalSection1Content: "Le site est édité par {{name}}. Pour toute question, veuillez contacter {{email}} ou appeler au {{phone}}.",
     legalSection2Title: "2. Hébergeur du site",
     legalSection2Content: "Le site est hébergé par Infomaniak. Adresse : 26 rue Eugène-Marziano, 1227 Genève, Suisse. Téléphone : +41 22 820 35 44.",
     legalSection3Title: "3. Droits de propriété intellectuelle",
@@ -224,7 +224,7 @@ export default {
     legalSection6Title: "6. Cookies et vie privée",
     legalSection6Content: "Ce site utilise des cookies pour améliorer l’expérience utilisateur. Vous pouvez les désactiver via les paramètres de votre navigateur.",
     legalSection7Title: "7. Coordonnées",
-    legalSection7Content: "Pour toute question relative aux mentions légales, veuillez contacter {{name}} à l’adresse {{email}}.",
+    legalSection7Content: "Pour toute question relative aux mentions légales, veuillez contacter {{name}} à l’adresse {{email}} ou appeler au {{phone}}.",
 
     // -- TERMS AND CONDITIONS
     // Terms of service for website usage and service agreements
@@ -248,7 +248,7 @@ export default {
     termsSection8Title: "8. Modifications des Conditions",
     termsSection8Content: "Ces conditions peuvent être mises à jour à tout moment. L'utilisation continue du site implique l'acceptation de ces modifications.",
     termsSection9Title: "9. Contact pour les Conditions",
-    termsSection9Content: "Pour toute question concernant ces conditions, contactez {{name}} via {{email}}.",
+    termsSection9Content: "Pour toute question concernant ces conditions, contactez {{name}} via {{email}} ou appelez au {{phone}}.",
 
     // -- PRIVACY POLICY
     // Details on how user data is collected, stored, and protected
@@ -270,7 +270,7 @@ export default {
     privacySection7Title: "7. Conservation des données",
     privacySection7Content: "Les données personnelles sont conservées aussi longtemps que nécessaire pour atteindre les objectifs décrits ou respecter les obligations légales.",
     privacySection8Title: "8. Contact pour la confidentialité",
-    privacySection8Content: "Pour toute question concernant la confidentialité, veuillez contacter {{name}} à {{email}}.",
+    privacySection8Content: "Pour toute question concernant la confidentialité, veuillez contacter {{name}} à {{email}} ou appeler au {{phone}}.",
 
     // -- REFUND POLICY
     // Information on refund eligibility, process, and exceptions

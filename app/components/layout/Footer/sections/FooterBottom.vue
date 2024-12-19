@@ -51,6 +51,9 @@ const socialIcons = [
     // Phone link with a phone icon
     { link: `tel:${personalInfo.phone.replace(/\s+/g, "")}`, class: "fas fa-phone", label: "Phone" },
 
+    // WhatsApp link with a WhatsApp icon
+    { link: personalInfo.links.whatsapp, class: "fab fa-whatsapp", label: "WhatsApp" },
+
     // LinkedIn link with a LinkedIn icon
     { link: personalInfo.links.linkedin, class: "fab fa-linkedin", label: "LinkedIn" },
 
@@ -134,13 +137,13 @@ const socialIcons = [
 @media (max-width: 768px) {
     .icons {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
         gap: 1rem;
         justify-items: center;
     }
 
-    .icons a:nth-last-child(1):nth-child(4) {
-        grid-column: span 3;
+    .icons a:nth-child(5) {
+        grid-column: 1 / -1;
         justify-self: center;
     }
 }

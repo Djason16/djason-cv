@@ -2,7 +2,8 @@
     <!-- Use OtherSectionLayout to display the privacy policy content -->
     <OtherSectionLayout pageTitleKey="privacyTitle" pageSubtitleKey="privacyIntro" :sections="privacySections"
         titleTag="h2" titleClass="text-xlarge text-bold" titleColor="var(--text-color-light)" contentClass="text-normal"
-        contentColor="var(--text-color-light)" :dynamicData="{ name: personalInfo.name, email: personalInfo.email }" />
+        contentColor="var(--text-color-light)"
+        :dynamicData="{ name: personalInfo.name, email: personalInfo.email, phone: personalInfo.phone }" />
 </template>
 
 <script setup>

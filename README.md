@@ -11,11 +11,14 @@
   <a href="https://www.linkedin.com/in/djason-chery-3b87702b4/" target="_blank">
     <img src="https://img.shields.io/badge/LinkedIn-%23C9D6DF?style=for-the-badge&logo=linkedin&logoColor=%23FFFFFF" alt="Djason Chery | LinkedIn" />
   </a>
-  <a href="tel:+33695072078" target="_blank">
+  <a href="tel:+33758204726" target="_blank">
     <img src="https://img.shields.io/badge/Phone-%2352616B?style=for-the-badge&logo=phone&logoColor=%23FFFFFF" alt="Djason Chery | Phone" />
   </a>
   <a href="mailto:djason.chery@yahoo.com" target="_blank">
     <img src="https://img.shields.io/badge/Email-%231E2022?style=for-the-badge&logo=gmail&logoColor=%23FFFFFF" alt="Djason Chery | Email" />
+  </a>
+  <a href="https://wa.me/33758204726" target="_blank">
+    <img src="https://img.shields.io/badge/WhatsApp-%2325D366?style=for-the-badge&logo=whatsapp&logoColor=%23FFFFFF" alt="Djason Chery | WhatsApp" />
   </a>
 </p>
 
@@ -237,7 +240,7 @@ STRIPE_SECRET_KEY=your-stripe-secret-key
 <h2 id="contact">Contact</h2>
 <p align="center">
   <strong>📩 Email:</strong> <a href="mailto:djason.chery@yahoo.com">djason.chery@yahoo.com</a><br>
-  <strong>📞 Phone:</strong> <a href="tel:+33695072078">06 95 07 20 78</a><br>
+  <strong>📞 Phone:</strong> <a href="tel:+33758204726">07 58 20 47 26</a><br>
   <strong>🌐 Website:</strong> <a href="https://djason-chery.dev/">djason-chery.dev</a>
 </p>
 

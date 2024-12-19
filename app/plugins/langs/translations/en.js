@@ -212,7 +212,7 @@ export default {
     legalTitle: "Legal Notice",
     legalIntro: "Discover the legal information regarding the {{name}} website.",
     legalSection1Title: "1. Website Publisher",
-    legalSection1Content: "{{name}} is responsible for publishing this website. For inquiries, contact {{email}}.",
+    legalSection1Content: "The website is published by {{name}}. For any inquiries, please contact {{email}} or call {{phone}}.",
     legalSection2Title: "2. Website Host",
     legalSection2Content: "The website is hosted by Infomaniak. Address: 26 rue Eugène-Marziano, 1227 Geneva, Switzerland. Phone: +41 22 820 35 44.",
     legalSection3Title: "3. Intellectual Property Rights",
@@ -224,7 +224,7 @@ export default {
     legalSection6Title: "6. Privacy and Cookies",
     legalSection6Content: "This website uses cookies to enhance user experience. Users can disable cookies through browser settings if preferred.",
     legalSection7Title: "7. Contact Information",
-    legalSection7Content: "For questions about this legal notice, contact {{name}} at {{email}}.",
+    legalSection7Content: "For any questions regarding the legal notice, please contact {{name}} at {{email}} or call {{phone}}.",
 
     // -- TERMS AND CONDITIONS
     // Terms of service for website usage and service agreements
@@ -248,7 +248,7 @@ export default {
     termsSection8Title: "8. Changes to Terms",
     termsSection8Content: "These terms may be updated at any time. Continued use of the website implies acceptance of any changes.",
     termsSection9Title: "9. Contact for Terms",
-    termsSection9Content: "For questions or concerns about these terms, contact {{name}} via {{email}}.",
+    termsSection9Content: "For any questions regarding these terms, contact {{name}} via {{email}} or call at {{phone}}.",
 
     // -- PRIVACY POLICY
     // Details on how user data is collected, stored, and protected
@@ -270,7 +270,7 @@ export default {
     privacySection7Title: "7. Data Retention",
     privacySection7Content: "Personal data is retained only as long as necessary for the purposes described or as required by law.",
     privacySection8Title: "8. Contact for Privacy Concerns",
-    privacySection8Content: "For questions regarding privacy, contact {{name}} at {{email}}.",
+    privacySection8Content: "For questions regarding privacy, contact {{name}} at {{email}} or call at {{phone}}.",
 
     // -- REFUND POLICY
     // Information on refund eligibility, process, and exceptions
