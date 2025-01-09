@@ -56,7 +56,7 @@ const lastColor = computed(() => getColor(sectionCount.value - 1));
     align-items: center;
     text-align: center;
     overflow: hidden;
-    padding: 5vh 5vw;
+    padding: 6vh 5vw;
 }
 
 .content {
@@ -70,7 +70,7 @@ const lastColor = computed(() => getColor(sectionCount.value - 1));
     align-items: center;
     min-height: 50vh;
     height: auto;
-    margin-bottom: calc(5vh + 50px);
+    margin-bottom: calc(6vh + 65px);
 }
 
 .content-last {

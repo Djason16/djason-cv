@@ -138,4 +138,10 @@ const isHomePage = computed(() => router.currentRoute.value.path === "/");
         display: inline-block;
     }
 }
+
+@media (max-width: 480px) {
+    .header-top {
+        padding: 0 1rem;
+    }
+}
 </style>

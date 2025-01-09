@@ -16,14 +16,14 @@ export const projects = [
 
     // Splash Auto BM
     // Description: Development of a website for an automotive specialist, integrating Stripe for payments.
-    // Skills Used: Vue.js, Slim PHP for backend, Stripe payment integration, o2switch hosting, Git/GitHub for versioning, and responsive design.
+    // Skills Used: Nuxt.js, Slim PHP for backend, Stripe payment integration, o2switch hosting, Git/GitHub for versioning, and responsive design.
     // Link: https://splashauto-bm.fr/
     // Date: September 13, 2024.
     {
         name: "Splash Auto BM",
         shortDescriptionKey: "splashAutoShort",
         image: "images/banner_splash_auto_bm.jpg",
-        skills: ["vue", "slimPHP", "stripe", "o2switch", "git", "github", "responsive"],
+        skills: ["nuxt", "slimPHP", "stripe", "o2switch", "git", "github", "responsive"],
         link: "https://splashauto-bm.fr/",
         date: "2024-09-13",
     },
