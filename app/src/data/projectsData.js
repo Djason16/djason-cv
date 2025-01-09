@@ -22,7 +22,7 @@ export const projects = [
     {
         name: "Splash Auto BM",
         shortDescriptionKey: "splashAutoShort",
-        image: "images/banner_splash_auto_bm.jpg",
+        image: "images/banner_splash_auto_bm_meihdi.jpg",
         skills: ["nuxt", "slimPHP", "stripe", "o2switch", "git", "github", "responsive"],
         link: "https://splashauto-bm.fr/",
         date: "2024-09-13",
