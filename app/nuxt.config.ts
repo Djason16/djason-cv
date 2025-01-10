@@ -10,6 +10,12 @@ if (process.env.NODE_ENV === 'production') {
   console.log('\x1b[33m%s\x1b[0m', 'Running in development mode');
 }
 
+process.env.NUXT_PUBLIC_SITE_URL = envConfig.FRONTEND_DOMAIN;
+process.env.BACKEND_DOMAIN = envConfig.BACKEND_DOMAIN;
+process.env.FRONTEND_DOMAIN = envConfig.FRONTEND_DOMAIN;
+process.env.STRIPE_PUBLIC_KEY = envConfig.STRIPE_PUBLIC_KEY;
+process.env.STRIPE_SECRET_KEY = envConfig.STRIPE_SECRET_KEY;
+
 export default defineNuxtConfig({
   ssr: true,
   devtools: { enabled: true },
@@ -17,10 +23,10 @@ export default defineNuxtConfig({
   plugins: ['./plugins/langs/lang.js'],
   modules: [
     ['@nuxtjs/sitemap', {
-      hostname: envConfig.APP_BASE_URL,
+      hostname: process.env.NUXT_PUBLIC_SITE_URL,
       gzip: true,
       routes: async () => {
-        const routes = [
+        const paths = [
           '/',
           '/legal',
           '/pay-me',
@@ -28,7 +34,7 @@ export default defineNuxtConfig({
           '/refund-policy',
           '/terms',
         ];
-        return routes;
+        return paths.map(path => `${process.env.NUXT_PUBLIC_SITE_URL}${path}`);
       },
     }],
   ],
@@ -57,9 +63,9 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      backendDomain: envConfig.BACKEND_DOMAIN,
-      frontendDomain: envConfig.FRONTEND_DOMAIN,
-      stripePublicKey: envConfig.STRIPE_PUBLIC_KEY,
+      backendDomain: process.env.BACKEND_DOMAIN,
+      frontendDomain: process.env.FRONTEND_DOMAIN,
+      stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
     },
   },
 
