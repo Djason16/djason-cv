@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@nuxtjs/sitemap": "^7.0.1",
     "cross-env": "^7.0.3",
     "gsap": "^3.12.5",
     "intersection-observer": "^0.12.2",

@@ -15,6 +15,23 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['./assets/css/main.css'],
   plugins: ['./plugins/langs/lang.js'],
+  modules: [
+    ['@nuxtjs/sitemap', {
+      hostname: envConfig.APP_BASE_URL,
+      gzip: true,
+      routes: async () => {
+        const routes = [
+          '/',
+          '/legal',
+          '/pay-me',
+          '/privacy',
+          '/refund-policy',
+          '/terms',
+        ];
+        return routes;
+      },
+    }],
+  ],
   app: {
     head: {
       link: [
