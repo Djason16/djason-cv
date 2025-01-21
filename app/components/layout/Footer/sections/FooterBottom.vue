@@ -59,6 +59,9 @@ const socialIcons = [
 
     // GitHub link with a GitHub icon
     { link: personalInfo.links.github, class: "fab fa-github", label: "GitHub" },
+
+    // Malt link with a Malt icon
+    { link: personalInfo.links.malt, class: "fab fa-m", label: "Malt" },
 ];
 </script>
 
@@ -137,14 +140,9 @@ const socialIcons = [
 @media (max-width: 768px) {
     .icons {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 1rem;
         justify-items: center;
-    }
-
-    .icons a:nth-child(5) {
-        grid-column: 1 / -1;
-        justify-self: center;
     }
 }
 </style>

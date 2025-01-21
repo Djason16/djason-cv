@@ -37,6 +37,16 @@ export default defineNuxtConfig({
         return paths.map(path => `${process.env.NUXT_PUBLIC_SITE_URL}${path}`);
       },
     }],
+    ['@nuxtjs/robots', {
+      rules: [
+        {
+          UserAgent: '*',
+          Disallow: process.env.NODE_ENV === 'production' ? '' : '/',
+          Allow: process.env.NODE_ENV === 'production' ? '/' : '',
+        }
+      ],
+      Sitemap: `${process.env.NUXT_PUBLIC_SITE_URL}/sitemap.xml`,
+    }],
   ],
   app: {
     head: {
