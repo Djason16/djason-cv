@@ -9,15 +9,15 @@
     <img src="https://img.shields.io/badge/Website-%23F0F5F9?style=for-the-badge&logo=medium&logoColor=%23FFFFFF" alt="Djason Chery | Website" />
   </a>
   <a href="https://www.linkedin.com/in/djason-chery-3b87702b4/" target="_blank">
-    <img src="https://img.shields.io/badge/LinkedIn-%23C9D6DF?style=for-the-badge&logo=linkedin&logoColor=%23FFFFFF" alt="Djason Chery | LinkedIn" />
+    <img src="https://img.shields.io/badge/LinkedIn-%230077b5?style=for-the-badge&logo=linkedin&logoColor=white" alt="Djason Chery | LinkedIn" />
   </a>
   <a href="https://www.malt.com/profile/djasonchery" target="_blank">
     <img src="https://img.shields.io/badge/Malt-%23FF6F61?style=for-the-badge&logo=malt&logoColor=%23FFFFFF" alt="Djason Chery | Malt" />
   </a>
-  <a href="tel:+33758204726" target="_blank">
+  <a href="tel:+33758204726">
     <img src="https://img.shields.io/badge/Phone-%2352616B?style=for-the-badge&logo=phone&logoColor=%23FFFFFF" alt="Djason Chery | Phone" />
   </a>
-  <a href="mailto:djason.chery@yahoo.com" target="_blank">
+  <a href="mailto:djason.chery@yahoo.com">
     <img src="https://img.shields.io/badge/Email-%231E2022?style=for-the-badge&logo=gmail&logoColor=%23FFFFFF" alt="Djason Chery | Email" />
   </a>
   <a href="https://wa.me/33758204726" target="_blank">
