@@ -2,6 +2,18 @@
 // PROJECTS CONFIGURATION
 // ==========================
 export const projects = [
+    // Soul's Team Battle Arena
+    // Description: A community-driven video editing competition platform, featuring a unique battle system and a wide range of creative challenges.
+    // Skills Used: Nuxt.js, Slim PHP for backend, Photoshop for design, responsive design, and project management.
+    // Date: March 5, 2025.
+    {
+        name: "Soul's Team Battle Arena",
+        shortDescriptionKey: "soulsTeamBattleArenaShort",
+        image: "images/banner_souls_team_battle_arena.jpg",
+        link: "https://souls.team",
+        skills: ["nuxt", "slimPHP", "photoshop", "responsive"],
+        date: "2025-03-05"
+    },
     // Djason Chery - Portfolio
     // Description: Showcase of personal skills and projects, including the development of this portfolio site.
     // Skills Used: Nuxt.js, Node.js, Infomaniak hosting, GitHub for version control, responsive design, and tools like Figma and Photoshop.
@@ -22,9 +34,9 @@ export const projects = [
     {
         name: "Splash Auto BM",
         shortDescriptionKey: "splashAutoShort",
-        image: "images/banner_splash_auto_bm_meihdi.jpg",
+        image: "images/banner_splash_auto_bm.jpg",
         skills: ["nuxt", "slimPHP", "stripe", "o2switch", "git", "github", "responsive"],
-        link: "https://splashauto-bm.fr/",
+        link: "https://splashauto-bm.fr",
         date: "2024-09-13",
     },
 

@@ -1,18 +1,39 @@
 <template>
     <!-- Carousel pagination container -->
     <div class="carousel-pagination">
-        <!-- Loop through the number of items and create a button for each item -->
-        <button v-for="index in itemsLength" :key="index" :class="{ active: index - 1 === activeIndex }"
-            @click="$emit('goToSlide', index)" :aria-label="`Go to slide ${index}`">
+        <button v-for="index in visibleButtons" :key="index" :class="{ active: getActualIndex(index) === activeIndex }"
+            @click="$emit('goToSlide', getActualIndex(index) + 1)"
+            :aria-label="`Go to slide ${getActualIndex(index) + 1}`">
         </button>
     </div>
 </template>
 
 <script setup>
+import { computed } from "vue";
+
 // Define props to receive from the parent component
-// itemsLength: The total number of items in the carousel (used to create the pagination buttons)
-// activeIndex: The index of the currently active slide, used to highlight the active pagination button
-defineProps(["itemsLength", "activeIndex"]);
+const props = defineProps(["itemsLength", "activeIndex"]);
+
+// Number of buttons to display
+const maxButtons = 5;
+
+// Calculate the number of visible buttons
+const visibleButtons = computed(() => Math.min(props.itemsLength, maxButtons));
+
+// Fuction to calculate the actual index of the button
+const getActualIndex = (index) => {
+    if (props.itemsLength <= maxButtons) {
+        return index - 1;
+    }
+    const halfMax = Math.floor(maxButtons / 2);
+    let startIndex = Math.max(0, props.activeIndex - halfMax);
+
+    if (startIndex + maxButtons > props.itemsLength) {
+        startIndex = props.itemsLength - maxButtons;
+    }
+
+    return startIndex + index - 1;
+};
 </script>
 
 <style scoped>
