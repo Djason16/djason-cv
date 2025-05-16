@@ -176,6 +176,21 @@ export default {
 <pre><code>npm run dev</code></pre>
 <p>The frontend should now be running, typically at <a href="http://localhost:3000">http://localhost:3000</a> in development mode.</p>
 
+<h4>Alternative: run both frontend and backend with one command</h4>
+
+<p>If you prefer to start both the frontend and backend at once, you can use the included script:</p>
+
+<pre><code>start.bat</code></pre>
+
+<p>Just double-click <code>start.bat</code> from the root folder (where <code>/app</code> and <code>/api</code> are located).</p>
+
+<p>This will open two separate terminal windows:</p>
+<ul>
+  <li>One for <code>app</code> running <code>npm run dev</code> (Nuxt frontend)</li>
+  <li>One for <code>api</code> running <code>npm run dev</code> (Express backend)</li>
+</ul>
+<p>You can stop the servers by closing their respective terminal windows.</p>
+
 <h3>6. Build for Production (Optional)</h3>
 <p>Once you're ready to deploy or want to test the production version locally, follow these steps for the frontend (<code>/app</code> folder):</p>
 
