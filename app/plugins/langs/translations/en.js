@@ -46,6 +46,7 @@ export default {
     // ======================================================
     lastProjects: 'Last Projects',
     projectDescription: 'A comprehensive showcase of the most recent projects I have contributed to, designed to highlight my expertise, creativity, and the meaningful impact of my work in achieving project goals and delivering exceptional results.',
+    zabekoShort: "A portfolio website for a freelance graphic designer offering logo creation, visual identity design, photo retouching, and print materials.",
     soulsTeamBattleArenaShort: "Community-driven video editing competition platform with a unique battle system and creative challenges.",
     djasonCheryShort: "Personal portfolio to showcase my skills and projects, including this very site.",
     splashAutoShort: "Development of a website for an automotive specialist.",

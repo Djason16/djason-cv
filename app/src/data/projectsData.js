@@ -2,6 +2,20 @@
 // PROJECTS CONFIGURATION
 // ==========================
 export const projects = [
+    // Zabeko - Portfolio
+    // Description: A portfolio website for a freelance graphic designer offering logo creation, visual identity design, photo retouching, and print materials. The site presents her services, creative process, and past work in a clean and professional layout.
+    // Skills Used: Nuxt.js, responsive design, Figma for design mockups, and GitHub for version control.
+    // Link: https://zabeko.com
+    // Date: May 21, 2025.
+    {
+        name: "Zabeko - Portfolio",
+        shortDescriptionKey: "zabekoShort",
+        image: "images/banner_zabeko.jpg",
+        link: "https://zabeko.com",
+        skills: ["nuxt", "responsive", "figma", "github"],
+        date: "2025-05-21"
+    },
+
     // Soul's Team Battle Arena
     // Description: A community-driven video editing competition platform, featuring a unique battle system and a wide range of creative challenges.
     // Skills Used: Nuxt.js, Slim PHP for backend, Photoshop for design, responsive design, and project management.
@@ -14,6 +28,7 @@ export const projects = [
         skills: ["nuxt", "slimPHP", "photoshop", "responsive"],
         date: "2025-03-05"
     },
+
     // Djason Chery - Portfolio
     // Description: Showcase of personal skills and projects, including the development of this portfolio site.
     // Skills Used: Nuxt.js, Node.js, Infomaniak hosting, GitHub for version control, responsive design, and tools like Figma and Photoshop.

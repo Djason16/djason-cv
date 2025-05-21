@@ -46,6 +46,7 @@ export default {
     // ======================================================
     lastProjects: 'Derniers Projets',
     projectDescription: 'Une présentation de mes projets récents, illustrant mon expertise, ma créativité et l’impact concret de mon travail pour atteindre des objectifs précis et produire des résultats tangibles.',
+    zabekoShort: "Portfolio d'une graphiste freelance, offrant des services de création de logos, design d'identité visuelle, retouche photo et supports imprimés.",
     soulsTeamBattleArenaShort: "Plateforme de compétition de montage vidéo communautaire, avec un système de bataille unique et une variété de défis créatifs.",
     djasonCheryShort: "Portfolio personnel pour présenter mes compétences et projets, y compris ce site même.",
     splashAutoShort: "Développement d'un site web pour un spécialiste automobile.",
