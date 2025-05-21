@@ -79,7 +79,7 @@ export default {
     // Personal details, location, availability, and contact info
     // ======================================================
     aboutMe: "Qui suis-je ?",
-    aboutDescription: `Je suis ${personalInfo.name}, monteur VFX et développeur full-stack freelance, passionné par la création audiovisuelle et le développement web. À ${new Date().getFullYear() - personalInfo.birthDate.getFullYear()} ans, je mêle créativité et expertise technique. Basé à Paris, je suis disponible à distance ou sur site, avec un permis B, pour des déplacements jusqu'à 90 km.`,
+    aboutDescription: `Je suis {{name}}, monteur VFX et développeur full-stack freelance, passionné par la création audiovisuelle et le développement web. À {{age}} ans, je mêle créativité et expertise technique. Basé à Paris, je suis disponible à distance ou sur site, avec un permis B, pour des déplacements jusqu'à 90 km.`,
 
     // ======================================================
     // SKILLS SECTION

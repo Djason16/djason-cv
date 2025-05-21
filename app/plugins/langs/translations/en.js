@@ -79,7 +79,7 @@ export default {
     // Personal details, location, availability, and contact info
     // ======================================================
     aboutMe: "Who am I?",
-    aboutDescription: `I'm ${personalInfo.name}, a freelance VFX editor and full-stack developer passionate about audiovisual creation and web development. At ${new Date().getFullYear() - personalInfo.birthDate.getFullYear()} years old, I bring creativity and technical skills. Based in Paris, I'm available for remote or on-site work, with a Category B driver's license, and can travel up to 90 km.`,
+    aboutDescription: `I'm {{name}}, a freelance VFX editor and full-stack developer passionate about audiovisual creation and web development. At {{age}} years old, I bring creativity and technical skills. Based in Paris, I'm available for remote or on-site work, with a Category B driver's license, and can travel up to 90 km.`,
 
     // ======================================================
     // SKILLS SECTION

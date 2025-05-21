@@ -18,7 +18,7 @@
             </h2>
             <!-- About me section description -->
             <div class="about-section__description text-normal">
-                {{ $lang.getTranslation('aboutDescription') }}
+                {{ $lang.getTranslation('aboutDescription', variables) }}
             </div>
         </div>
     </section>
@@ -26,6 +26,26 @@
 
 <script setup>
 import AboutImages from '~/components/ui/Image/AboutImages.vue'; // About images component
+import { personalInfo } from '~/utils/personalInfo'; // Personal information data
+
+/**
+ * Calculates the age based on the birth date.
+ */
+function calculateAge(birthDate) {
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+    return age;
+}
+
+// Get the name and age from personal information
+const variables = {
+    name: personalInfo.name,
+    age: calculateAge(personalInfo.birthDate)
+};
 </script>
 
 <style scoped>
