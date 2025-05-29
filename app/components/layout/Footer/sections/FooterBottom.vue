@@ -45,10 +45,11 @@ const currentYear = new Date().getFullYear();
 const socialIcons = [
     { link: `mailto:${personalInfo.email}`, class: "fas fa-envelope", label: "Email" },
     { link: `tel:${personalInfo.phone.replace(/\s+/g, "")}`, class: "fas fa-phone", label: "Phone" },
-    { link: personalInfo.links.whatsapp, class: "fab fa-whatsapp", label: "WhatsApp" },
     { link: personalInfo.links.linkedin, class: "fab fa-linkedin", label: "LinkedIn" },
     { link: personalInfo.links.github, class: "fab fa-github", label: "GitHub" },
     { link: personalInfo.links.malt, class: "fab fa-m", label: "Malt" },
+    { link: personalInfo.links.instagram, class: "fab fa-instagram", label: "Instagram" },
+    { link: personalInfo.links.whatsapp, class: "fab fa-whatsapp", label: "WhatsApp" },
 ];
 
 // Footer navigation links (legal, privacy, etc.)
@@ -132,10 +133,15 @@ const footerLinks = [
 
 @media (max-width: 768px) {
     .icons {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 1rem;
-        justify-items: center;
+    }
+
+    .icons a {
+        width: 20%;
+        text-align: center;
     }
 }
 </style>  
