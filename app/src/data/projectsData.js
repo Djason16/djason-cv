@@ -1,85 +1,77 @@
 // ==========================
 // PROJECTS CONFIGURATION
 // ==========================
-export const projects = [
+
+// This file contains the configuration for the projects displayed on the website.
+const rawProjects = [
     // Zabeko - Portfolio
-    // Description: A portfolio website for a freelance graphic designer offering logo creation, visual identity design, photo retouching, and print materials. The site presents her services, creative process, and past work in a clean and professional layout.
-    // Skills Used: Nuxt.js, responsive design, Figma for design mockups, and GitHub for version control.
-    // Link: https://zabeko.com
-    // Date: May 21, 2025.
     {
         name: "Zabeko - Portfolio",
-        shortDescriptionKey: "zabekoShort",
-        image: "images/banner_zabeko.jpg",
+        short: "zabekoShort",
+        img: "images/banner_zabeko.jpg",
         link: "https://zabeko.com",
         skills: ["nuxt", "responsive", "figma", "github"],
-        date: "2025-05-21"
+        date: "2025-05-21",
     },
 
     // Soul's Team Battle Arena
-    // Description: A community-driven video editing competition platform, featuring a unique battle system and a wide range of creative challenges.
-    // Skills Used: Nuxt.js, Slim PHP for backend, Photoshop for design, responsive design, and project management.
-    // Date: March 5, 2025.
     {
         name: "Soul's Team Battle Arena",
-        shortDescriptionKey: "soulsTeamBattleArenaShort",
-        image: "images/banner_souls_team_battle_arena.jpg",
+        short: "soulsTeamBattleArenaShort",
+        img: "images/banner_souls_team_battle_arena.jpg",
         link: "https://souls.team",
         skills: ["nuxt", "slimPHP", "photoshop", "responsive"],
-        date: "2025-03-05"
+        date: "2025-03-05",
     },
 
     // Djason Chery - Portfolio
-    // Description: Showcase of personal skills and projects, including the development of this portfolio site.
-    // Skills Used: Nuxt.js, Node.js, Infomaniak hosting, GitHub for version control, responsive design, and tools like Figma and Photoshop.
-    // Date: December 5, 2024.
     {
         name: "Djason Chery - Portfolio",
-        shortDescriptionKey: "djasonCheryShort",
-        image: "images/banner_portfolio.jpg",
+        short: "djasonCheryShort",
+        img: "images/banner_portfolio.jpg",
         skills: ["nuxt", "nodejs", "infomaniak", "github", "responsive", "figma", "photoshop"],
         date: "2024-12-05",
     },
 
     // Splash Auto BM
-    // Description: Development of a website for an automotive specialist, integrating Stripe for payments.
-    // Skills Used: Nuxt.js, Slim PHP for backend, Stripe payment integration, o2switch hosting, Git/GitHub for versioning, and responsive design.
-    // Link: https://splashauto-bm.fr/
-    // Date: September 13, 2024.
     {
         name: "Splash Auto BM",
-        shortDescriptionKey: "splashAutoShort",
-        image: "images/banner_splash_auto_bm.jpg",
-        skills: ["nuxt", "slimPHP", "stripe", "o2switch", "git", "github", "responsive"],
+        short: "splashAutoShort",
+        img: "images/banner_splash_auto_bm.jpg",
         link: "https://splashauto-bm.fr",
+        skills: ["nuxt", "slimPHP", "stripe", "o2switch", "git", "github", "responsive"],
         date: "2024-09-13",
     },
 
     // L'Effondrement - Canal+
-    // Description: Post-production work for the Canal+ series "L'Effondrement".
-    // Skills Used: Video editing, visual effects (VFX), compositing, and tracking for seamless visual integration.
-    // Link: https://www.canalplus.com/series/l-effondrement/h/12670812_50001
-    // Date: November 11, 2019.
     {
         name: "L'Effondrement - Canal+",
-        shortDescriptionKey: "effondrementShort",
-        image: "images/banner_l'effondrement.jpg",
-        skills: ["editing", "vfx", "compositing", "tracking"],
+        short: "effondrementShort",
+        img: "images/banner_l'effondrement.jpg",
         link: "https://www.canalplus.com/series/l-effondrement/h/12670812_50001",
+        skills: ["editing", "vfx", "compositing", "tracking"],
         date: "2019-11-11",
     },
 
     // ST IC 20: VOID - Promo
-    // Description: Promotional video for the 20th Iron Chef competition of the Soul's Team, showcasing advanced editing and motion graphics.
-    // Skills Used: Video editing, VFX, compositing, motion design, 3D animations, and creative storytelling.
-    // Link: https://www.youtube.com/watch?v=dT3SwFnHxIY
-    // Date: February 6, 2024.
     {
         name: "ST IC 20: VOID - Promo",
-        shortDescriptionKey: "promoSTICShort",
-        image: "images/banner_promoSTIC.jpg",
-        skills: ["editing", "vfx", "compositing", "motionDesign", "threeDimensional", "animation"],
+        short: "promoSTICShort",
+        img: "images/banner_promoSTIC.jpg",
         link: "https://www.youtube.com/watch?v=dT3SwFnHxIY",
+        skills: ["editing", "vfx", "compositing", "motionDesign", "threeDimensional", "animation"],
         date: "2024-02-06",
-    }
-].sort((a, b) => new Date(b.date) - new Date(a.date));
+    },
+];
+
+// Construction finale des projets
+export const projects = rawProjects
+    .map(p => ({
+        name: p.name,
+        shortDescriptionKey: p.short,
+        image: p.img,
+        link: p.link,
+        skills: p.skills,
+        date: p.date,
+    }))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));

@@ -15,16 +15,10 @@ import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
 const { $lang } = useNuxtApp();
 
 // Define sections for the privacy policy
-const privacySections = [
-    { titleKey: 'privacySection1Title', contentKey: 'privacySection1Content' }, // Section 1: Data collected
-    { titleKey: 'privacySection2Title', contentKey: 'privacySection2Content' }, // Section 2: Purpose of data collection
-    { titleKey: 'privacySection3Title', contentKey: 'privacySection3Content' }, // Section 3: Data security
-    { titleKey: 'privacySection4Title', contentKey: 'privacySection4Content' }, // Section 4: Sharing of data
-    { titleKey: 'privacySection5Title', contentKey: 'privacySection5Content' }, // Section 5: User rights
-    { titleKey: 'privacySection6Title', contentKey: 'privacySection6Content' }, // Section 6: Cookies policy
-    { titleKey: 'privacySection7Title', contentKey: 'privacySection7Content' }, // Section 7: Data retention policy
-    { titleKey: 'privacySection8Title', contentKey: 'privacySection8Content' }, // Section 8: Contact for privacy concerns
-];
+const privacySections = Array.from({ length: 8 }, (_, i) => ({
+    titleKey: `privacySection${i + 1}Title`,
+    contentKey: `privacySection${i + 1}Content`,
+}));
 
 // Set dynamic metadata for SEO purposes
 const pageKey = 'privacy';

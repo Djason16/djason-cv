@@ -2,30 +2,44 @@
     <!-- Hero banner section -->
     <div id="hero-banner" class="hero-banner" aria-labelledby="hero-banner__title" role="banner">
         <div class="hero-banner__content">
-            <AvailabilityButton status="available" />
+            <AvailabilityButton :status="personalInfo.availability" />
+
             <!-- Hero banner title -->
             <h1 id="hero-banner__title" class="hero-banner__title text-uppercase text-bold">
                 {{ $lang.getTranslation('welcomeToMyWebsite') }}
             </h1>
+
             <!-- Hero banner action buttons -->
             <div class="hero-banner__actions">
-                <!-- Button to send an email -->
-                <HeroButton :label="$lang.getTranslation('sendEmail')" :href="`mailto:${personalInfo.email}`"
-                    :ariaLabel="`Send an email to ${personalInfo.email}`" iconClass="fas fa-envelope" />
-                    
-                <!-- Button to make a phone call -->
-                <HeroButton :label="$lang.getTranslation('callMe')"
-                    :href="`tel:${personalInfo.phone.replace(/\s+/g, '')}`" :ariaLabel="`Call ${personalInfo.phone}`"
-                    iconClass="fas fa-phone" />
+                <!-- Loop through the heroActions array to generate each HeroButton -->
+                <HeroButton v-for="(action, index) in heroActions" :key="index"
+                    :label="$lang.getTranslation(action.labelKey)" :href="action.href" :ariaLabel="action.aria"
+                    :iconClass="action.icon" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { personalInfo } from "../../../utils/personalInfo.js"; // Personal information
-import AvailabilityButton from "../../ui/Button/AvailabilityButton.vue"; // Availability button component
-import HeroButton from "../../ui/Button/HeroButton.vue"; // Hero button component
+import { personalInfo } from "../../../utils/personalInfo.js";
+import AvailabilityButton from "../../ui/Button/AvailabilityButton.vue";
+import HeroButton from "../../ui/Button/HeroButton.vue";
+
+// Array of action button data
+const heroActions = [
+    {
+        labelKey: 'sendEmail',
+        href: `mailto:${personalInfo.email}`,
+        aria: `Send an email to ${personalInfo.email}`,
+        icon: 'fas fa-envelope',
+    },
+    {
+        labelKey: 'callMe',
+        href: `tel:${personalInfo.phone.replace(/\s+/g, '')}`,
+        aria: `Call ${personalInfo.phone}`,
+        icon: 'fas fa-phone',
+    },
+];
 </script>
 
 <style scoped>

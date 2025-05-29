@@ -5,36 +5,20 @@
             <!-- Logo section with link to homepage -->
             <div class="header-top__title">
                 <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')">
-                    <!-- Logo image for the site -->
                     <img src="/images/main_logo_light.png" alt="Djason CHERY Logo" class="header-top__logo" />
                 </NuxtLink>
             </div>
 
-            <!-- Navigation section for the homepage, only visible on the home page -->
+            <!-- Navigation section -->
             <nav class="header-top__nav">
-                <!-- Navigation links are conditionally rendered if we are on the homepage -->
-                <NavLink v-if="isHomePage" id="projects">
-                    <!-- Project link with translated text and an icon -->
-                    <span class="nav-text">{{ $lang.getTranslation('lastProjects') }}</span>
-                    <i class="fas fa-folder nav-icon text-normal" aria-label="Projects"></i>
+                <!-- Loop through homepage links if we're on the home page -->
+                <NavLink v-if="isHomePage" v-for="(item, index) in homeNavItems" :key="index" :id="item.id">
+                    <span class="nav-text">{{ $lang.getTranslation(item.translationKey) }}</span>
+                    <i :class="item.icon" class="nav-icon text-normal" :aria-label="item.label"></i>
                 </NavLink>
-                <NavLink v-if="isHomePage" id="about-me">
-                    <!-- About Me link with translated text and an icon -->
-                    <span class="nav-text">{{ $lang.getTranslation('aboutMe') }}</span>
-                    <i class="fas fa-user nav-icon text-normal" aria-label="About Me"></i>
-                </NavLink>
-                <NavLink v-if="isHomePage" id="skills">
-                    <!-- Skills link with translated text and an icon -->
-                    <span class="nav-text">{{ $lang.getTranslation('skillsTitle') }}</span>
-                    <i class="fas fa-lightbulb nav-icon text-normal" aria-label="Skills"></i>
-                </NavLink>
-                <NavLink v-if="isHomePage" id="services">
-                    <!-- Services link with translated text and an icon -->
-                    <span class="nav-text">{{ $lang.getTranslation('servicesTitle') }}</span>
-                    <i class="fas fa-tools nav-icon text-normal" aria-label="Services"></i>
-                </NavLink>
+
+                <!-- Static link to the pay page -->
                 <NuxtLink to="/pay-me" class="nav-link text-normal text-bold text-uppercase" rel="noopener noreferrer">
-                    <!-- Pay Me link with translated text and an icon -->
                     <span class="nav-text">{{ $lang.getTranslation('payMe') }}</span>
                     <i class="fas fa-credit-card nav-icon text-normal" aria-label="Pay Me"></i>
                 </NuxtLink>
@@ -54,9 +38,37 @@ const { $lang } = useNuxtApp();
 // Access the Vue Router instance
 const router = useRouter();
 
-// Computed property to check if the current page is the homepage ("/")
+// Check if current route is homepage
 const isHomePage = computed(() => router.currentRoute.value.path === "/");
-</script>
+
+// Homepage navigation items to loop through
+const homeNavItems = [
+    {
+        id: "projects",
+        translationKey: "lastProjects",
+        icon: "fas fa-folder",
+        label: "Projects"
+    },
+    {
+        id: "about-me",
+        translationKey: "aboutMe",
+        icon: "fas fa-user",
+        label: "About Me"
+    },
+    {
+        id: "skills",
+        translationKey: "skillsTitle",
+        icon: "fas fa-lightbulb",
+        label: "Skills"
+    },
+    {
+        id: "services",
+        translationKey: "servicesTitle",
+        icon: "fas fa-tools",
+        label: "Services"
+    }
+];
+</script>  
 
 <style scoped>
 .header-top {

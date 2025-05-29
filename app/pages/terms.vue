@@ -15,17 +15,10 @@ import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
 const { $lang } = useNuxtApp();
 
 // Define sections for terms and conditions
-const termsSections = [
-    { titleKey: 'termsSection1Title', contentKey: 'termsSection1Content' }, // Section 1: Ownership of content
-    { titleKey: 'termsSection2Title', contentKey: 'termsSection2Content' }, // Section 2: Use of services
-    { titleKey: 'termsSection3Title', contentKey: 'termsSection3Content' }, // Section 3: Payment terms
-    { titleKey: 'termsSection4Title', contentKey: 'termsSection4Content' }, // Section 4: Service availability
-    { titleKey: 'termsSection5Title', contentKey: 'termsSection5Content' }, // Section 5: External links
-    { titleKey: 'termsSection6Title', contentKey: 'termsSection6Content' }, // Section 6: Privacy policy
-    { titleKey: 'termsSection7Title', contentKey: 'termsSection7Content' }, // Section 7: Liability limitations
-    { titleKey: 'termsSection8Title', contentKey: 'termsSection8Content' }, // Section 8: Changes to terms
-    { titleKey: 'termsSection9Title', contentKey: 'termsSection9Content' }, // Section 9: Contact information
-];
+const termsSections = Array.from({ length: 9 }, (_, i) => ({
+    titleKey: `termsSection${i + 1}Title`,
+    contentKey: `termsSection${i + 1}Content`,
+}));
 
 // Set dynamic metadata for SEO purposes
 const pageKey = 'terms';

@@ -12,6 +12,9 @@ export const personalInfo = {
     phone: "+33758204726",
     birthDate: new Date("1998-07-16"),
 
+    // Current availability status for work ('available', 'busy', or 'unavailable')
+    availability: "available",
+
     // Social Links
     // LinkedIn: Professional profile showcasing experiences and projects.
     // URL: https://www.linkedin.com/in/djason-chery-3b87702b4

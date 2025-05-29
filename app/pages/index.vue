@@ -1,48 +1,39 @@
 <template>
-    <!-- Use SectionLayout to display the main sections of the home page -->
+    <!-- Use SectionLayout to display all home page sections dynamically -->
     <SectionLayout>
-        <template v-slot:section-0>
-            <Hero />
-        </template>
-
-        <template v-slot:section-1>
-            <LastProject />
-        </template>
-
-        <template v-slot:section-2>
-            <AboutMe />
-        </template>
-
-        <template v-slot:section-3>
-            <Skills />
-        </template>
-
-        <template v-slot:section-4>
-            <Services />
+        <!-- Loop through each section and inject it into a named slot -->
+        <template v-for="(section, index) in sections" :key="index" v-slot:[`section-${index}`]>
+            <component :is="section" />
         </template>
     </SectionLayout>
 </template>
 
 <script setup>
-import SectionLayout from "../components/ui/SectionLayout/SectionLayout.vue"; // Reusable layout component
-import AboutMe from "../components/views/Index/AboutMe.vue"; // About me section component
-import Hero from "../components/views/Index/Hero.vue"; // Hero section component
-import LastProject from "../components/views/Index/LastProject.vue"; // Last project section component
-import Services from "../components/views/Index/Services.vue"; // Services section component
-import Skills from "../components/views/Index/Skills.vue"; // Skills section component
-import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
+import SectionLayout from "../components/ui/SectionLayout/SectionLayout.vue";
 
-// Current language context
+// Import all section components
+import Hero from "../components/views/Index/Hero.vue";
+import LastProject from "../components/views/Index/LastProject.vue";
+import AboutMe from "../components/views/Index/AboutMe.vue";
+import Skills from "../components/views/Index/Skills.vue";
+import Services from "../components/views/Index/Services.vue";
+
+import { seoMetaData } from "../utils/seo.js";
+
+// Define ordered list of sections
+const sections = [Hero, LastProject, AboutMe, Skills, Services];
+
+// Language and SEO context
 const { $lang } = useNuxtApp();
+const pageKey = "index";
 
-// Set dynamic metadata for SEO purposes
-const pageKey = 'index';
+// Initial SEO setup
 useSeoMeta(seoMetaData(pageKey, $lang));
 
-// Watch for language changes and update SEO metadata dynamically
+// Watch language changes and refresh SEO meta
 watch(() => $lang.current.value, () => {
     useSeoMeta(seoMetaData(pageKey, $lang));
 });
-</script>
+</script>  
 
 <style scoped></style>

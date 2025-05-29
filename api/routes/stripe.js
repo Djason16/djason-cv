@@ -55,29 +55,49 @@ router.post('/create-checkout-session', async (req, res) => {
     }
 });
 
-// Success endpoint to show a success message after payment
-router.get('/success', (req, res) => {
-    res.send(`
+// Function to render the payment page with a consistent layout
+function renderPaymentPage(type = 'success') {
+    const isSuccess = type === 'success';
+
+    const backgroundColor = '#C9D6DF';
+    const textColor = '#1a1d1f';
+    const highlightColor = isSuccess ? '#58D68D' : '#E74C3C';
+    const title = isSuccess ? 'Paiement réussi !' : 'Paiement annulé !';
+    const message = isSuccess
+        ? 'Le paiement a été effectué avec succès.'
+        : 'Le paiement a été annulé.';
+    const englishMsg = isSuccess
+        ? 'Payment Successful! This window will close automatically.'
+        : 'Payment Canceled. This window will close automatically.';
+
+    return `
         <html>
             <head>
                 <style>
                     body {
                         text-align: center;
                         padding: 2rem;
-                        font-family: Arial, sans-serif;
-                        background-color: #f0f8f5;
-                        color: #333;
+                        font-family: 'Barlow Condensed', 'Roboto Condensed', sans-serif;
+                        background-color: ${backgroundColor};
+                        color: ${textColor};
                     }
                     .container {
+                        width: 90%;
                         max-width: 600px;
+                        aspect-ratio: 1 / 1; /* carré */
                         margin: auto;
                         padding: 2rem;
-                        border-radius: 8px;
-                        background-color: white;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                        background-color: #ffffff;
+                        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+                        box-sizing: border-box;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        text-align: center;
                     }
                     h1 {
-                        color: green;
+                        color: ${highlightColor};
                         font-size: 2rem;
                     }
                     p {
@@ -85,13 +105,17 @@ router.get('/success', (req, res) => {
                         font-size: 1.2rem;
                         line-height: 1.5;
                     }
+                    strong {
+                        color: ${highlightColor};
+                        font-weight: 500;
+                    }
                 </style>
             </head>
             <body>
                 <div class="container">
-                    <h1>Paiement réussi !</h1>
-                    <p>Le paiement a été effectué avec succès. Cette fenêtre va se fermer automatiquement.</p>
-                    <p><strong>Payment Successful!</strong> The payment was successful. This window will close automatically.</p>
+                    <h1>${title}</h1>
+                    <p>${message}</p>
+                    <p><strong>${englishMsg}</strong></p>
                 </div>
                 <script>
                     setTimeout(() => {
@@ -100,55 +124,17 @@ router.get('/success', (req, res) => {
                 </script>
             </body>
         </html>
-    `);
+    `;
+}
+
+// Route to handle successful payment
+router.get('/success', (req, res) => {
+    res.send(renderPaymentPage('success'));
 });
 
-// Cancel endpoint to show a canceled payment message
+// Route to handle canceled payment
 router.get('/cancel', (req, res) => {
-    res.send(`
-        <html>
-            <head>
-                <style>
-                    body {
-                        text-align: center;
-                        padding: 2rem;
-                        font-family: Arial, sans-serif;
-                        background-color: #fff5f5;
-                        color: #333;
-                    }
-                    .container {
-                        max-width: 600px;
-                        margin: auto;
-                        padding: 2rem;
-                        border-radius: 8px;
-                        background-color: white;
-                        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                    }
-                    h1 {
-                        color: red;
-                        font-size: 2rem;
-                    }
-                    p {
-                        margin-top: 1rem;
-                        font-size: 1.2rem;
-                        line-height: 1.5;
-                    }
-                </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h1>Paiement annulé !</h1>
-                    <p>Le paiement a été annulé. Cette fenêtre va se fermer automatiquement.</p>
-                    <p><strong>Payment Canceled!</strong> The payment was canceled. This window will close automatically.</p>
-                </div>
-                <script>
-                    setTimeout(() => {
-                        window.close();
-                    }, 3000);
-                </script>
-            </body>
-        </html>
-    `);
+    res.send(renderPaymentPage('cancel'));
 });
 
 // Endpoint to check payment status for a given session ID

@@ -62,17 +62,10 @@ import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
 const { $lang } = useNuxtApp();
 
 // Define sections for the payment page
-const payMeSections = [
-    { titleKey: 'payMeSection1Title', contentKey: 'payMeSection1Content' },
-    { titleKey: 'payMeSection2Title', contentKey: 'payMeSection2Content' },
-    { titleKey: 'payMeSection3Title', contentKey: 'payMeSection3Content' },
-    { titleKey: 'payMeSection4Title', contentKey: 'payMeSection4Content' },
-    { titleKey: 'payMeSection5Title', contentKey: 'payMeSection5Content' },
-    { titleKey: 'payMeSection6Title', contentKey: 'payMeSection6Content' },
-    { titleKey: 'payMeSection7Title', contentKey: 'payMeSection7Content' },
-    { titleKey: 'payMeSection8Title', contentKey: 'payMeSection8Content' },
-    { titleKey: 'payMeSection9Title', contentKey: 'payMeSection9Content' },
-];
+const payMeSections = Array.from({ length: 9 }, (_, i) => ({
+    titleKey: `payMeSection${i + 1}Title`,
+    contentKey: `payMeSection${i + 1}Content`,
+}));
 
 // Set dynamic metadata for SEO purposes
 const pageKey = 'payMe';

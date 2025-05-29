@@ -22,6 +22,7 @@ export default {
     // NAVIGATION AND FOOTER
     // Links and footer text displayed across the website
     // ======================================================
+    loading: "Loading...",
     home: "Home",
     footerText: "{{year}} {{name}}. All rights reserved.",
     terms: 'Terms and Conditions',

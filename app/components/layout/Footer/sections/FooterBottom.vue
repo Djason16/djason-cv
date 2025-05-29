@@ -1,7 +1,6 @@
 <template>
     <!-- Divider section with SVG path to create a decorative divider -->
     <div class="divider" aria-hidden="true">
-        <!-- SVG to create the divider shape using a custom path -->
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
             <path d="M0,256L720,160L1440,256L1440,320L0,320Z" fill="var(--fourth-color)" />
         </svg>
@@ -12,9 +11,9 @@
         <!-- Navigation for social media links with icons -->
         <nav class="icons text-normal" aria-label="Social media links">
             <!-- Loop through the socialIcons array to create each social media link -->
-            <a v-for="(icon, key) in socialIcons" :key="key" :href="icon.link" target="_blank" rel="noopener noreferrer"
-                :aria-label="icon.label">
-                <i :class="icon.class"></i> <!-- Icon for the social media link -->
+            <a v-for="(icon, index) in socialIcons" :key="index" :href="icon.link" target="_blank"
+                rel="noopener noreferrer" :aria-label="icon.label">
+                <i :class="icon.class"></i>
             </a>
         </nav>
 
@@ -23,12 +22,11 @@
             &copy; {{ $lang.getTranslation('footerText', { year: currentYear, name: personalInfo.name }) }}
         </p>
 
-        <!-- Footer links for legal, terms, privacy, and refund policy -->
+        <!-- Footer links section -->
         <div class="footer-links text-normal">
-            <NuxtLink to="/legal" aria-label="Legal Notice">{{ $lang.getTranslation('legal') }}</NuxtLink>
-            <NuxtLink to="/terms" aria-label="Terms and Conditions">{{ $lang.getTranslation('terms') }}</NuxtLink>
-            <NuxtLink to="/privacy" aria-label="Privacy Policy">{{ $lang.getTranslation('privacy') }}</NuxtLink>
-            <NuxtLink to="/refund-policy" aria-label="Refund Policy">{{ $lang.getTranslation('refundPolicy') }}
+            <!-- Loop through the footerLinks array to generate each link -->
+            <NuxtLink v-for="(link, index) in footerLinks" :key="index" :to="link.to" :aria-label="link.label">
+                {{ $lang.getTranslation(link.translationKey) }}
             </NuxtLink>
         </div>
     </div>
@@ -40,28 +38,25 @@ import { personalInfo } from "@/utils/personalInfo.js"; // Personal information
 // Current language context
 const { $lang } = useNuxtApp();
 
-// Getting the current year to dynamically display it in the footer
+// Get current year for footer
 const currentYear = new Date().getFullYear();
 
-// Array containing social media links and associated icons
+// Social media links and icons
 const socialIcons = [
-    // Email link with an envelope icon
     { link: `mailto:${personalInfo.email}`, class: "fas fa-envelope", label: "Email" },
-
-    // Phone link with a phone icon
     { link: `tel:${personalInfo.phone.replace(/\s+/g, "")}`, class: "fas fa-phone", label: "Phone" },
-
-    // WhatsApp link with a WhatsApp icon
     { link: personalInfo.links.whatsapp, class: "fab fa-whatsapp", label: "WhatsApp" },
-
-    // LinkedIn link with a LinkedIn icon
     { link: personalInfo.links.linkedin, class: "fab fa-linkedin", label: "LinkedIn" },
-
-    // GitHub link with a GitHub icon
     { link: personalInfo.links.github, class: "fab fa-github", label: "GitHub" },
-
-    // Malt link with a Malt icon
     { link: personalInfo.links.malt, class: "fab fa-m", label: "Malt" },
+];
+
+// Footer navigation links (legal, privacy, etc.)
+const footerLinks = [
+    { to: "/legal", label: "Legal Notice", translationKey: "legal" },
+    { to: "/terms", label: "Terms and Conditions", translationKey: "terms" },
+    { to: "/privacy", label: "Privacy Policy", translationKey: "privacy" },
+    { to: "/refund-policy", label: "Refund Policy", translationKey: "refundPolicy" },
 ];
 </script>
 
@@ -128,10 +123,8 @@ const socialIcons = [
 }
 
 @media (max-width: 1024px) {
-    .icons a:hover {
-        color: inherit;
-    }
 
+    .icons a:hover,
     .footer-links a:hover {
         color: inherit;
     }
@@ -145,4 +138,4 @@ const socialIcons = [
         justify-items: center;
     }
 }
-</style>
+</style>  

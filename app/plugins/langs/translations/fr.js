@@ -22,6 +22,7 @@ export default {
     // NAVIGATION AND FOOTER
     // Links and footer text displayed across the website
     // ======================================================
+    loading: 'Chargement...',
     home: 'Accueil',
     footerText: "{{year}} {{name}}. Tous droits réservés.",
     terms: 'Conditions Générales de Vente',

@@ -1,6 +1,11 @@
 // ==========================
 // SERVICES CONFIGURATION
 // ==========================
+
+// Helper to generate sections array from parallel title/content keys
+const generateSections = (titles, contents) =>
+    titles.map((titleKey, i) => ({ titleKey, contentKey: contents[i] }));
+
 export const services = [
     // Video Editor Services
     // Services related to video editing and post-production, showcasing creativity and technical expertise.
@@ -13,24 +18,20 @@ export const services = [
         titleKey: "videoEditor",
         icon: "fa-solid fa-film",
         introKey: "passionateAudiovisual",
-        sections: [
-            {
-                titleKey: "creativeEditingTitle",
-                contentKey: "creativeEditing",
-            },
-            {
-                titleKey: "advancedVFXTitle",
-                contentKey: "advancedVFX",
-            },
-            {
-                titleKey: "technicalPostProductionTitle",
-                contentKey: "technicalPostProduction",
-            },
-            {
-                titleKey: "creativeImpactTitle",
-                contentKey: "creativeImpact",
-            }
-        ],
+        sections: generateSections(
+            [
+                "creativeEditingTitle",
+                "advancedVFXTitle",
+                "technicalPostProductionTitle",
+                "creativeImpactTitle"
+            ],
+            [
+                "creativeEditing",
+                "advancedVFX",
+                "technicalPostProduction",
+                "creativeImpact"
+            ]
+        ),
         addedValueKey: "addedValueVideo",
     },
 
@@ -45,24 +46,20 @@ export const services = [
         titleKey: "fullstackDeveloper",
         icon: "fa-solid fa-code",
         introKey: "customDigitalSolutions",
-        sections: [
-            {
-                titleKey: "websiteCreationTitle",
-                contentKey: "websiteCreation",
-            },
-            {
-                titleKey: "websiteOptimizationTitle",
-                contentKey: "websiteOptimization",
-            },
-            {
-                titleKey: "secureHostingTitle",
-                contentKey: "secureHosting",
-            },
-            {
-                titleKey: "topSEOTitle",
-                contentKey: "topSEO",
-            },
-        ],
+        sections: generateSections(
+            [
+                "websiteCreationTitle",
+                "websiteOptimizationTitle",
+                "secureHostingTitle",
+                "topSEOTitle"
+            ],
+            [
+                "websiteCreation",
+                "websiteOptimization",
+                "secureHosting",
+                "topSEO"
+            ]
+        ),
         addedValueKey: "addedValueDev",
     },
 
@@ -77,24 +74,20 @@ export const services = [
         titleKey: "repairAndConsulting",
         icon: "fa-solid fa-tools",
         introKey: "solidTechnicalSkills",
-        sections: [
-            {
-                titleKey: "diagnosticsRepairTitle",
-                contentKey: "diagnosticsRepair",
-            },
-            {
-                titleKey: "performanceOptimizationTitle",
-                contentKey: "performanceOptimization",
-            },
-            {
-                titleKey: "personalizedAdviceTitle",
-                contentKey: "personalizedAdvice",
-            },
-            {
-                titleKey: "reliableSystemsTitle",
-                contentKey: "reliableSystems",
-            },
-        ],
+        sections: generateSections(
+            [
+                "diagnosticsRepairTitle",
+                "performanceOptimizationTitle",
+                "personalizedAdviceTitle",
+                "reliableSystemsTitle"
+            ],
+            [
+                "diagnosticsRepair",
+                "performanceOptimization",
+                "personalizedAdvice",
+                "reliableSystems"
+            ]
+        ),
         addedValueKey: "addedValueConsulting",
     },
 ];

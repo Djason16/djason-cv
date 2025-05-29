@@ -15,15 +15,10 @@ import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
 const { $lang } = useNuxtApp();
 
 // Define sections for the legal information
-const legalSections = [
-    { titleKey: 'legalSection1Title', contentKey: 'legalSection1Content' }, // Section 1: Publisher details
-    { titleKey: 'legalSection2Title', contentKey: 'legalSection2Content' }, // Section 2: Hosting provider
-    { titleKey: 'legalSection3Title', contentKey: 'legalSection3Content' }, // Section 3: Intellectual property rights
-    { titleKey: 'legalSection4Title', contentKey: 'legalSection4Content' }, // Section 4: Liability disclaimer
-    { titleKey: 'legalSection5Title', contentKey: 'legalSection5Content' }, // Section 5: Governing law
-    { titleKey: 'legalSection6Title', contentKey: 'legalSection6Content' }, // Section 6: Privacy and cookies
-    { titleKey: 'legalSection7Title', contentKey: 'legalSection7Content' }, // Section 7: Contact information
-];
+const legalSections = Array.from({ length: 7 }, (_, i) => ({
+    titleKey: `legalSection${i + 1}Title`,
+    contentKey: `legalSection${i + 1}Content`,
+}));
 
 // Set dynamic metadata for SEO purposes
 const pageKey = 'legal';

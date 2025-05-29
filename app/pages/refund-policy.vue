@@ -15,13 +15,10 @@ import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
 const { $lang } = useNuxtApp();
 
 // Define sections for the refund policy
-const refundPolicySections = [
-    { titleKey: 'refundPolicySection1Title', contentKey: 'refundPolicySection1Content' }, // Section 1: Refund eligibility
-    { titleKey: 'refundPolicySection2Title', contentKey: 'refundPolicySection2Content' }, // Section 2: Request process
-    { titleKey: 'refundPolicySection3Title', contentKey: 'refundPolicySection3Content' }, // Section 3: Non-refundable services
-    { titleKey: 'refundPolicySection4Title', contentKey: 'refundPolicySection4Content' }, // Section 4: Approval process
-    { titleKey: 'refundPolicySection5Title', contentKey: 'refundPolicySection5Content' }, // Section 5: Exceptions
-];
+const refundPolicySections = Array.from({ length: 5 }, (_, i) => ({
+    titleKey: `refundPolicySection${i + 1}Title`,
+    contentKey: `refundPolicySection${i + 1}Content`,
+}));
 
 // Set dynamic metadata for SEO purposes
 const pageKey = 'refundPolicy';

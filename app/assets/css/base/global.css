@@ -8,16 +8,19 @@ body {
     margin: 0 auto;
     padding: 0;
     width: 90vw;
+    height: 100dvh;
     min-height: 100vh;
     overflow-x: hidden;
     box-shadow: 0px 5px 50px rgba(255, 255, 255, 0.05);
     transition: all 0.5s ease-in-out;
+    touch-action: manipulation;
 }
 
 /* Responsive styles */
 @media (max-width: 1024px) {
     body {
-        width: 100%;
+        width: 100vw;
+        height: 100dvh;
         box-shadow: none;
     }
 }
