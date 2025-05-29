@@ -23,6 +23,9 @@
   <a href="https://wa.me/33758204726" target="_blank">
     <img src="https://img.shields.io/badge/WhatsApp-%2325D366?style=for-the-badge&logo=whatsapp&logoColor=%23FFFFFF" alt="Djason Chery | WhatsApp" />
   </a>
+  <a href="https://www.instagram.com/djasonchery/" target="_blank">
+    <img src="https://img.shields.io/badge/Instagram-%23E4405F?style=for-the-badge&logo=instagram&logoColor=%23FFFFFF" alt="Djason Chery | Instagram" />
+  </a>
 </p>
 
 <hr>
