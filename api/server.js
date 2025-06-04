@@ -13,7 +13,7 @@ const app = express(); // Initialize the Express app
 
 // Retrieve environment-specific configurations (backend domain and port)
 const backendDomain = process.env.BACKEND_DOMAIN; // Backend domain from environment variables
-const port = process.env.BACKEND_PORT || (process.env.NODE_ENV === 'production' ? 443 : 3001); // Set the port based on the environment
+const port = process.env.BACKEND_PORT || (process.env.NODE_ENV === 'production' ? 3000 : 3001); // Set the port based on the environment
 
 // CORS options configuration to allow specific origins
 const corsOptions = {
