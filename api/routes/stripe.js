@@ -1,13 +1,22 @@
+// Loading environment variables from .env files based on the current environment.
+require('dotenv').config({
+    path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
+});
+
 const express = require('express'); // Web framework to handle HTTP requests
 const Stripe = require('stripe'); // Stripe library to interact with Stripe API
 
 // Create a new router instance
 const router = express.Router();
 
-// Select Stripe secret key based on environment (development or production)
-const stripeSecretKey = process.env.NODE_ENV === 'production'
-    ? process.env.STRIPE_SECRET_KEY // Use production secret key
-    : process.env.STRIPE_SECRET_KEY; // Use development secret key
+// Load the Stripe secret key from environment variables
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+
+// Check if the Stripe secret key is loaded correctly
+console.log('[stripe.js] Stripe Key loaded:', stripeSecretKey ? '[OK]' : '[MISSING]');
+if (!stripeSecretKey) {
+    throw new Error('Stripe secret key is not defined in environment variables.');
+}
 
 const stripe = new Stripe(stripeSecretKey); // Initialize Stripe with the correct secret key
 

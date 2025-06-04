@@ -1,63 +1,63 @@
 // Load environment variables based on the NODE_ENV (production or development)
-// Uses dotenv to load variables from .env.production or .env files
-require('dotenv').config({
-    path: process.env.NODE_ENV === 'production' ? '.env.production' : '.env',
-});
+const envPath = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+require('dotenv').config({ path: envPath });
+console.log('[server.js] [ENV] Loaded variables from:', envPath);
 
 // Import necessary modules
-const cors = require('cors'); // CORS middleware for handling cross-origin requests
-const express = require('express'); // Express framework for building the server
-const routes = require('./routes/index'); // Importing the routes for the application
+const cors = require('cors');
+const express = require('express');
+const routes = require('./routes/index');
 
-const app = express(); // Initialize the Express app
+const app = express();
 
-// Retrieve environment-specific configurations (backend domain and port)
-const backendDomain = process.env.BACKEND_DOMAIN; // Backend domain from environment variables
-const port = process.env.BACKEND_PORT || (process.env.NODE_ENV === 'production' ? 443 : 3001); // Set the port based on the environment
+// Retrieve environment-specific configurations
+const backendDomain = process.env.BACKEND_DOMAIN;
+const frontendDomain = process.env.FRONTEND_DOMAIN;
+const port = process.env.BACKEND_PORT || 3001;
 
-// CORS options configuration to allow specific origins
+// === Validate required ENV variables ===
+if (!backendDomain) console.warn('[WARN] BACKEND_DOMAIN is not set');
+if (!frontendDomain) console.warn('[WARN] FRONTEND_DOMAIN is not set');
+
+// === CORS options configuration ===
 const corsOptions = {
     origin: (origin, callback) => {
-        const allowedOrigins = [
-            process.env.FRONTEND_DOMAIN, // Allow requests from the frontend domain
-            'https://djason-chery.dev', // Allow requests from specific URL (for production)
-        ];
+        const allowedOrigins = [frontendDomain, 'https://djason-chery.dev'];
 
-        // If the request's origin is in the allowed list, allow the request
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            // Reject the request if the origin is not in the allowed list
+            console.warn(`[CORS] Blocked origin: ${origin}`);
             callback(new Error(`CORS policy does not allow access from origin: ${origin}`));
         }
     },
-    methods: ['GET', 'POST'], // Allowed HTTP methods
-    allowedHeaders: ['Content-Type'], // Allowed headers for requests
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
 };
 
-// Use middleware for handling CORS requests
+// === Middleware setup ===
 app.use(cors(corsOptions));
-// Use JSON middleware to parse incoming JSON request bodies
 app.use(express.json());
 
-// Log each incoming request (method and URL) for debugging purposes
 app.use((req, res, next) => {
-    console.log(`Request received: ${req.method} ${req.url}`); // Log the request method and URL
-    next(); // Pass control to the next middleware
+    console.log(`[REQ] ${req.method} ${req.url}`);
+    next();
 });
 
-// Use the imported routes for routing requests
+// === Routes ===
 app.use(routes);
 
-// Catch-all handler for 404 errors when no route matches the request
+// === 404 Handler ===
 app.use((req, res) => {
-    res.status(404).json({ error: 'Route not found' }); // Return a 404 error with a message
+    console.warn(`[404] Route not found: ${req.method} ${req.url}`);
+    res.status(404).json({ error: 'Route not found' });
 });
 
-// Start the server and listen on the specified port
+// === Start Server ===
 app.listen(port, () => {
-    console.log('Current Environment:', process.env.NODE_ENV); // Log the current environment (development or production)
-    console.log('Backend Domain:', backendDomain); // Log the backend domain
-    console.log('Port:', port); // Log the port the server is running on
-
+    console.log('[INFO] Server started');
+    console.log('Environment:', process.env.NODE_ENV);
+    console.log('Backend Domain:', backendDomain);
+    console.log('Frontend Domain:', frontendDomain);
+    console.log('Port:', port);
 });

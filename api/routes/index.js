@@ -7,6 +7,12 @@ const stripeRoutes = require('./stripe');
 // Creating a new instance of the Express Router
 const router = express.Router();
 
+// Log when the routes are initialized
+console.log('[routes/index.js] Initializing API routes...');
+console.log('[routes/index.js] NODE_ENV:', process.env.NODE_ENV);
+console.log('[routes/index.js] BACKEND_DOMAIN:', process.env.BACKEND_DOMAIN);
+console.log('[routes/index.js] FRONTEND_DOMAIN:', process.env.FRONTEND_DOMAIN);
+
 // Setting up a default route that responds with basic information about the API
 router.get('/', (req, res) => {
     res.json({
