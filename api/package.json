@@ -1,11 +1,12 @@
 {
   "name": "api-backend",
   "version": "1.0.0",
+  "description": "Backend API pour djason-chery.dev",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "npx pm2-runtime ecosystem.config.js",
     "dev": "nodemon server.js",
-    "prod": "NODE_ENV=production node server.js"
+    "prod": "npx pm2-runtime ecosystem.config.js --env production"
   },
   "keywords": [
     "api",
@@ -15,7 +16,6 @@
   ],
   "author": "Djason CHERY",
   "license": "MIT",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -23,6 +23,7 @@
     "stripe": "^17.4.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "pm2": "^5.4.1"
   }
 }
