@@ -40,6 +40,9 @@ app.use(cors(corsOptions));
 // Use JSON middleware to parse incoming JSON request bodies
 app.use(express.json());
 
+// Serve static files from the "public" directory (e.g., for SSL validation)
+app.use(express.static('public'));
+
 // Log each incoming request (method and URL) for debugging purposes
 app.use((req, res, next) => {
     console.log(`Request received: ${req.method} ${req.url}`); // Log the request method and URL
