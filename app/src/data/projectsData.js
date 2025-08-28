@@ -4,6 +4,16 @@
 
 // This file contains the configuration for the projects displayed on the website.
 const rawProjects = [
+    // David Noguier - Portfolio
+    {
+        name: "David Noguier - Portfolio",
+        short: "davidShort",
+        img: "images/banner_david_noguier.jpg",
+        link: "https://david-noguier.fr",
+        skills: ["nuxt", "slimPHP", "responsive", "git", "github",],
+        date: "2025-08-28",
+    },
+
     // Zabeko - Portfolio
     {
         name: "Zabeko - Portfolio",
