@@ -18,24 +18,36 @@ process.env.STRIPE_SECRET_KEY = envConfig.STRIPE_SECRET_KEY;
 
 export default defineNuxtConfig({
   ssr: true,
+  target: 'static',
   devtools: { enabled: true },
   css: ['./assets/css/main.css'],
   plugins: ['./plugins/langs/lang.js'],
+  nitro: {
+    prerender: {
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/legal',
+        '/pay-me',
+        '/privacy',
+        '/refund-policy',
+        '/terms',
+      ],
+      fallback: '200.html',
+    },
+  },
   modules: [
     ['@nuxtjs/sitemap', {
       hostname: process.env.NUXT_PUBLIC_SITE_URL,
       gzip: true,
-      routes: async () => {
-        const paths = [
-          '/',
-          '/legal',
-          '/pay-me',
-          '/privacy',
-          '/refund-policy',
-          '/terms',
-        ];
-        return paths.map(path => `${process.env.NUXT_PUBLIC_SITE_URL}${path}`);
-      },
+      routes: [
+        '/',
+        '/legal',
+        '/pay-me',
+        '/privacy',
+        '/refund-policy',
+        '/terms',
+      ].map(path => `${process.env.NUXT_PUBLIC_SITE_URL}${path}`),
     }],
     ['@nuxtjs/robots', {
       rules: [
@@ -53,7 +65,7 @@ export default defineNuxtConfig({
       link: [
         {
           rel: 'stylesheet',
-          href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css',
+          href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css',
         },
         {
           rel: 'icon',
@@ -70,7 +82,6 @@ export default defineNuxtConfig({
       ],
     },
   },
-
   runtimeConfig: {
     public: {
       backendDomain: process.env.BACKEND_DOMAIN,
@@ -78,6 +89,5 @@ export default defineNuxtConfig({
       stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
     },
   },
-
   compatibilityDate: '2024-12-11',
 });
