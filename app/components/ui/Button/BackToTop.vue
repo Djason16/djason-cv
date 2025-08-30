@@ -1,40 +1,24 @@
 <template>
-    <!-- Button to scroll back to the top, only visible when isVisible is true -->
+    <!-- Show Back-to-Top button when scrolled down -->
     <button v-show="isVisible" @click="scrollToTop" class="back-to-top text-small">
-        <!-- Icon representing the arrow to go back to top -->
         <i class="fa-solid fa-arrow-up"></i>
     </button>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue"; // Vue 3 composition API
+import { ref, onMounted, onUnmounted } from 'vue'
 
-// Reactive reference to manage the visibility of the button
-const isVisible = ref(false);
+const isVisible = ref(false) // track button visibility
 
-// Function to handle the scroll event and toggle the visibility of the button
-function handleScroll() {
-    // Show the button when the page is scrolled down more than 200 pixels
-    isVisible.value = window.scrollY > 200;
-}
+// Smooth scroll to top
+const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
-// Function to scroll to the top of the page smoothly
-function scrollToTop() {
-    window.scrollTo({
-        top: 0, // Scroll to the top of the page
-        behavior: "smooth", // Smooth scrolling effect
-    });
-}
-
-// Lifecycle hook to add event listener when the component is mounted
 onMounted(() => {
-    window.addEventListener("scroll", handleScroll); // Listen to scroll events
-});
-
-// Lifecycle hook to clean up when the component is unmounted
-onUnmounted(() => {
-    window.removeEventListener("scroll", handleScroll); // Remove the event listener
-});
+    const onScroll = () => (isVisible.value = window.scrollY > 200) // show if scrolled >200px
+    onScroll() // initial check
+    window.addEventListener('scroll', onScroll)
+    onUnmounted(() => window.removeEventListener('scroll', onScroll))
+})
 </script>
 
 <style scoped>

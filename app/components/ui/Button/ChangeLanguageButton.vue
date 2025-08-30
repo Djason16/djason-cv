@@ -1,35 +1,36 @@
 <template>
-    <!-- Language switcher buttons to toggle between available languages -->
+    <!-- Language switcher buttons -->
     <div class="language-switcher">
-        <!-- Loop through language options -->
-        <button v-for="lang in languages" :key="lang.code" :class="{ active: currentLanguage === lang.code }"
-            @click="switchLanguage(lang.code)" :aria-label="lang.label">
+        <button v-for="lang in availableLanguages" :key="lang.code" :class="{ active: currentLanguage === lang.code }"
+            @click="switchLanguage(lang.code)" :aria-label="`Switch to ${lang.code}`">
             {{ lang.short }}
         </button>
     </div>
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app';
+import { computed } from 'vue'
+import { useNuxtApp } from '#app'
 
-// Language context
-const { $lang } = useNuxtApp();
+// Access Nuxt language plugin
+const { $lang } = useNuxtApp()
+const currentLanguage = $lang.current // reactive current language
 
-// Current language from the language manager
-const currentLanguage = $lang.current;
+// Prepare language options with short codes and labels
+const availableLanguages = computed(() =>
+    $lang.availableLanguages.map(code => ({
+        code,
+        short: code.slice(0, 2).toUpperCase(), // short display
+        label: `Switch to ${code}`              // accessibility
+    }))
+)
 
-// Array of available languages
-const languages = [
-    { code: 'french', short: 'FR', label: 'Switch to French' },
-    { code: 'english', short: 'EN', label: 'Switch to English' },
-];
-
-// Function to switch language and persist in localStorage
-const switchLanguage = (lang) => {
-    $lang.setLang(lang);
-    localStorage.setItem('selectedLanguage', lang);
-};
-</script>  
+// Change language and persist selection
+const switchLanguage = lang => {
+    $lang.setLang(lang)
+    localStorage.setItem('selectedLanguage', lang)
+}
+</script>
 
 <style scoped>
 .language-switcher {

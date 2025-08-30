@@ -1,6 +1,7 @@
 <template>
+    <!-- Render only on client-side to avoid SSR issues -->
     <div v-if="isMounted" :class="['availability-button', `is-${status}`]">
-        <span class="availability-button__dot"></span>
+        <span class="availability-button__dot"></span> <!-- Colored dot showing status -->
         <span class="availability-button__text text-normal text-uppercase text-bold">
             {{ $lang.getTranslation(status) || status }}
         </span>
@@ -8,29 +9,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"; // Vue 3 Composition API
+import { onMounted, ref } from 'vue'
 
-// Current language context
-const { $lang } = useNuxtApp();
+const { $lang } = useNuxtApp() // Nuxt language plugin
 
-// Define props for the component, with a validator for the 'status' prop
-defineProps({
-    // 'status' prop determines the availability state: available, busy, or unavailable
-    status: {
-        type: String,
-        required: true,
-        // Validate that the 'status' prop can only be one of the specified values
-        validator: (value) => ["available", "busy", "unavailable"].includes(value),
-    },
-});
+// Props: restrict to valid statuses
+const props = defineProps({
+    status: { type: String, required: true, validator: v => ['available', 'busy', 'unavailable'].includes(v) }
+})
 
-// Local state to track whether the component is mounted
-const isMounted = ref(false);
-
-// Set 'isMounted' to true once the component is mounted
-onMounted(() => {
-    isMounted.value = true;
-});
+const isMounted = ref(false) // only render on client
+onMounted(() => isMounted.value = true)
 </script>
 
 <style scoped>

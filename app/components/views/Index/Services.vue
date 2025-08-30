@@ -1,24 +1,22 @@
 <template>
-    <!-- Services section container -->
+    <!-- Services section wrapper -->
     <section id="services" class="services-section">
         <div class="services-section__content">
-            <!-- Services section title -->
             <h2 class="services-section__title text-tall text-uppercase">
                 {{ $lang.getTranslation('servicesTitle') }}
             </h2>
-            <!-- Services section description -->
             <div class="services-section__description text-normal">
                 {{ $lang.getTranslation('servicesDescription') }}
             </div>
         </div>
 
-        <!-- Render a card component for displaying individual services -->
+        <!-- Single card component to display services -->
         <SectionCard />
     </section>
 </template>
 
 <script setup>
-import SectionCard from "../../ui/Tab/ServiceCard.vue"; // Service card component
+import SectionCard from '~/components/ui/Tab/ServiceCard.vue' // Card for individual service
 </script>
 
 <style scoped>

@@ -1,8 +1,9 @@
-# Lancer npm run dev dans app
-Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd `"$PSScriptRoot\app`" && npm run dev" -WindowStyle Normal
+# Launch frontend (Nuxt 3) dev server in the "app" folder
+Start-Process cmd.exe -ArgumentList "/c cd `"$PSScriptRoot\app`" && npm run dev" -WindowStyle Normal
 
-# Lancer npm run dev dans api
-Start-Process -FilePath "cmd.exe" -ArgumentList "/c cd `"$PSScriptRoot\api`" && npm run dev" -WindowStyle Normal
+# Launch backend (Node.js API) dev server in the "api" folder
+Start-Process cmd.exe -ArgumentList "/c cd `"$PSScriptRoot\api`" && npm run dev" -WindowStyle Normal
 
-Write-Host "`nLes deux serveurs ont ete lances dans des fenetres separees."
-Write-Host "Ferme les fenetres pour arreter les serveurs."
+# Notify user
+Write-Host "`nFrontend (Nuxt 3) and backend (Node.js API) servers started in separate windows."
+Write-Host "Close the windows to stop the servers."

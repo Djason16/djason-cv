@@ -1,47 +1,46 @@
 <template>
-    <!-- Container for the entire sections -->
     <div class="sections-container">
-        <!-- Loop through each section and render the corresponding content -->
-        <section v-for="index in sectionCount" :key="index" class="section-wrapper"
-            :style="{ backgroundColor: getColor(index - 1) }">
-
-            <!-- Slide-in animation for each section -->
+        <!-- Loop through dynamic slots and render each section -->
+        <section v-for="i in sectionCount" :key="i" class="section-wrapper"
+            :style="{ backgroundColor: getColor(i - 1) }">
+            <!-- Slide-in animation for content -->
             <SlideInFromRight>
-                <div class="content" :class="{ 'content-last': index === sectionCount }">
-                    <slot :name="'section-' + (index - 1)">Section {{ index }}</slot>
+                <div class="content" :class="{ 'content-last': i === sectionCount }">
+                    <!-- Render slot content or fallback text -->
+                    <slot :name="'section-' + (i - 1)">Section {{ i }}</slot>
                 </div>
             </SlideInFromRight>
 
-            <!-- Diagonal separator between sections (except for the last one) -->
-            <div v-if="index < sectionCount" class="diagonal-separator">
+            <!-- Diagonal separator, skip for last section -->
+            <div v-if="i < sectionCount" class="diagonal-separator">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" preserveAspectRatio="none"
-                    :class="index % 2 === 0 ? 'diagonal-separator-normal' : 'diagonal-separator-inverted'">
-                    <polygon points="0,0 1440,0 0,100" :fill="getColor(index)" />
+                    :class="i % 2 === 0 ? 'diagonal-separator-normal' : 'diagonal-separator-inverted'">
+                    <polygon points="0,0 1440,0 0,100" :fill="getColor(i)" />
                 </svg>
             </div>
         </section>
 
-        <!-- Footer section at the end of the content, with dynamic color -->
+        <!-- Footer with color matching the last section -->
         <FooterTop :color="lastColor" />
     </div>
 </template>
 
 <script setup>
-import { computed, getCurrentInstance } from "vue"; // Vue 3 composition API
-import SlideInFromRight from "~/components/animations/SlideInFromRight.vue"; // Slide-in animation component
-import FooterTop from "~/components/layout/Footer/sections/FooterTop.vue"; // Footer top component
-import { getColor } from "~/utils/sections"; // Function to get section color
+import { computed, getCurrentInstance } from 'vue'
+import SlideInFromRight from '~/components/animations/SlideInFromRight.vue'
+import FooterTop from '~/components/layout/Footer/sections/FooterTop.vue'
+import { getColor } from '~/utils/sections'
 
-// Computed property to get the number of sections
-const sectionCount = computed(() => {
-    const slots = Object.keys(getCurrentInstance().slots).filter((slot) =>
-        slot.startsWith("section-")
-    );
-    return slots.length;
-});
+// Detect all "section-*" slots dynamically
+const sections = computed(() =>
+    Object.keys(getCurrentInstance().slots).filter(s => s.startsWith('section-'))
+)
 
-// Computed property to get the color of the last section
-const lastColor = computed(() => getColor(sectionCount.value - 1));
+// Compute total number of sections to render
+const sectionCount = computed(() => sections.value.length)
+
+// Footer color matches the last section
+const lastColor = computed(() => getColor(sectionCount.value - 1))
 </script>
 
 <style scoped>
@@ -56,7 +55,7 @@ const lastColor = computed(() => getColor(sectionCount.value - 1));
     align-items: center;
     text-align: center;
     overflow: hidden;
-    padding: 6vh 5vw;
+    padding: 6rem;
 }
 
 .content {

@@ -1,77 +1,39 @@
 <template>
-    <!-- Link element for navigating and scrolling to a section -->
+    <!-- Clickable link that scrolls to a target section -->
     <span class="header-top__link text-normal text-bold text-uppercase" @click="handleClick">
-        <!-- Slot for dynamically inserting content inside the link -->
         <slot></slot>
     </span>
 </template>
 
 <script setup>
-import { nextTick } from "vue"; // Import nextTick for async operations
-import { useRouter } from "vue-router"; // Import useRouter for navigation
+import { nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 
-// Define props for the component
-const props = defineProps({
-    id: {
-        type: String, // ID of the section to scroll to
-        required: true,
-    },
-});
+// Prop: target section ID to scroll to
+const props = defineProps({ id: { type: String, required: true } })
+const router = useRouter()
 
-const router = useRouter(); // Access the router for navigation
-
-// Method triggered on clicking the link
+// Handle click: navigate home if needed, then scroll
 const handleClick = async () => {
-    // If the current route is not the homepage, navigate to it
-    if (router.currentRoute.value.path !== "/") {
-        await router.push("/"); // Navigate to the homepage
-    }
+    if (router.currentRoute.value.path !== '/') await router.push('/') // go home if not already
+    await nextTick() // wait for DOM to update
+    scrollToSection()
+}
 
-    await nextTick(); // Wait for the next tick for the DOM to update
-
-    scrollToSection(); // Scroll to the specified section
-};
-
-// Method to scroll to the specified section by ID
+// Smoothly scrolls to the target element, adjusting for header
 const scrollToSection = () => {
-    // Get the target element by its ID
-    const element = document.getElementById(props.id);
+    const el = document.getElementById(props.id)
+    if (!el) return console.error(`Element with ID "${props.id}" not found.`)
 
-    // Get the header element to calculate its height
-    const header = document.querySelector("header");
+    const header = document.querySelector('header')
+    const headerHeight = header?.offsetHeight ?? 0
+    const offset = header?.classList.contains('sticky') ? headerHeight + 20 : headerHeight * 2 + 20
 
-    // Calculate the header height or default to 0 if not found
-    const headerHeight = header?.offsetHeight || 0;
-
-    // Extra padding for better visual spacing during scrolling
-    const extraPadding = 20;
-
-    if (element) {
-        // Check if the header currently has the 'sticky' class
-        const isSticky = header.classList.contains("sticky");
-
-        // If the header is sticky, use its height with additional padding
-        const stickyOffset = isSticky ? headerHeight + extraPadding : 0;
-
-        // Calculate the final scroll position
-        // If the header is sticky, only subtract the header height and extra padding
-        // If not sticky, subtract additional height to account for the difference
-        const position =
-            element.getBoundingClientRect().top +
-            window.scrollY -
-            headerHeight -
-            (isSticky ? extraPadding : headerHeight + extraPadding);
-
-        // Smoothly scroll to the calculated position
-        window.scrollTo({
-            top: position,
-            behavior: "smooth",
-        });
-    } else {
-        // Log an error if the target element is not found
-        console.error(`Element with ID "${props.id}" not found.`);
-    }
-};
+    window.scrollTo({
+        top: el.getBoundingClientRect().top + window.scrollY - offset,
+        behavior: 'smooth'
+    })
+}
 </script>
 
 <style scoped>

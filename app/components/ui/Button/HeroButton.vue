@@ -1,43 +1,24 @@
 <template>
-    <!-- Render either a link (<a>) or a button (<button>) based on whether 'href' is provided -->
+    <!-- Render an anchor if 'href' exists, else a button -->
     <component :is="href ? 'a' : 'button'" class="custom-button" :href="href" :target="href ? '_blank' : undefined"
         :rel="href ? 'noopener noreferrer' : undefined" :aria-label="ariaLabel || label">
-
-        <!-- Icon section of the button/link -->
+        <!-- Icon display -->
         <span class="custom-button__icon text-normal">
-            <!-- The icon class is dynamically set based on 'iconClass' prop -->
             <i :class="iconClass"></i>
         </span>
-
-        <!-- Text section of the button/link -->
+        <!-- Button/link text -->
         <span class="custom-button__text text-normal text-uppercase text-bold">{{ label }}</span>
     </component>
 </template>
 
 <script setup>
-// Define component properties (props) and their default values
+// Props: label, optional link, accessibility label, and icon class
 defineProps({
-    // 'label' prop for the button/link text (default: "Button")
-    label: {
-        type: String,
-        default: "Button",
-    },
-    // 'href' prop for the URL (optional, if provided, the component renders a link)
-    href: {
-        type: String,
-        default: null,
-    },
-    // 'ariaLabel' prop for the accessibility label (optional)
-    ariaLabel: {
-        type: String,
-        default: null,
-    },
-    // 'iconClass' prop to specify the icon (default: "fas fa-circle")
-    iconClass: {
-        type: String,
-        default: "fas fa-circle",
-    },
-});
+    label: { type: String, default: 'Button' },          // Display text
+    href: { type: String, default: null },               // Makes it a link if provided
+    ariaLabel: { type: String, default: null },          // Accessibility label
+    iconClass: { type: String, default: 'fas fa-circle' } // Icon for the button/link
+})
 </script>
 
 <style scoped>

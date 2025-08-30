@@ -1,5 +1,5 @@
 <template>
-    <!-- Use OtherSectionLayout to display the legal information -->
+    <!-- Render legal information using a reusable layout with dynamic content -->
     <OtherSectionLayout pageTitleKey="legalTitle" pageSubtitleKey="legalIntro" :sections="legalSections" titleTag="h2"
         titleClass="text-xlarge text-bold" titleColor="var(--text-color-light)" contentClass="text-normal"
         contentColor="var(--text-color-light)"
@@ -7,27 +7,23 @@
 </template>
 
 <script setup>
-import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'; // Reusable layout component
-import { personalInfo } from "../utils/personalInfo.js"; // Personal data (e.g., name, email)
-import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
+import { watch } from 'vue'
+import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
+import { personalInfo } from '~/utils/personalInfo.js'
+import { seoMetaData } from '~/utils/seo.js'
 
-// Current language context
-const { $lang } = useNuxtApp();
+const { $lang } = useNuxtApp()
 
-// Define sections for the legal information
+// Generate legal sections dynamically
 const legalSections = Array.from({ length: 7 }, (_, i) => ({
     titleKey: `legalSection${i + 1}Title`,
-    contentKey: `legalSection${i + 1}Content`,
-}));
+    contentKey: `legalSection${i + 1}Content`
+}))
 
-// Set dynamic metadata for SEO purposes
-const pageKey = 'legal';
-useSeoMeta(seoMetaData(pageKey, $lang, personalInfo));
-
-// Watch for language changes and update SEO metadata dynamically
-watch(() => $lang.current.value, () => {
-    useSeoMeta(seoMetaData(pageKey, $lang, personalInfo));
-});
+// Setup SEO and refresh on language changes
+const pageKey = 'legal'
+useSeoMeta(seoMetaData(pageKey, $lang, personalInfo))
+watch(() => $lang.current.value, () => useSeoMeta(seoMetaData(pageKey, $lang, personalInfo)))
 </script>
 
 <style></style>

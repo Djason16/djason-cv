@@ -1,18 +1,14 @@
 <template>
-    <!-- Fullscreen loader that shows while the page is loading -->
+    <!-- Fullscreen loader with spinner and translated text -->
     <div class="loader-wrapper">
-        <!-- Spinning animation for visual feedback -->
-        <div class="spinner"></div>
-        <!-- Loading text, translated based on the current language -->
-        <p class="loader-text text-large">
-            {{ $lang.getTranslation('loading') }}
-        </p>
+        <div class="spinner"></div> <!-- Spinning visual feedback -->
+        <p class="loader-text text-large">{{ $lang.getTranslation('loading') }}</p> <!-- Localized loading message -->
     </div>
 </template>
 
 <script setup>
-// Access the language utility from the Nuxt app
-const { $lang } = useNuxtApp();
+// Access Nuxt's language utility for translations
+const { $lang } = useNuxtApp()
 </script>
 
 <style scoped>

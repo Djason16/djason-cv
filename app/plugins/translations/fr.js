@@ -1,8 +1,5 @@
 export default {
-    // ======================================================
-    // SEO METADATA
-    // Titles and descriptions for SEO optimization on each page
-    // ======================================================
+    // ================= SEO METADATA =================
     defaultSeoTitle: "{{name}} - Monteur Truquiste & Développeur Full-Stack",
     defaultSeoDescription: "Bienvenue dans le portfolio de {{name}}. Découvrez ses compétences en post-production audiovisuelle et en développement web full-stack, alliant créativité et expertise technique.",
     seoIndexTitle: "{{name}} - Monteur Truquiste & Développeur Full-Stack",
@@ -18,10 +15,7 @@ export default {
     seoPayMeTitle: "{{name}} - Payer",
     seoPayMeDescription: "Effectuez un paiement sécurisé à {{name}} pour les services rendus, notamment le développement web, le montage vidéo, et plus encore.",
 
-    // ======================================================
-    // NAVIGATION AND FOOTER
-    // Links and footer text displayed across the website
-    // ======================================================
+    // ================ NAVIGATION & FOOTER ================
     loading: 'Chargement...',
     home: 'Accueil',
     footerText: "{{year}} {{name}}. Tous droits réservés.",
@@ -30,10 +24,7 @@ export default {
     legal: 'Mentions légales',
     refundPolicy: 'Politique de remboursement',
 
-    // ======================================================
-    // HERO SECTION
-    // Introduction and call-to-actions on the homepage
-    // ======================================================
+    // ================= HERO SECTION =================
     available: "Disponible",
     busy: "Occupé",
     unavailable: "Indisponible",
@@ -41,10 +32,7 @@ export default {
     sendEmail: 'Envoyer un email',
     callMe: 'M’appeler',
 
-    // ======================================================
-    // PROJECTS SECTION
-    // Highlighted projects with descriptions and related skills
-    // ======================================================
+    // ================= PROJECTS =================
     lastProjects: 'Derniers Projets',
     projectDescription: 'Une présentation de mes projets récents, illustrant mon expertise, ma créativité et l’impact concret de mon travail pour atteindre des objectifs précis et produire des résultats tangibles.',
     davidShort: "Portfolio d’un monteur freelance, proposant des services de montage vidéo, post-production, habillage graphique et optimisation de contenu audiovisuel.",
@@ -76,17 +64,11 @@ export default {
     photoshop: "Photoshop",
     viewMore: "Voir plus",
 
-    // ======================================================
-    // ABOUT ME
-    // Personal details, location, availability, and contact info
-    // ======================================================
+    // ================= ABOUT ME =================
     aboutMe: "Qui suis-je ?",
     aboutDescription: `Je suis {{name}}, monteur VFX et développeur full-stack freelance, passionné par la création audiovisuelle et le développement web. À {{age}} ans, je mêle créativité et expertise technique. Basé à Paris, je suis disponible à distance ou sur site, avec un permis B, pour des déplacements jusqu'à 90 km.`,
 
-    // ======================================================
-    // SKILLS SECTION
-    // Comprehensive list of technical and creative skills
-    // ======================================================
+    // ================= SKILLS =================
     skillsTitle: "Mes compétences",
     skillsDescription: "Découvrez mes compétences en post-production audiovisuelle et en développement web full-stack, alliant créativité et expertise technique.",
     html5Description: "Langage de balisage HyperText",
@@ -125,11 +107,7 @@ export default {
     mediaEncoderDescription: "Logiciel d'encodage et de conversion développé par Adobe",
     virtualDubDescription: "Logiciel de capture et de traitement vidéo héritage",
 
-    // ======================================================
-    // SERVICES SECTION
-    // Overview of services offered, including web development,
-    // video editing, and consulting
-    // ======================================================
+    // ================= SERVICES =================
     servicesTitle: "Mes services",
     servicesDescription: "Découvrez les services que je propose en post-production audiovisuelle, développement web et conseil informatique, alliant créativité et expertise technique.",
     fullstackDeveloper: "Développeur web Fullstack",
@@ -168,11 +146,7 @@ export default {
     addedValueDev: "Des sites web performants et esthétiques qui répondent à vos besoins.",
     addedValueConsulting: "Un service rigoureux et centré sur vos attentes.",
 
-    // ======================================================
-    // PAY ME PAGE
-    // Details for the payment page, including instructions and
-    // transaction details with Stripe
-    // ======================================================
+    // ================= PAY ME =================
     payMe: 'Payez-moi',
     payMeTitle: "Payer pour les services",
     payMeIntro: "Bienvenue sur ma page de paiement. Vous pouvez payer en toute sécurité pour les services rendus, y compris le développement web, le montage vidéo, et autres services freelance.",
@@ -209,10 +183,7 @@ export default {
     successPayment: 'Paiement réussi ! Merci pour votre achat.',
     cancelPayment: 'Paiement annulé. Veuillez réessayer.',
 
-    // ======================================================
-    // LEGAL PAGES
-    // Includes terms, privacy policy, and refund policy details
-    // ======================================================
+    // ================= LEGAL =================
     legalTitle: "Mentions légales",
     legalIntro: "Retrouvez les informations légales relatives au site de {{name}}.",
     legalSection1Title: "1. Éditeur du site",
@@ -230,9 +201,7 @@ export default {
     legalSection7Title: "7. Coordonnées",
     legalSection7Content: "Pour toute question relative aux mentions légales, veuillez contacter {{name}} à l’adresse {{email}} ou appeler au {{phone}}.",
 
-    // -- TERMS AND CONDITIONS
-    // Terms of service for website usage and service agreements
-    // --------------------------------------------------------
+    // ================= TERMS =================
     termsTitle: "Conditions Générales de Vente",
     termsIntro: "En utilisant ce site web, vous acceptez les termes et conditions suivants. Ces conditions régissent l'accès au site de {{name}}, y compris les paiements, les services et les responsabilités.",
     termsSection1Title: "1. Propriété du Contenu",
@@ -254,9 +223,7 @@ export default {
     termsSection9Title: "9. Contact pour les Conditions",
     termsSection9Content: "Pour toute question concernant ces conditions, contactez {{name}} via {{email}} ou appelez au {{phone}}.",
 
-    // -- PRIVACY POLICY
-    // Details on how user data is collected, stored, and protected
-    // --------------------------------------------------------
+    // ================= PRIVACY =================
     privacyTitle: "Politique de confidentialité",
     privacyIntro: "Cette politique de confidentialité explique comment {{name}} collecte, utilise et protège vos données personnelles sur ce site.",
     privacySection1Title: "1. Données collectées",
@@ -276,9 +243,7 @@ export default {
     privacySection8Title: "8. Contact pour la confidentialité",
     privacySection8Content: "Pour toute question concernant la confidentialité, veuillez contacter {{name}} à {{email}} ou appeler au {{phone}}.",
 
-    // -- REFUND POLICY
-    // Information on refund eligibility, process, and exceptions
-    // --------------------------------------------------------
+    // ================= REFUND POLICY =================
     refundPolicyTitle: "Politique de remboursement",
     refundPolicyIntro: "Découvrez la politique de remboursement des services de {{name}}, incluant les conditions dans lesquelles un remboursement peut être accordé.",
     refundPolicySection1Title: "1. Éligibilité aux remboursements",

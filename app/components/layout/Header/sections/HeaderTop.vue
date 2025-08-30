@@ -1,23 +1,23 @@
 <template>
-    <!-- Main header top section containing logo and navigation links -->
+    <!-- Top header with logo and navigation -->
     <div class="header-top">
         <div class="header-top__content">
-            <!-- Logo section with link to homepage -->
+            <!-- Logo linking to home -->
             <div class="header-top__title">
                 <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')">
                     <img src="/images/main_logo_light.png" alt="Djason CHERY Logo" class="header-top__logo" />
                 </NuxtLink>
             </div>
 
-            <!-- Navigation section -->
+            <!-- Navigation links -->
             <nav class="header-top__nav">
-                <!-- Loop through homepage links if we're on the home page -->
-                <NavLink v-if="isHomePage" v-for="(item, index) in homeNavItems" :key="index" :id="item.id">
+                <!-- Loop homepage links only on home page -->
+                <NavLink v-if="isHomePage" v-for="(item, i) in homeNavItems" :key="i" :id="item.id">
                     <span class="nav-text">{{ $lang.getTranslation(item.translationKey) }}</span>
                     <i :class="item.icon" class="nav-icon text-normal" :aria-label="item.label"></i>
                 </NavLink>
 
-                <!-- Static link to the pay page -->
+                <!-- Static link to payment page -->
                 <NuxtLink to="/pay-me" class="nav-link text-normal text-bold text-uppercase" rel="noopener noreferrer">
                     <span class="nav-text">{{ $lang.getTranslation('payMe') }}</span>
                     <i class="fas fa-credit-card nav-icon text-normal" aria-label="Pay Me"></i>
@@ -28,47 +28,24 @@
 </template>
 
 <script setup>
-import { computed } from "vue"; // Vue 3 composition API
-import { useRouter } from "vue-router"; // Importing useRouter hook from Vue Router
-import NavLink from "~/components/ui/Nav/NavLink.vue"; // NavLink component
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import NavLink from '~/components/ui/Nav/NavLink.vue'
 
-// Current language context
-const { $lang } = useNuxtApp();
+const { $lang } = useNuxtApp()
+const router = useRouter()
 
-// Access the Vue Router instance
-const router = useRouter();
+// Only show homepage links on the root route
+const isHomePage = computed(() => router.currentRoute.value.path === '/')
 
-// Check if current route is homepage
-const isHomePage = computed(() => router.currentRoute.value.path === "/");
-
-// Homepage navigation items to loop through
+// Navigation items for homepage links
 const homeNavItems = [
-    {
-        id: "projects",
-        translationKey: "lastProjects",
-        icon: "fas fa-folder",
-        label: "Projects"
-    },
-    {
-        id: "about-me",
-        translationKey: "aboutMe",
-        icon: "fas fa-user",
-        label: "About Me"
-    },
-    {
-        id: "skills",
-        translationKey: "skillsTitle",
-        icon: "fas fa-lightbulb",
-        label: "Skills"
-    },
-    {
-        id: "services",
-        translationKey: "servicesTitle",
-        icon: "fas fa-tools",
-        label: "Services"
-    }
-];
-</script>  
+    { id: 'projects', translationKey: 'lastProjects', icon: 'fas fa-folder', label: 'Projects' },
+    { id: 'about-me', translationKey: 'aboutMe', icon: 'fas fa-user', label: 'About Me' },
+    { id: 'skills', translationKey: 'skillsTitle', icon: 'fas fa-lightbulb', label: 'Skills' },
+    { id: 'services', translationKey: 'servicesTitle', icon: 'fas fa-tools', label: 'Services' }
+]
+</script>
 
 <style scoped>
 .header-top {

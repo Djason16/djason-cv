@@ -1,18 +1,16 @@
 <template>
-    <!-- Projects section container -->
+    <!-- Projects section wrapper -->
     <section id="projects" class="projects-section">
         <div class="projects-section__content">
-            <!-- Projects section title -->
             <h2 class="projects-section__title text-tall text-uppercase">
                 {{ $lang.getTranslation('lastProjects') }}
             </h2>
-            <!-- Projects section description -->
             <div class="projects-section__description text-normal">
                 {{ $lang.getTranslation('projectDescription') }}
             </div>
         </div>
 
-        <!-- Projects carousel for showcasing multiple projects -->
+        <!-- Carousel showcasing projects -->
         <div class="projects-section__carousel">
             <CarouselWithPagination :items="projects" />
         </div>
@@ -20,8 +18,8 @@
 </template>
 
 <script setup>
-import CarouselWithPagination from '~/components/ui/Carousel/CarouselWithPagination.vue'; // Carousel component
-import { projects } from '../../../src/data/projectsData.js'; // Projects data
+import CarouselWithPagination from '~/components/ui/Carousel/CarouselWithPagination.vue'; // Handles project slides
+import { projects } from '~/src/data/projectsData.js'; // Projects array
 </script>
 
 <style scoped>

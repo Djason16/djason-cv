@@ -1,21 +1,14 @@
 <template>
-    <!-- Carousel controls container for navigating between slides -->
+    <!-- Simple carousel controls with previous/next buttons -->
     <div class="carousel-controls">
-        <!-- Button to go to the previous slide -->
-        <button @click="prevSlide" aria-label="Previous Slide">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-
-        <!-- Button to go to the next slide -->
-        <button @click="nextSlide" aria-label="Next Slide">
-            <i class="fas fa-chevron-right"></i>
-        </button>
+        <button @click="prevSlide" aria-label="Previous Slide"><i class="fas fa-chevron-left"></i></button>
+        <button @click="nextSlide" aria-label="Next Slide"><i class="fas fa-chevron-right"></i></button>
     </div>
 </template>
 
 <script setup>
-// Define the props for the previous and next slide navigation methods
-defineProps(["prevSlide", "nextSlide"]);
+// Props: functions to navigate slides, passed from parent
+const { prevSlide, nextSlide } = defineProps({ prevSlide: Function, nextSlide: Function })
 </script>
 
 <style scoped>

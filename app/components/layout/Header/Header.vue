@@ -1,39 +1,24 @@
 <template>
-    <!-- Header element with sticky behavior based on scroll position -->
+    <!-- Sticky header reacts to scroll position -->
     <header :class="{ sticky: isSticky }" ref="header">
-        <!-- HeaderTop component that contains the top section of the header -->
         <HeaderTop />
     </header>
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue'; // Vue 3 composition API
-import HeaderTop from './sections/HeaderTop.vue'; // HeaderTop component
+import { ref, onMounted, onUnmounted } from 'vue'
+import HeaderTop from './sections/HeaderTop.vue'
 
-// Define a reactive variable 'isSticky' to control whether the header should be sticky
-const isSticky = ref(false);
+const isSticky = ref(false)
 
-// Reference to the header element for potential direct DOM manipulation (if needed)
-const header = ref(null);
+// Toggle sticky class based on scroll Y offset
+const handleScroll = () => isSticky.value = window.scrollY > 0
 
-// Function to check scroll position and toggle 'sticky' class
-const handleScroll = () => {
-    // Set 'isSticky' to true if the window is scrolled down, otherwise false
-    isSticky.value = window.scrollY > 0;
-};
-
-// Setup lifecycle hooks to add and remove scroll event listeners
 onMounted(() => {
-    // Ensure `isSticky` is applied on page load
-    handleScroll();
-    // Add scroll event listener when the component is mounted
-    window.addEventListener('scroll', handleScroll);
-});
-
-onUnmounted(() => {
-    // Remove scroll event listener when the component is unmounted to avoid memory leaks
-    window.removeEventListener('scroll', handleScroll);
-});
+    handleScroll() // initial check
+    window.addEventListener('scroll', handleScroll)
+})
+onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
 <style scoped>
@@ -51,7 +36,6 @@ header.sticky {
     left: 50%;
     transform: translateX(-50%);
     width: 90vw;
-    padding: 0.5rem 0;
     background-color: rgba(82, 97, 107, 0.75);
     backdrop-filter: blur(10px);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);

@@ -1,5 +1,5 @@
 <template>
-    <!-- Use OtherSectionLayout to display the refund policy content -->
+    <!-- Render refund policy via reusable layout -->
     <OtherSectionLayout pageTitleKey="refundPolicyTitle" pageSubtitleKey="refundPolicyIntro"
         :sections="refundPolicySections" titleTag="h2" titleClass="text-xlarge text-bold"
         titleColor="var(--text-color-light)" contentClass="text-normal" contentColor="var(--text-color-light)"
@@ -7,27 +7,23 @@
 </template>
 
 <script setup>
-import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'; // Reusable layout component
-import { personalInfo } from "../utils/personalInfo.js"; // Personal data (e.g., name, email)
-import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
+import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
+import { personalInfo } from '@/utils/personalInfo.js'
+import { seoMetaData } from '@/utils/seo.js'
 
-// Current language context
-const { $lang } = useNuxtApp();
+// Language context and SEO key
+const { $lang } = useNuxtApp()
 
-// Define sections for the refund policy
+// Refund policy sections dynamically generated
 const refundPolicySections = Array.from({ length: 5 }, (_, i) => ({
     titleKey: `refundPolicySection${i + 1}Title`,
-    contentKey: `refundPolicySection${i + 1}Content`,
-}));
+    contentKey: `refundPolicySection${i + 1}Content`
+}))
 
-// Set dynamic metadata for SEO purposes
-const pageKey = 'refundPolicy';
-useSeoMeta(seoMetaData(pageKey, $lang, personalInfo));
-
-// Watch for language changes and update SEO metadata dynamically
-watch(() => $lang.current.value, () => {
-    useSeoMeta(seoMetaData(pageKey, $lang));
-});
+// SEO setup for page and reactive update on language change
+const pageKey = 'refundPolicy'
+useSeoMeta(seoMetaData(pageKey, $lang, personalInfo))
+watch(() => $lang.current.value, () => useSeoMeta(seoMetaData(pageKey, $lang)))
 </script>
 
 <style></style>

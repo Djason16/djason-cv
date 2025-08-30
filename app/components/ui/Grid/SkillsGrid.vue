@@ -1,16 +1,12 @@
 <template>
-    <!-- Wrapper for the skills grid container -->
+    <!-- Skills grid with dynamic modifier and expandable items -->
     <div class="skills-grid-container">
-        <!-- Grid for displaying the skills, with a dynamic class based on the `gridClass` prop -->
-        <div class="skills-grid" :class="`skills-grid--${gridClass}`">
-            <!-- Loop through the skills array to display each skill -->
-            <div v-for="(skill, index) in skills" :key="index"
-                :class="['skills-item', { expanded: expandedSkill === index }]" @click.stop="toggleExpand(index)">
-                <!-- Display the skill icon -->
-                <img :src="skill.svg" :alt="skill.name" class="skills-item__icon" />
+        <div :class="`skills-grid--${gridClass} skills-grid`">
+            <div v-for="(skill, i) in skills" :key="i" :class="['skills-item', { expanded: expandedSkill === i }]"
+                @click.stop="toggleExpand(i)"> <!-- Toggle expansion on click -->
+                <img :src="skill.svg" :alt="skill.name" class="skills-item__icon" /> <!-- Skill icon -->
                 <div class="skills-item__content">
-                    <!-- Display the skill name -->
-                    <h3 class="skills-item__title text-smaller text-bold">{{ skill.name }}</h3>
+                    <h3 class="skills-item__title text-smaller text-bold">{{ skill.name }}</h3> <!-- Skill name -->
                 </div>
             </div>
         </div>
@@ -18,32 +14,16 @@
 </template>
 
 <script setup>
-// Define properties that the component expects to receive from the parent
-defineProps({
-    // List of skills to be displayed in the grid
-    skills: {
-        type: Array,
-        required: true,
-    },
-    // Class for styling the grid (used for different layouts or types of grids)
-    gridClass: {
-        type: String,
-        required: true,
-    },
-    // The index of the currently expanded skill (if any)
-    expandedSkill: {
-        type: Number,
-        default: null,
-    },
-});
+// Props: array of skills, grid class, optional expanded skill index
+const props = defineProps({
+    skills: { type: Array, required: true },
+    gridClass: { type: String, required: true },
+    expandedSkill: { type: Number, default: undefined }
+})
 
-// Define the custom event to be emitted when a skill is clicked
-const emit = defineEmits(["toggleExpand"]);
-
-// Function to toggle the expanded state of a skill item when clicked
-function toggleExpand(index) {
-    emit("toggleExpand", index);
-}
+// Emit function to notify parent of skill toggle
+const emit = defineEmits(['toggleExpand'])
+const toggleExpand = i => emit('toggleExpand', i) // Emit index when a skill is clicked
 </script>
 
 <style scoped>

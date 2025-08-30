@@ -1,47 +1,35 @@
 <template>
-    <!-- Use OtherSectionLayout to display the payment page content -->
+    <!-- Payment page rendered via reusable layout -->
     <OtherSectionLayout pageTitleKey="payMeTitle" pageSubtitleKey="payMeIntro" :sections="payMeSections" titleTag="h2"
         titleClass="text-xlarge text-bold" titleColor="var(--text-color-light)" contentClass="text-normal"
         contentColor="var(--text-color-light)" :dynamicData="{ name: personalInfo.name, email: personalInfo.email }">
-
-        <!-- Custom Stripe payment form -->
+        <!-- Custom slot for Stripe form -->
         <template v-slot:custom-content>
             <div class="stripe-payment-form">
-                <!-- Animated container for the payment form fields -->
                 <SlideInFromRight>
-                    <!-- Email input field -->
-                    <div class="form-group text-large">
-                        <label for="email">{{ $lang.getTranslation('emailAddress') }}</label>
-                        <input type="email" id="email" v-model="email" :placeholder="$lang.getTranslation('enterEmail')"
-                            required />
-                    </div>
+                    <!-- Generate form fields dynamically -->
+                    <div v-for="field in formFields" :key="field.id" class="form-group text-large">
+                        <label :for="field.id">{{ $lang.getTranslation(field.labelKey) }}</label>
 
-                    <!-- Payment amount input field -->
-                    <div class="form-group text-large">
-                        <label for="amount">{{ $lang.getTranslation('amountToPay') }}</label>
-                        <input type="number" id="amount" v-model="amount"
-                            :placeholder="$lang.getTranslation('enterAmount')" min="1" />
-                    </div>
+                        <input v-if="field.type !== 'select'" :type="field.type" :id="field.id"
+                            v-model="formData[field.model]" :placeholder="$lang.getTranslation(field.placeholderKey)"
+                            :min="field.min" :required="field.required" />
 
-                    <!-- Currency selection dropdown -->
-                    <div class="form-group text-large">
-                        <label for="currency">{{ $lang.getTranslation('currency') }}</label>
-                        <select id="currency" v-model="currency">
-                            <option value="usd">{{ $lang.getTranslation('usdCurrency') }}</option>
-                            <option value="eur">{{ $lang.getTranslation('eurCurrency') }}</option>
+                        <select v-else :id="field.id" v-model="formData[field.model]">
+                            <option v-for="option in field.options" :key="option.value" :value="option.value">
+                                {{ $lang.getTranslation(option.labelKey) }}
+                            </option>
                         </select>
                     </div>
 
-                    <!-- Submit button for initiating the payment -->
-                    <div class="stripe-payment-form">
-                        <HeroButton :label="$lang.getTranslation('payButtonText')"
-                            :ariaLabel="$lang.getTranslation('payWithStripe')" iconClass="fas fa-credit-card"
-                            @click="startCheckout" />
-                    </div>
+                    <!-- Payment button triggers checkout -->
+                    <HeroButton :label="$lang.getTranslation('payButtonText')"
+                        :ariaLabel="$lang.getTranslation('payWithStripe')" iconClass="fas fa-credit-card"
+                        @click="startCheckout" />
                 </SlideInFromRight>
 
-                <!-- Display messages for payment status (e.g., success or error) -->
-                <div class="message-display text-large text-bold" v-if="message">
+                <!-- Display dynamic messages (success/error) -->
+                <div v-if="message" class="message-display text-large text-bold">
                     <p :class="message.type">{{ $lang.getTranslation(message.key) }}</p>
                 </div>
             </div>
@@ -50,120 +38,79 @@
 </template>
 
 <script setup>
-import { useNuxtApp, useRuntimeConfig } from '#app'; // Nuxt app context and runtime configuration
-import { personalInfo } from "@/utils/personalInfo.js"; // Personal data (e.g., name, email)
-import { computed, ref } from 'vue'; // Vue 3 composition API
-import HeroButton from '~/components/ui/Button/HeroButton.vue'; // Reusable button component
-import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'; // Reusable layout component
-import SlideInFromRight from '../components/animations/SlideInFromRight.vue'; // Custom animation component
-import { seoMetaData } from "../utils/seo.js"; // SEO configuration utility
+import { useNuxtApp, useRuntimeConfig } from '#app'
+import { personalInfo } from '@/utils/personalInfo.js'
+import { seoMetaData } from '@/utils/seo.js'
+import { computed, reactive, ref, watch } from 'vue'
+import HeroButton from '~/components/ui/Button/HeroButton.vue'
+import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
+import SlideInFromRight from '../components/animations/SlideInFromRight.vue'
 
-// Current language context
-const { $lang } = useNuxtApp();
+const { $lang } = useNuxtApp()
+const runtimeConfig = useRuntimeConfig()
 
-// Define sections for the payment page
+// Dynamic sections for layout
 const payMeSections = Array.from({ length: 9 }, (_, i) => ({
     titleKey: `payMeSection${i + 1}Title`,
-    contentKey: `payMeSection${i + 1}Content`,
-}));
+    contentKey: `payMeSection${i + 1}Content`
+}))
 
-// Set dynamic metadata for SEO purposes
-const pageKey = 'payMe';
-useSeoMeta(seoMetaData(pageKey, $lang, personalInfo));
+// Initial SEO setup & reactive update on language change
+const pageKey = 'payMe'
+useSeoMeta(seoMetaData(pageKey, $lang, personalInfo))
+watch(() => $lang.current.value, () => useSeoMeta(seoMetaData(pageKey, $lang, personalInfo)))
 
-// Watch for language changes and update SEO metadata dynamically
-watch(() => $lang.current.value, () => {
-    useSeoMeta(seoMetaData(pageKey, $lang, personalInfo));
-});
+// Reactive form data and validation
+const formData = reactive({ email: '', amount: 0, currency: computed(() => $lang.current.value === 'french' ? 'eur' : 'usd') })
+const message = ref(null)
 
-// Access runtime configuration (e.g., API URLs)
-const runtimeConfig = useRuntimeConfig();
+// Form fields config
+const formFields = [
+    { id: 'email', type: 'email', model: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', required: true },
+    { id: 'amount', type: 'number', model: 'amount', labelKey: 'amountToPay', placeholderKey: 'enterAmount', min: 1, required: true },
+    {
+        id: 'currency', type: 'select', model: 'currency', labelKey: 'currency', options: [
+            { value: 'usd', labelKey: 'usdCurrency' }, { value: 'eur', labelKey: 'eurCurrency' }
+        ]
+    }
+]
 
-// Reactive state for payment form fields and messages
-const amount = ref(0); // Payment amount
-const currency = computed(() => ($lang.current.value === 'french' ? 'eur' : 'usd')); // Dynamically determine currency based on language
-const email = ref(''); // Customer email address
-const message = ref(null); // Payment status message
-
-/**
- * Start the Stripe checkout process.
- * Validates input fields and sends data to the backend to create a Stripe session.
- */
+// Initiate Stripe checkout with validation
 const startCheckout = async () => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Email validation regex
-
-    // Validate payment amount
-    if (amount.value <= 0) {
-        message.value = { key: 'invalidAmount', type: 'error' };
-        return;
-    }
-
-    // Validate email format
-    if (!email.value || !emailRegex.test(email.value)) {
-        message.value = { key: 'invalidEmail', type: 'error' };
-        return;
-    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (formData.amount <= 0) return message.value = { key: 'invalidAmount', type: 'error' }
+    if (!formData.email || !emailRegex.test(formData.email)) return message.value = { key: 'invalidEmail', type: 'error' }
 
     try {
-        // Create a Stripe checkout session
-        const response = await fetch(`${runtimeConfig.public.backendDomain}/stripe/create-checkout-session`, {
+        const res = await fetch(`${runtimeConfig.public.backendDomain}/stripe/create-checkout-session`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                amount: amount.value * 100, // Convert amount to cents
-                currency: currency.value, // Selected currency
-                email: email.value, // User's email
-            }),
-        });
+            body: JSON.stringify({ amount: formData.amount * 100, currency: formData.currency, email: formData.email })
+        })
+        const data = await res.json()
+        if (!data.url || !data.sessionId) throw new Error('Missing URL/sessionId')
 
-        const data = await response.json();
-
-        // Open the Stripe checkout page in a popup
-        if (data.url && data.sessionId) {
-            const popup = window.open(
-                data.url,
-                'Stripe Checkout',
-                'width=500,height=700,resizable,scrollbars=yes,status=1'
-            );
-
-            // Poll to check if the popup has closed
-            const interval = setInterval(() => {
-                if (popup.closed) {
-                    clearInterval(interval);
-                    checkPaymentStatus(data.sessionId); // Check the payment status
-                }
-            }, 1000);
-        } else {
-            throw new Error('No URL or session ID received from backend.');
-        }
-    } catch (error) {
-        console.error('Frontend error:', error); // Log the error
-        message.value = { key: 'checkoutError', type: 'error' }; // Display an error message
+        const popup = window.open(data.url, 'Stripe Checkout', 'width=500,height=700,resizable,scrollbars=yes,status=1')
+        const interval = setInterval(() => {
+            if (popup.closed) { clearInterval(interval); checkPaymentStatus(data.sessionId) }
+        }, 1000)
+    } catch (err) {
+        console.error('Checkout error:', err)
+        message.value = { key: 'checkoutError', type: 'error' }
     }
-};
+}
 
-/**
- * Check the status of the payment after Stripe checkout.
- * @param {string} sessionId - The ID of the Stripe session to check.
- */
-const checkPaymentStatus = async (sessionId) => {
+// Check Stripe payment status
+const checkPaymentStatus = async sessionId => {
     try {
-        const response = await fetch(`${runtimeConfig.public.backendDomain}/stripe/check-payment-status?sessionId=${sessionId}`, {
-            method: 'GET',
-        });
-        const data = await response.json();
-
-        // Update message based on payment status
-        if (data.success) {
-            message.value = { key: 'successPayment', type: 'success' }; // Payment successful
-        } else {
-            message.value = { key: 'cancelPayment', type: 'error' }; // Payment canceled or failed
-        }
-    } catch (error) {
-        console.error('Error checking payment status:', error); // Log the error
-        message.value = { key: 'unknownError', type: 'error' }; // Display an error message
+        const res = await fetch(`${runtimeConfig.public.backendDomain}/stripe/check-payment-status?sessionId=${sessionId}`)
+        const data = await res.json()
+        message.value = { key: data.success ? 'successPayment' : 'cancelPayment', type: data.success ? 'success' : 'error' }
+    } catch (err) {
+        console.error('Status check error:', err)
+        message.value = { key: 'unknownError', type: 'error' }
     }
-};
+}
 </script>
 
 <style scoped>

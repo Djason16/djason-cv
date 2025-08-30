@@ -1,32 +1,30 @@
 <template>
-    <!-- Carousel track container, dynamically applying 'no-transition' class when transition is disabled -->
+    <!-- Carousel track container with optional transition -->
     <div class="carousel-track" :class="{ 'no-transition': !transitionEnabled }" :style="trackStyle">
-
-        <!-- Loop through each slide item and render it within the carousel -->
+        <!-- Loop through each slide -->
         <div v-for="(item, index) in slides" :key="index" class="carousel-item">
-            <!-- Slot allows the parent component to pass custom content for each carousel item -->
+            <!-- Default slot content for slide -->
             <slot :item="item">
                 <div class="carousel-content">
                     <div class="carousel-overlay">
-                        <!-- Title of the project or carousel item -->
+                        <!-- Slide title -->
                         <h3 class="project-title text-xlarge">{{ item.name }}</h3>
-                        <!-- Short description of the project or carousel item -->
-                        <p class="project-description text-normal">
-                            {{ $lang.getTranslation(item.shortDescriptionKey) }}
+                        <!-- Short description -->
+                        <p class="project-description text-normal">{{ $lang.getTranslation(item.shortDescriptionKey) }}
                         </p>
-                        <!-- Skills associated with the project or carousel item -->
+                        <!-- Skills list -->
                         <ul class="project-skills">
-                            <li v-for="(skill, i) in item.skills" :key="i" class="skill  text-normal">
+                            <li v-for="(skill, i) in item.skills" :key="i" class="skill text-normal">
                                 {{ $lang.getTranslation(skill) || skill }}
                             </li>
                         </ul>
-                        <!-- If a link exists for the project, display a "View More" button -->
+                        <!-- Optional external link -->
                         <a v-if="item.link" :href="item.link" target="_blank"
                             class="project-link text-normal text-bold text-uppercase">
                             {{ $lang.getTranslation('viewMore') || 'View More' }}
                         </a>
                     </div>
-                    <!-- Image for the project or carousel item -->
+                    <!-- Slide image -->
                     <img :src="item.image" :alt="item.name" class="carousel-image" />
                 </div>
             </slot>
@@ -35,11 +33,12 @@
 </template>
 
 <script setup>
-// Define props passed to the component, which are:
-// slides (list of items to display in the carousel)
-// trackStyle (styling for the carousel track)
-// transitionEnabled (boolean to enable/disable transitions)
-defineProps(["slides", "trackStyle", "transitionEnabled"]);
+// Props: slides array, dynamic track style, and transition toggle
+defineProps({
+    slides: Array,
+    trackStyle: Object,
+    transitionEnabled: Boolean
+})
 </script>
 
 <style scoped>

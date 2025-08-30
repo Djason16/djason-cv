@@ -1,8 +1,5 @@
 export default {
-    // ======================================================
-    // SEO METADATA
-    // Titles and descriptions for SEO optimization on each page
-    // ======================================================
+    // ================= SEO METADATA =================
     defaultSeoTitle: "{{name}} - Compositing Editor & Full-Stack Developer",
     defaultSeoDescription: "Welcome to {{name}}'s portfolio. Discover his skills in audiovisual post-production and full-stack web development, combining creativity and technical expertise.",
     seoIndexTitle: "{{name}} - Compositing Editor & Full-Stack Developer",
@@ -18,10 +15,7 @@ export default {
     seoPayMeTitle: "{{name}} - Pay Me",
     seoPayMeDescription: "Make a secure payment to {{name}} for services rendered, including web development, video editing, and more.",
 
-    // ======================================================
-    // NAVIGATION AND FOOTER
-    // Links and footer text displayed across the website
-    // ======================================================
+    // ================ NAVIGATION & FOOTER ================
     loading: "Loading...",
     home: "Home",
     footerText: "{{year}} {{name}}. All rights reserved.",
@@ -30,10 +24,7 @@ export default {
     legal: 'Legal Mentions',
     refundPolicy: 'Refund Policy',
 
-    // ======================================================
-    // HERO SECTION
-    // Introduction and call-to-actions on the homepage
-    // ======================================================
+    // ================= HERO SECTION =================
     available: "Available",
     busy: "Busy",
     unavailable: "Unavailable",
@@ -41,10 +32,7 @@ export default {
     sendEmail: 'Send an email',
     callMe: 'Call me',
 
-    // ======================================================
-    // PROJECTS SECTION
-    // Highlighted projects with descriptions and related skills
-    // ======================================================
+    // ================= PROJECTS =================
     lastProjects: 'Last Projects',
     projectDescription: 'A comprehensive showcase of the most recent projects I have contributed to, designed to highlight my expertise, creativity, and the meaningful impact of my work in achieving project goals and delivering exceptional results.',
     davidShort: "Portfolio of a freelance video editor, offering services in video editing, post-production, motion graphics, and audiovisual content optimization.",
@@ -76,17 +64,11 @@ export default {
     photoshop: "Photoshop",
     viewMore: "View more",
 
-    // ======================================================
-    // ABOUT ME
-    // Personal details, location, availability, and contact info
-    // ======================================================
+    // ================= ABOUT ME =================
     aboutMe: "Who am I?",
     aboutDescription: `I'm {{name}}, a freelance VFX editor and full-stack developer passionate about audiovisual creation and web development. At {{age}} years old, I bring creativity and technical skills. Based in Paris, I'm available for remote or on-site work, with a Category B driver's license, and can travel up to 90 km.`,
 
-    // ======================================================
-    // SKILLS SECTION
-    // Comprehensive list of technical and creative skills
-    // ======================================================
+    // ================= SKILLS =================
     skillsTitle: "My skills",
     skillsDescription: "Discover my skills in audiovisual post-production and full-stack web development, combining creativity and technical expertise.",
     html5Description: "HyperText Markup Language",
@@ -125,11 +107,7 @@ export default {
     mediaEncoderDescription: "Encoding and conversion software by Adobe",
     virtualDubDescription: "Legacy video capture and processing software",
 
-    // ======================================================
-    // SERVICES SECTION
-    // Overview of services offered, including web development,
-    // video editing, and consulting
-    // ======================================================
+    // ================= SERVICES =================
     servicesTitle: "My services",
     servicesDescription: "Discover my services in audiovisual post-production, web development, and computer repair and consulting, tailored to your needs and designed to deliver professional results.",
     fullstackDeveloper: "Fullstack Developer",
@@ -168,11 +146,7 @@ export default {
     addedValueDev: "Websites that are both functional and visually stunning.",
     addedValueConsulting: "Rigorous, client-focused service to meet your expectations.",
 
-    // ======================================================
-    // PAY ME PAGE
-    // Details for the payment page, including instructions and
-    // transaction details with Stripe
-    // ======================================================
+    // ================= PAY ME =================
     payMe: "Pay me",
     payMeTitle: "Pay for Services",
     payMeIntro: "Welcome to my payment page. You can securely pay for services rendered, including web development, video editing, and other freelance services.",
@@ -209,10 +183,7 @@ export default {
     successPayment: 'Payment successful! Thank you for your purchase.',
     cancelPayment: 'Payment cancelled. Please try again.',
 
-    // ======================================================
-    // LEGAL PAGES
-    // Includes terms, privacy policy, and refund policy details
-    // ======================================================
+    // ================= LEGAL =================
     legalTitle: "Legal Notice",
     legalIntro: "Discover the legal information regarding the {{name}} website.",
     legalSection1Title: "1. Website Publisher",
@@ -230,9 +201,7 @@ export default {
     legalSection7Title: "7. Contact Information",
     legalSection7Content: "For any questions regarding the legal notice, please contact {{name}} at {{email}} or call {{phone}}.",
 
-    // -- TERMS AND CONDITIONS
-    // Terms of service for website usage and service agreements
-    // --------------------------------------------------------
+    // ================= TERMS =================
     termsTitle: "Terms and Conditions",
     termsIntro: "By using this website, you agree to the following terms and conditions. These conditions govern access to the {{name}} website, including payments, services, and responsibilities.",
     termsSection1Title: "1. Ownership of Content",
@@ -254,9 +223,7 @@ export default {
     termsSection9Title: "9. Contact for Terms",
     termsSection9Content: "For any questions regarding these terms, contact {{name}} via {{email}} or call at {{phone}}.",
 
-    // -- PRIVACY POLICY
-    // Details on how user data is collected, stored, and protected
-    // --------------------------------------------------------
+    // ================= PRIVACY =================
     privacyTitle: "Privacy Policy",
     privacyIntro: "This privacy policy explains how {{name}} collects, uses, and protects your personal data on this website.",
     privacySection1Title: "1. Data Collected",
@@ -276,9 +243,7 @@ export default {
     privacySection8Title: "8. Contact for Privacy Concerns",
     privacySection8Content: "For questions regarding privacy, contact {{name}} at {{email}} or call at {{phone}}.",
 
-    // -- REFUND POLICY
-    // Information on refund eligibility, process, and exceptions
-    // --------------------------------------------------------
+    // ================= REFUND POLICY =================
     refundPolicyTitle: "Refund Policy",
     refundPolicyIntro: "Learn about the refund policy for {{name}}'s services, including conditions under which refunds may be issued.",
     refundPolicySection1Title: "1. Eligibility for Refunds",

@@ -1,39 +1,32 @@
 <template>
-    <!-- Carousel pagination container -->
+    <!-- Carousel pagination buttons, highlighting active slide -->
     <div class="carousel-pagination">
-        <button v-for="index in visibleButtons" :key="index" :class="{ active: getActualIndex(index) === activeIndex }"
-            @click="$emit('goToSlide', getActualIndex(index) + 1)"
-            :aria-label="`Go to slide ${getActualIndex(index) + 1}`">
-        </button>
+        <button v-for="i in visibleButtons" :key="i" :class="{ active: getSlideIndex(i) === activeIndex }"
+            @click="$emit('goToSlide', getSlideIndex(i) + 1)"
+            :aria-label="`Go to slide ${getSlideIndex(i) + 1}`"></button>
     </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue'
 
-// Define props to receive from the parent component
-const props = defineProps(["itemsLength", "activeIndex"]);
+// Props: total slides and currently active slide
+const { itemsLength, activeIndex } = defineProps({ itemsLength: Number, activeIndex: Number })
 
-// Number of buttons to display
-const maxButtons = 5;
+// Maximum buttons to display at once
+const MAX_BUTTONS = 5
 
-// Calculate the number of visible buttons
-const visibleButtons = computed(() => Math.min(props.itemsLength, maxButtons));
+// Compute number of buttons to show (capped at MAX_BUTTONS)
+const visibleButtons = computed(() => Math.min(itemsLength, MAX_BUTTONS))
 
-// Fuction to calculate the actual index of the button
-const getActualIndex = (index) => {
-    if (props.itemsLength <= maxButtons) {
-        return index - 1;
-    }
-    const halfMax = Math.floor(maxButtons / 2);
-    let startIndex = Math.max(0, props.activeIndex - halfMax);
-
-    if (startIndex + maxButtons > props.itemsLength) {
-        startIndex = props.itemsLength - maxButtons;
-    }
-
-    return startIndex + index - 1;
-};
+// Compute the slide index each button represents, centering around activeIndex if needed
+const getSlideIndex = i => {
+    if (itemsLength <= MAX_BUTTONS) return i - 1
+    const half = Math.floor(MAX_BUTTONS / 2)
+    let start = Math.max(0, activeIndex - half)
+    if (start + MAX_BUTTONS > itemsLength) start = itemsLength - MAX_BUTTONS
+    return start + i - 1
+}
 </script>
 
 <style scoped>

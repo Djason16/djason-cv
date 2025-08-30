@@ -1,22 +1,15 @@
 <template>
-    <!-- About me section container -->
     <section id="about-me" class="about-section">
-        <!-- Component to display a grid of images related to the "About Me" section -->
-        <AboutImages :images="[
-            '/images/matrix.jpg',
-            '/images/moi.jpg',
-            '/images/matrix.jpg',
-            '/images/moi.jpg',
-            '/images/matrix.jpg',
-            '/images/moi.jpg'
-        ]" />
+        <!-- Image gallery -->
+        <AboutImages :images="images" />
 
         <div class="about-section__content">
-            <!-- About me section title -->
+            <!-- Section title -->
             <h2 class="about-section__title text-tall text-uppercase">
                 {{ $lang.getTranslation('aboutMe') }}
             </h2>
-            <!-- About me section description -->
+
+            <!-- Description with dynamic variables (name, age) -->
             <div class="about-section__description text-normal">
                 {{ $lang.getTranslation('aboutDescription', variables) }}
             </div>
@@ -25,27 +18,22 @@
 </template>
 
 <script setup>
-import AboutImages from '~/components/ui/Image/AboutImages.vue'; // About images component
-import { personalInfo } from '~/utils/personalInfo'; // Personal information data
+import AboutImages from '~/components/ui/Image/AboutImages.vue'
+import { personalInfo } from '~/utils/personalInfo'
 
-/**
- * Calculates the age based on the birth date.
- */
-function calculateAge(birthDate) {
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-    return age;
+// Compute age from birth date
+const calculateAge = d => {
+    const today = new Date(), age = today.getFullYear() - d.getFullYear()
+    return today.getMonth() < d.getMonth() || (today.getMonth() === d.getMonth() && today.getDate() < d.getDate())
+        ? age - 1 : age
 }
 
-// Get the name and age from personal information
-const variables = {
-    name: personalInfo.name,
-    age: calculateAge(personalInfo.birthDate)
-};
+// Prepare a set of 6 images by repeating base images
+const baseImages = ['/images/matrix.jpg', '/images/moi.jpg']
+const images = Array.from({ length: 6 }, (_, i) => baseImages[i % baseImages.length])
+
+// Translation variables for dynamic interpolation
+const variables = { name: personalInfo.name, age: calculateAge(personalInfo.birthDate) }
 </script>
 
 <style scoped>

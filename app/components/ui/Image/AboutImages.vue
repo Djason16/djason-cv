@@ -1,45 +1,30 @@
 <template>
-    <!-- Wrapper for the images section -->
+    <!-- Images grid split into two rows of three, fallback applied for missing/broken images -->
     <div class="about-section__images">
-        <!-- Loop through image rows -->
-        <div v-for="(rowImages, rowIndex) in imageRows" :key="rowIndex" class="about-section__row">
-            <!-- Loop through each image in the row -->
-            <div v-for="(image, index) in rowImages" :key="index" class="about-section__image-wrapper">
-                <!-- Display image, fallback to default if not found -->
-                <img :src="image || defaultImage" alt="About Me Image" class="about-section__image"
-                    @error="handleImageError" />
+        <div v-for="(row, r) in imageRows" :key="r" class="about-section__row">
+            <div v-for="(img, i) in row" :key="i" class="about-section__image-wrapper">
+                <img :src="img" :alt="`About Me Image ${r * 3 + i + 1}`" class="about-section__image"
+                    @error="e => e.target.src = defaultImage" /> <!-- Use fallback if image fails -->
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed } from "vue"; // Vue 3 composition API
+import { computed } from 'vue'
 
-// Define the component's props, expecting an array of images
-const props = defineProps({
-    images: {
-        type: Array, // Array of image URLs
-        default: () => [null, null, null, null, null, null], // Default array of 6 null values (empty images)
-    },
-});
+// Props: images array, defaults to empty
+const props = defineProps({ images: { type: Array, default: () => [] } })
 
-// Default fallback image in case an image fails to load
-const defaultImage = "/images/default_image.jpg";
+// Default image used when missing or broken
+const defaultImage = '/images/default_image.jpg'
 
-// Computed property to organize images into rows (each row has 3 images)
+// Computed: take first 6 images, fill missing with default, split into 2 rows
 const imageRows = computed(() => {
-    const filledImages = [...props.images]; // Copy of the provided images array
-    // Fill the array with null values if less than 6 images are provided
-    while (filledImages.length < 6) filledImages.push(null);
-    // Return an array of two rows: first 3 images in one row, last 3 in another
-    return [filledImages.slice(0, 3), filledImages.slice(3, 6)];
-});
-
-// Handle image error by replacing with default image if the provided image fails to load
-function handleImageError(event) {
-    event.target.src = defaultImage; // Replace broken image source with default image
-}
+    const imgs = [...props.images].slice(0, 6)
+    while (imgs.length < 6) imgs.push(defaultImage)
+    return [imgs.slice(0, 3), imgs.slice(3, 6)]
+})
 </script>
 
 <style scoped>

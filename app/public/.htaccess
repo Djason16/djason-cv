@@ -1,14 +1,14 @@
 RewriteEngine On
 
-# Toujours HTTPS
+# Always redirect to HTTPS
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-# Forcer sans www
+# Force non-www domain
 RewriteCond %{HTTP_HOST} ^www\.djason-chery\.dev [NC]
 RewriteRule ^(.*)$ https://djason-chery.dev/$1 [L,R=301]
 
-# Toutes les routes qui ne correspondent pas à un fichier ou dossier existant -> fallback 200.html
+# Fallback to 200.html for all routes that do not match an existing file or directory
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ /200.html [L]
