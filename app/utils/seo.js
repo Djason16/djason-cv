@@ -32,6 +32,7 @@ export const seoMetaData = (pageKey, $lang) => {
         description,
         author: name,
         keywords,
+        robots: "index, follow",
         "og:title": title,
         "og:description": description,
         "og:type": "website",
@@ -45,5 +46,9 @@ export const seoMetaData = (pageKey, $lang) => {
     };
 
     useSeoMeta({ htmlAttrs: { lang: meta.lang }, ...meta });
+    useHead({
+        link: [{ rel: "canonical", href: fullUrl }]
+    });
+
     return meta;
 };
