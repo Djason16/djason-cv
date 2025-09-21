@@ -11,21 +11,20 @@ const seoConfig = {
     payMe: { url: "/pay-me", image: "/images/pay.jpg", keywords: "Pay Me, Paiement, Service Payment, Règlement, Transaction, Freelance Payment, Paiement Freelance, Payment Terms, Conditions de paiement, Secure Payment, Paiement sécurisé" }
 };
 
-/**
- * Generate SEO metadata for a page based on key and language
- * @param {string} pageKey
- * @param {object} $lang
- * @returns {object} SEO meta object
- */
+// Ensure URLs end with a trailing slash
+const withTrailingSlash = (url) => url.endsWith("/") ? url : url + "/";
+
+// Generate SEO metadata for a page
 export const seoMetaData = (pageKey, $lang) => {
     const { name } = personalInfo;
     const baseUrl = useRuntimeConfig().public.frontendDomain;
-    const { url = "", image = "/favicon_dc.jpg", keywords = `${name}, Portfolio, Web Developer` } = seoConfig[pageKey] || {};
 
+    const { url = "", image = "/favicon_dc.jpg", keywords = `${name}, Portfolio, Web Developer` } = seoConfig[pageKey] || {};
     const keyCap = pageKey.charAt(0).toUpperCase() + pageKey.slice(1);
+
     const title = $lang.getTranslation(pageKey === "index" ? "seoIndexTitle" : `seo${keyCap}Title`, { name });
     const description = $lang.getTranslation(pageKey === "index" ? "seoIndexDescription" : `seo${keyCap}Description`, { name });
-    const fullUrl = `${baseUrl}${url}`;
+    const fullUrl = withTrailingSlash(`${baseUrl}${url}`);
 
     const meta = {
         lang: $lang.locale.value,

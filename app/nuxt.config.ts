@@ -1,5 +1,8 @@
 import { defineNuxtConfig } from 'nuxt/config';
 
+// Import personalInfo
+const { personalInfo } = await import('./utils/personalInfo.js');
+
 // Load environment dynamically
 const envConfig = process.env.NODE_ENV === 'production'
   ? require('./env/env.prod.js').default
@@ -22,6 +25,12 @@ process.env.STRIPE_SECRET_KEY = envConfig.STRIPE_SECRET_KEY;
 const routes: string[] = ['/', '/legal', '/pay-me', '/privacy', '/refund-policy', '/terms'];
 
 export default defineNuxtConfig({
+  site: {
+    name: personalInfo.name,
+    url: process.env.NUXT_PUBLIC_SITE_URL,
+    trailingSlash: true,
+  },
+
   ssr: true,
   devtools: { enabled: true },
   css: ['./assets/css/main.css'],
@@ -44,9 +53,14 @@ export default defineNuxtConfig({
   // Modules with sitemap and robots
   modules: [
     ['@nuxtjs/sitemap', {
-      hostname: process.env.NUXT_PUBLIC_SITE_URL,
       gzip: true,
-      routes: routes.map(path => `${process.env.NUXT_PUBLIC_SITE_URL}${path}`),
+      excludeAppSources: ['nuxt:pages', 'nuxt:prerender'],
+      autoLastmod: true,
+      urls: routes.map(route => ({
+        loc: route,
+        lastmod: new Date().toISOString(),
+        changefreq: 'daily'
+      })),
     }],
     ['@nuxtjs/robots', {
       rules: [{
