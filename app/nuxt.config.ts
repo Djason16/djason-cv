@@ -69,13 +69,6 @@ export default defineNuxtConfig({
       ignoreUnprefixedPublicAssets: true,
     },
     experimental: { wasm: true },
-    routeRules: {
-      '/images/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-      '/images/svg/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-      '/_nuxt/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-      '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-      '/favicon_dc.jpg': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-    },
   },
 
   modules: [
