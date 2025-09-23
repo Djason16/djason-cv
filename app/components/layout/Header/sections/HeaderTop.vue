@@ -6,7 +6,7 @@
             <div class="header-top__title">
                 <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')">
                     <NuxtImg :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo" format="webp" preload
-                        priority fit="contain" />
+                        priority fetchpriority="high" fit="contain" />
                 </NuxtLink>
             </div>
 
