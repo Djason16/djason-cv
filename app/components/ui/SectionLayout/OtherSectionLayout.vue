@@ -1,28 +1,35 @@
 <template>
     <div class="content-container">
-        <!-- Header with dynamic title and subtitle -->
+        <!-- Header with dynamic title and subtitle processed for links -->
         <div class="header">
-            <h1 :class="headerClass">{{ $lang.getTranslation(pageTitleKey, dynamicData) }}</h1>
-            <p :class="subtitleClass">{{ $lang.getTranslation(pageSubtitleKey, dynamicData) }}</p>
+            <h1 :class="headerClass">
+                <span v-html="processText($lang.getTranslation(pageTitleKey, dynamicData), dynamicData)"></span>
+            </h1>
+            <p :class="subtitleClass">
+                <span v-html="processText($lang.getTranslation(pageSubtitleKey, dynamicData), dynamicData)"></span>
+            </p>
         </div>
 
-        <!-- Render sections list via CustomList component -->
+        <!-- Render custom list with styling and dynamic content -->
         <CustomList :items="sections" :titleTag="titleTag" :titleClass="titleClass" :titleColor="titleColor"
             :contentClass="contentClass" :contentColor="contentColor" :dynamicData="dynamicData" />
 
-        <!-- Optional custom content slot -->
-        <slot name="custom-content"></slot>
+        <!-- Slot for optional custom content -->
+        <slot name="custom-content" />
     </div>
 
-    <!-- Footer with background color based on content -->
+    <!-- Footer section with fixed theme color -->
     <FooterTop :color="contentBackgroundColor" />
 </template>
 
 <script setup>
 import FooterTop from "~/components/layout/Footer/sections/FooterTop.vue"
 import CustomList from "../List/CustomList.vue"
+import { useTextEscape } from '~/composables/useTextEscape'
 
-// Component props: customizable content, sections, and styles
+const { processText } = useTextEscape()
+
+// Props for dynamic content, styling, and list configuration
 defineProps({
     pageTitleKey: { type: String, required: true },
     pageSubtitleKey: { type: String, required: true },
@@ -37,7 +44,7 @@ defineProps({
     dynamicData: { type: Object, default: () => ({}) },
 })
 
-// Footer color fixed to third theme color
+// Fixed theme color for footer section
 const contentBackgroundColor = "var(--third-color)"
 </script>
 

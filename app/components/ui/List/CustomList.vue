@@ -1,16 +1,16 @@
 <template>
-    <!-- Custom list with slide-in animation for each item -->
     <div class="custom-list">
+        <!-- Animate each list item with slide-in effect -->
         <SlideInFromRight v-for="(item, i) in items" :key="i">
             <div class="custom-list__item">
-                <!-- Dynamic title tag with styling and color -->
+                <!-- Dynamic title tag with styling and processed content -->
                 <component :is="titleTag" :class="['custom-list__title', titleClass]" :style="{ color: titleColor }">
-                    {{ $lang.getTranslation(item.titleKey, dynamicData) }}
+                    <span v-html="processText($lang.getTranslation(item.titleKey, dynamicData), dynamicData)"></span>
                 </component>
 
-                <!-- List item content with dynamic styling and translations -->
+                <!-- Content paragraph with dynamic text and color -->
                 <p :class="contentClass" :style="{ color: contentColor }" class="custom-list__content">
-                    {{ $lang.getTranslation(item.contentKey, dynamicData) }}
+                    <span v-html="processText($lang.getTranslation(item.contentKey, dynamicData), dynamicData)"></span>
                 </p>
             </div>
         </SlideInFromRight>
@@ -20,11 +20,12 @@
 <script setup>
 import { useNuxtApp } from '#app'
 import SlideInFromRight from '~/components/animations/SlideInFromRight.vue'
+import { useTextEscape } from '~/composables/useTextEscape'
 
-// Access Nuxt language plugin for translations
 const { $lang } = useNuxtApp()
+const { processText } = useTextEscape()
 
-// Props: list data, dynamic styling, and optional dynamic variables
+// Props for list data, dynamic styling, and optional variable substitutions
 defineProps({
     items: { type: Array, default: () => [] },
     titleTag: { type: String, default: 'h3' },

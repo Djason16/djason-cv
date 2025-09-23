@@ -3,8 +3,10 @@
     <div class="about-section__images">
         <div v-for="(row, r) in imageRows" :key="r" class="about-section__row">
             <div v-for="(img, i) in row" :key="i" class="about-section__image-wrapper">
-                <img :src="img" :alt="`About Me Image ${r * 3 + i + 1}`" class="about-section__image"
-                    @error="e => e.target.src = defaultImage" /> <!-- Use fallback if image fails -->
+                <NuxtImg :src="img" :alt="`About Me Image ${r * 3 + i + 1}`" class="about-section__image" :width="250"
+                    :height="250" sizes="250px" format="webp" loading="lazy" densities="1x 2x" placeholder
+                    @error="handleImageError($event, r * 3 + i)" />
+                <!-- Use fallback if image fails -->
             </div>
         </div>
     </div>

@@ -16,11 +16,48 @@ body {
     touch-action: manipulation;
 }
 
+html:not([data-fonts-loaded]) {
+    visibility: hidden;
+    /* hide page until fonts are loaded */
+}
+
+html[data-fonts-loaded] {
+    visibility: visible;
+    /* show page once fonts are ready */
+}
+
+/* Default link style */
+a {
+    color: var(--text-color-light);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--second-color);
+    transition: width 0.3s ease;
+}
+
+a:hover::after {
+    width: 100%;
+}
+
 /* Responsive styles */
 @media (max-width: 1024px) {
     body {
         width: 100vw;
         height: 100dvh;
         box-shadow: none;
+    }
+
+    a::after {
+        display: none;
     }
 }

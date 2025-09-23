@@ -22,6 +22,12 @@ defineProps({
 </script>
 
 <style scoped>
+.custom-button::after,
+.custom-button__icon::after,
+.custom-button__text::after {
+    display: none;
+}
+
 .custom-button {
     display: inline-flex;
     align-items: center;

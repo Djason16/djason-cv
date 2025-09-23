@@ -19,7 +19,9 @@
 
 <script setup>
 import CarouselWithPagination from '~/components/ui/Carousel/CarouselWithPagination.vue'; // Handles project slides
-import { projects } from '~/src/data/projectsData.js'; // Projects array
+import { useProjects } from '~/composables/useProjects.js'
+
+const projects = useProjects()
 </script>
 
 <style scoped>

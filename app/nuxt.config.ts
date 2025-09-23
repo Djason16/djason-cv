@@ -33,9 +33,29 @@ export default defineNuxtConfig({
 
   ssr: true,
   devtools: { enabled: true },
-  css: ['./assets/css/main.css'],
+  css: ['./assets/css/main.css', '@fortawesome/fontawesome-free/css/all.min.css'],
 
-  // Nitro prerender configuration for static hosting
+  // Modern JS for supported browsers
+  build: { transpile: [] },
+  experimental: { payloadExtraction: false },
+
+  vite: {
+    build: {
+      target: 'es2020',
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          manualChunks: (id: string) => {
+            if (id.includes('stripe')) return 'stripe'
+            if (id.includes('node_modules')) return 'vendor'
+            return undefined
+          },
+        },
+      },
+    },
+    esbuild: { target: 'es2020' },
+  },
+
   nitro: {
     prerender: {
       crawlLinks: true,
@@ -48,44 +68,61 @@ export default defineNuxtConfig({
       retryDelay: 1000,
       ignoreUnprefixedPublicAssets: true,
     },
+    experimental: { wasm: true },
+    routeRules: {
+      '/images/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+      '/images/svg/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+      '/_nuxt/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+      '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+      '/favicon_dc.jpg': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+    },
   },
 
-  // Modules with sitemap and robots
   modules: [
-    ['@nuxtjs/sitemap', {
-      gzip: true,
-      excludeAppSources: ['nuxt:pages', 'nuxt:prerender'],
-      autoLastmod: true,
-      urls: routes.map(route => ({
-        loc: route,
-        lastmod: new Date().toISOString(),
-        changefreq: 'daily'
-      })),
-    }],
-    ['@nuxtjs/robots', {
-      rules: [{
-        UserAgent: '*',
-        Disallow: process.env.NODE_ENV === 'production' ? '' : '/',
-        Allow: process.env.NODE_ENV === 'production' ? '/' : '',
-      }],
-      Sitemap: `${process.env.NUXT_PUBLIC_SITE_URL}/sitemap.xml`,
-    }],
+    [
+      '@nuxtjs/sitemap',
+      {
+        gzip: true,
+        excludeAppSources: ['nuxt:pages', 'nuxt:prerender'],
+        autoLastmod: true,
+        urls: routes.map((route) => ({
+          loc: route,
+          lastmod: new Date().toISOString(),
+          changefreq: 'daily',
+        })),
+      },
+    ],
+    [
+      '@nuxtjs/robots',
+      {
+        rules: [
+          {
+            UserAgent: '*',
+            Disallow: process.env.NODE_ENV === 'production' ? '' : '/',
+            Allow: process.env.NODE_ENV === 'production' ? '/' : '',
+          },
+        ],
+        Sitemap: `${process.env.NUXT_PUBLIC_SITE_URL}/sitemap.xml`,
+      },
+    ],
+    '@nuxt/image',
   ],
 
-  // Head elements for scripts and links
   app: {
     head: {
+      htmlAttrs: {
+        lang: 'fr'
+      },
       link: [
-        { rel: 'stylesheet', href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
+        { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
+        { rel: 'preload', href: '/fonts/BarlowCondensed/BarlowCondensed-Regular.woff', as: 'font', type: 'font/woff', crossorigin: 'anonymous', fetchpriority: 'high' },
+        { rel: 'preload', href: '/fonts/BarlowCondensed/BarlowCondensed-Bold.woff', as: 'font', type: 'font/woff', crossorigin: 'anonymous', fetchpriority: 'high' },
         { rel: 'icon', type: 'image/jpeg', href: '/favicon_dc.jpg' },
-      ],
-      script: [
-        { src: 'https://js.stripe.com/v3/', type: 'text/javascript', defer: true },
       ],
     },
   },
 
-  // Runtime environment configuration
   runtimeConfig: {
     public: {
       backendDomain: process.env.BACKEND_DOMAIN,
@@ -94,6 +131,5 @@ export default defineNuxtConfig({
     },
   },
 
-  // Compatibility date for Nuxt
-  compatibilityDate: '2024-12-11',
+  compatibilityDate: '2025-01-01',
 });

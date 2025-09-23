@@ -5,7 +5,8 @@
             <!-- Logo linking to home -->
             <div class="header-top__title">
                 <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')">
-                    <img src="/images/main_logo_light.png" alt="Djason CHERY Logo" class="header-top__logo" />
+                    <NuxtImg :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo" format="webp" preload
+                        priority fit="contain" />
                 </NuxtLink>
             </div>
 
@@ -14,7 +15,7 @@
                 <!-- Loop homepage links only on home page -->
                 <NavLink v-if="isHomePage" v-for="(item, i) in homeNavItems" :key="i" :id="item.id">
                     <span class="nav-text">{{ $lang.getTranslation(item.translationKey) }}</span>
-                    <i :class="item.icon" class="nav-icon text-normal" :aria-label="item.label"></i>
+                    <i :class="item.icon" class="nav-icon text-normal" :aria-hidden="true"></i>
                 </NavLink>
 
                 <!-- Static link to payment page -->
@@ -35,6 +36,8 @@ import NavLink from '~/components/ui/Nav/NavLink.vue'
 const { $lang } = useNuxtApp()
 const router = useRouter()
 
+const logoPath = '/images/main_logo_light.png'
+
 // Only show homepage links on the root route
 const isHomePage = computed(() => router.currentRoute.value.path === '/')
 
@@ -48,6 +51,13 @@ const homeNavItems = [
 </script>
 
 <style scoped>
+.header-top a::after,
+.header-top .nav-link::after,
+.header-top .nav-text::after,
+.header-top .nav-icon::after {
+    display: none;
+}
+
 .header-top {
     padding: 0 1.75rem;
     display: flex;

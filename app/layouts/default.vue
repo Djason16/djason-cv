@@ -1,6 +1,6 @@
 <template>
-    <!-- Loader shown initially; main content renders after loading -->
-    <Loader v-show="showLoader" />
+    <!-- Show loader initially; render main content after loading -->
+    <Loader v-if="showLoader" />
     <div v-show="!showLoader">
         <BackToTop />
         <ChangeLanguageButton />
@@ -21,19 +21,34 @@ import Loader from '~/components/ui/Loader/Loader.vue'
 
 const { $lang } = useNuxtApp()
 const showLoader = ref(true)
+const fontsLoaded = ref(false)
 
 onMounted(async () => {
-    // Restore previously selected language or set default
+    // Load fonts and mark DOM when ready
+    try {
+        await Promise.all([
+            document.fonts.load('400 16px "Barlow Condensed"'),
+            document.fonts.load('700 16px "Barlow Condensed"')
+        ])
+        document.documentElement.setAttribute('data-fonts-loaded', 'true')
+    } catch (err) {
+        console.warn('Fonts failed to load:', err)
+    } finally {
+        fontsLoaded.value = true
+    }
+
+    // Initialize language from localStorage
     const storedLang = localStorage.getItem('selectedLanguage')
     storedLang ? $lang.setLang(storedLang) : localStorage.setItem('selectedLanguage', $lang.current.value)
 
-    // Determine if user has visited; control loader duration
+    // Control loader timing based on first visit and font load
     const alreadyVisited = localStorage.getItem('visited')
-    await new Promise(r => setTimeout(r, 200))
-    if (alreadyVisited) showLoader.value = false
+    await new Promise(r => setTimeout(r, 200)) // brief delay for smoother transition
+
+    if (alreadyVisited && fontsLoaded.value) showLoader.value = false
     else {
         localStorage.setItem('visited', 'true')
-        setTimeout(() => (showLoader.value = false), 2000)
+        setTimeout(() => (showLoader.value = false), Math.max(2000, fontsLoaded.value ? 0 : 1000))
     }
 })
 </script>

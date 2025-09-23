@@ -20,9 +20,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import SkillsGrid from '~/components/ui/Grid/SkillsGrid.vue'
-import { developerSkills, videoEditorSkills } from '~/src/data/skillsData.js'
+import { useSkills } from '~/composables/useSkills.js'
+
+const { developerSkills, videoEditorSkills } = useSkills()
 
 // Skill groups with data & style classes
 const skillGroups = [

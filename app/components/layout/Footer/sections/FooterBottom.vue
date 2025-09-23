@@ -56,6 +56,12 @@ const footerLinks = [
 </script>
 
 <style scoped>
+.footer-bottom a::after,
+.icons a::after,
+.footer-links a::after {
+    display: none;
+}
+
 .divider {
     width: 100%;
     overflow: hidden;
@@ -138,4 +144,4 @@ const footerLinks = [
         text-align: center;
     }
 }
-</style>  
+</style>

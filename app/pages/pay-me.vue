@@ -39,9 +39,10 @@
 
 <script setup>
 import { useNuxtApp, useRuntimeConfig } from '#app'
+import { useHead } from '#imports'
 import { personalInfo } from '@/utils/personalInfo.js'
 import { seoMetaData } from '@/utils/seo.js'
-import { computed, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
 import SlideInFromRight from '../components/animations/SlideInFromRight.vue'
@@ -111,6 +112,23 @@ const checkPaymentStatus = async sessionId => {
         message.value = { key: 'unknownError', type: 'error' }
     }
 }
+
+// Inject Stripe 
+const loadStripe = () => {
+    if (window.Stripe) return
+    useHead({
+        script: [{
+            src: 'https://js.stripe.com/v3/',
+            defer: true,
+            crossorigin: 'anonymous'
+        }]
+    })
+}
+
+// Load Stripe script on component mount
+onMounted(() => {
+    loadStripe()
+})
 </script>
 
 <style scoped>

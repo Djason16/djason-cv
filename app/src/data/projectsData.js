@@ -3,7 +3,7 @@
 // ==========================
 
 // This file contains the configuration for the projects displayed on the website.
-const rawProjects = [
+export const projects = [
     // David Noguier - Portfolio
     {
         name: "David Noguier - Portfolio",
@@ -73,15 +73,3 @@ const rawProjects = [
         date: "2024-02-06",
     },
 ];
-
-// Construction finale des projets
-export const projects = rawProjects
-    .map(p => ({
-        name: p.name,
-        shortDescriptionKey: p.short,
-        image: p.img,
-        link: p.link,
-        skills: p.skills,
-        date: p.date,
-    }))
-    .sort((a, b) => new Date(b.date) - new Date(a.date));

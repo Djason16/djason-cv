@@ -12,18 +12,26 @@ import { onMounted, ref } from 'vue'
 const container = ref(null)
 
 onMounted(() => {
-    const children = [...container.value.children]
+    const children = container.value.children
 
-    // Set initial hidden + offset state
-    gsap.set(children, { opacity: 0, x: '10%', force3D: true })
+    // Set initial hidden + offset state on GPU
+    gsap.set(children, { opacity: 0, xPercent: 10, force3D: true, willChange: 'opacity, transform' })
 
     // Animate when container enters viewport
-    new IntersectionObserver(([entry], obs) => {
+    const observer = new IntersectionObserver(([entry], obs) => {
         if (entry.isIntersecting) {
-            gsap.to(children, { opacity: 1, x: '0%', duration: 0.5, stagger: 0.2, delay: 0.1, ease: 'power2.out' })
+            gsap.to(children, {
+                opacity: 1,
+                xPercent: 0,
+                duration: 0.8,
+                stagger: 0.25,
+                ease: 'power2.out'
+            })
             obs.disconnect()
         }
-    }, { threshold: 0.1 }).observe(container.value)
+    }, { threshold: 0.1 })
+
+    observer.observe(container.value)
 })
 </script>
 
@@ -35,13 +43,6 @@ onMounted(() => {
 }
 
 .slide-in-from-right>* {
-    opacity: 0;
-    transform: translateX(10%);
     will-change: opacity, transform;
-}
-
-.slide-in-from-right>*:hover {
-    transform: translateX(0);
-    opacity: 1;
 }
 </style>

@@ -10,7 +10,7 @@ export const personalInfo = {
     links: {                               // Professional and social profiles
         linkedin: "https://www.linkedin.com/in/djason-chery-3b87702b4", // LinkedIn profile
         github: "https://github.com/Djason16",                            // GitHub repos
-        malt: "https://www.malt.com/profile/djasonchery",                // Freelance profile
+        malt: "https://www.malt.fr/profile/djasonchery",                // Freelance profile
         instagram: "https://www.instagram.com/djasonchery",              // Instagram updates
         whatsapp: "https://wa.me/33758204726"                             // WhatsApp direct link
     },

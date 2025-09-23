@@ -25,7 +25,9 @@
                         </a>
                     </div>
                     <!-- Slide image -->
-                    <img :src="item.image" :alt="item.name" class="carousel-image" />
+                    <NuxtImg :src="item.image" :alt="item.name" class="carousel-image" :width="640" :height="480"
+                        sizes="(max-width: 768px) 90vw, 640px" format="webp" loading="lazy" densities="1x 2x"
+                        placeholder />
                 </div>
             </slot>
         </div>
