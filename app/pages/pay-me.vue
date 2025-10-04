@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { useNuxtApp, useRuntimeConfig } from '#app'
+import { useNuxtApp } from '#app'
 import { useHead } from '#imports'
 import { personalInfo } from '@/utils/personalInfo.js'
 import { seoMetaData } from '@/utils/seo.js'
@@ -48,7 +48,6 @@ import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout
 import SlideInFromRight from '../components/animations/SlideInFromRight.vue'
 
 const { $lang } = useNuxtApp()
-const runtimeConfig = useRuntimeConfig()
 
 // Dynamic sections for layout
 const payMeSections = Array.from({ length: 9 }, (_, i) => ({
@@ -83,7 +82,7 @@ const startCheckout = async () => {
     if (!formData.email || !emailRegex.test(formData.email)) return message.value = { key: 'invalidEmail', type: 'error' }
 
     try {
-        const data = await $fetch(`${runtimeConfig.public.frontendDomain}/api/stripe/create-checkout-session`, {
+        const data = await $fetch('/api/stripe/create-checkout-session', {
             method: 'POST',
             body: {
                 amount: formData.amount * 100,
@@ -106,7 +105,7 @@ const startCheckout = async () => {
 // Check Stripe payment status
 const checkPaymentStatus = async sessionId => {
     try {
-        const data = await $fetch(`${runtimeConfig.public.frontendDomain}/api/stripe/check-payment-status?sessionId=${sessionId}`)
+        const data = await $fetch(`/api/stripe/check-payment-status?sessionId=${sessionId}`)
         message.value = { key: data.success ? 'successPayment' : 'cancelPayment', type: data.success ? 'success' : 'error' }
     } catch (err) {
         console.error('Status check error:', err)

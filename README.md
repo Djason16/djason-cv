@@ -188,7 +188,6 @@ cd djason-cv
 npm install
 
 # Create .env file (see Installation section)
-cp .env.example .env
 # Edit .env with your values
 
 # Start development
@@ -223,9 +222,9 @@ cd djason-cv</code></pre>
 
 <h3>3. Set up environment variables</h3>
 
-<p>Create a <code>.env</code> file at the root of the project for development:</p>
+<p>Create a <code>.env.development</code> file at the root of the project for development:</p>
 
-<pre><code># .env
+<pre><code># .env.development
 NODE_ENV=development
 FRONTEND_DOMAIN=http://localhost:3000
 STRIPE_PUBLIC_KEY=pk_test_xxxxx
@@ -241,7 +240,7 @@ STRIPE_PUBLIC_KEY=pk_live_xxxxx
 STRIPE_SECRET_KEY=sk_live_xxxxx
 </code></pre>
 
-<p><strong>⚠️ IMPORTANT:</strong> Never commit <code>.env</code> or <code>.env.production</code> files to Git. Add them to <code>.gitignore</code>.</p>
+<p><strong>⚠️ IMPORTANT:</strong> Never commit <code>.env.development</code> or <code>.env.production</code> files to Git. Add them to <code>.gitignore</code>.</p>
 
 <h3>4. Run the development server</h3>
 <pre><code>npm run dev</code></pre>
@@ -272,7 +271,7 @@ STRIPE_SECRET_KEY=sk_live_xxxxx
 <p>Upload the following files to your Infomaniak server:</p>
 
 <pre><code>.output/              # Production build
-ecosystem.config.js   # PM2 configuration
+ecosystem.config.cjs   # PM2 configuration
 package.json          # Dependencies
 package-lock.json     # Lock file
 .env.production       # Environment variables (create directly on server)
@@ -284,11 +283,12 @@ package-lock.json     # Lock file
 <pre><code>ssh your-user@your-server.infomaniak.com
 cd /path/to/your/site
 npm ci --production
+npm install cross-env --save-dev
 </code></pre>
 
 <h4>3. Start with PM2</h4>
 
-<pre><code>pm2 start ecosystem.config.js --env production
+<pre><code>pm2 start ecosystem.config.cjs --env production
 pm2 save
 pm2 startup
 </code></pre>
