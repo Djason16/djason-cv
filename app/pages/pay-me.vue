@@ -83,12 +83,14 @@ const startCheckout = async () => {
     if (!formData.email || !emailRegex.test(formData.email)) return message.value = { key: 'invalidEmail', type: 'error' }
 
     try {
-        const res = await fetch(`${runtimeConfig.public.backendDomain}/stripe/create-checkout-session`, {
+        const data = await $fetch(`${runtimeConfig.public.frontendDomain}/api/stripe/create-checkout-session`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: formData.amount * 100, currency: formData.currency, email: formData.email })
+            body: {
+                amount: formData.amount * 100,
+                currency: formData.currency,
+                email: formData.email
+            }
         })
-        const data = await res.json()
         if (!data.url || !data.sessionId) throw new Error('Missing URL/sessionId')
 
         const popup = window.open(data.url, 'Stripe Checkout', 'width=500,height=700,resizable,scrollbars=yes,status=1')
@@ -104,8 +106,7 @@ const startCheckout = async () => {
 // Check Stripe payment status
 const checkPaymentStatus = async sessionId => {
     try {
-        const res = await fetch(`${runtimeConfig.public.backendDomain}/stripe/check-payment-status?sessionId=${sessionId}`)
-        const data = await res.json()
+        const data = await $fetch(`${runtimeConfig.public.frontendDomain}/api/stripe/check-payment-status?sessionId=${sessionId}`)
         message.value = { key: data.success ? 'successPayment' : 'cancelPayment', type: data.success ? 'success' : 'error' }
     } catch (err) {
         console.error('Status check error:', err)

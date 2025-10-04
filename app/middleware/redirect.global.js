@@ -1,6 +1,6 @@
 export default defineNuxtRouteMiddleware(to => {
-    // Skip if redirected or on server
-    if (to.redirectedFrom || process.server) return
+    // Skip if redirected, on server, or API route
+    if (to.redirectedFrom || process.server || to.path.startsWith('/api/')) return
 
     // Check if path points to a file
     const isFile = /\.[a-zA-Z0-9]+$/.test(to.path)

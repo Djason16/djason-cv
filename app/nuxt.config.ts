@@ -3,31 +3,17 @@ import { defineNuxtConfig } from 'nuxt/config';
 // Import personalInfo
 const { personalInfo } = await import('./utils/personalInfo.js');
 
-// Load environment dynamically
-const envConfig = process.env.NODE_ENV === 'production'
-  ? require('./env/env.prod.js').default
-  : require('./env/env.dev.js').default;
-
-console.log(
-  process.env.NODE_ENV === 'production'
-    ? '\x1b[32m%s\x1b[0m Running in production mode'
-    : '\x1b[33m%s\x1b[0m Running in development mode'
-);
-
-// Set environment variables
-process.env.NUXT_PUBLIC_SITE_URL = envConfig.FRONTEND_DOMAIN;
-process.env.BACKEND_DOMAIN = envConfig.BACKEND_DOMAIN;
-process.env.FRONTEND_DOMAIN = envConfig.FRONTEND_DOMAIN;
-process.env.STRIPE_PUBLIC_KEY = envConfig.STRIPE_PUBLIC_KEY;
-process.env.STRIPE_SECRET_KEY = envConfig.STRIPE_SECRET_KEY;
-
 // Common prerender and sitemap routes
 const routes: string[] = ['/', '/legal', '/pay-me', '/privacy', '/refund-policy', '/terms'];
+
+// Detection mode
+const isDev = process.env.NODE_ENV !== 'production'
+console.log(isDev ? '\x1b[33m%s\x1b[0m Development mode' : '\x1b[32m%s\x1b[0m Production mode')
 
 export default defineNuxtConfig({
   site: {
     name: personalInfo.name,
-    url: process.env.NUXT_PUBLIC_SITE_URL,
+    url: process.env.FRONTEND_DOMAIN,
     trailingSlash: true,
   },
 
@@ -91,11 +77,11 @@ export default defineNuxtConfig({
         rules: [
           {
             UserAgent: '*',
-            Disallow: process.env.NODE_ENV === 'production' ? '' : '/',
-            Allow: process.env.NODE_ENV === 'production' ? '/' : '',
+            Disallow: isDev ? '/' : '',
+            Allow: isDev ? '' : '/',
           },
         ],
-        Sitemap: `${process.env.NUXT_PUBLIC_SITE_URL}/sitemap.xml`,
+        Sitemap: `${process.env.FRONTEND_DOMAIN}/sitemap.xml`,
       },
     ],
     '@nuxt/image',
@@ -117,8 +103,10 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    // Private variables (server only)
+    stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    // Public variables (client + server)
     public: {
-      backendDomain: process.env.BACKEND_DOMAIN,
       frontendDomain: process.env.FRONTEND_DOMAIN,
       stripePublicKey: process.env.STRIPE_PUBLIC_KEY,
     },

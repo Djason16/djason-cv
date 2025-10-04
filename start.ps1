@@ -2,7 +2,7 @@ Clear-Host
 
 # Display mode selection menu
 Write-Host "Select mode:"
-Write-Host "D - Development (Nuxt 4 + Express)"
+Write-Host "D - Development (Nuxt 4)"
 Write-Host "G - Generate site (static)"
 Write-Host "B - Build site"
 
@@ -45,31 +45,24 @@ try {
     Start-Process pwsh -ArgumentList "-NoExit", "-Command", $scriptBlock
 }
 
+$appPath = Join-Path $PSScriptRoot "app"
+
 # Handle user selection
 switch ($key) {
     "D" {
-        Write-Host "`nStarting development servers..." -ForegroundColor Cyan
-
-        # Start frontend Nuxt 4
-        Start-Server -Path "$PSScriptRoot\app" -Name "Frontend (Nuxt 4)" -Command "npm run dev"
-
-        Start-Sleep -Seconds 2
-
-        # Start backend Express
-        Start-Server -Path "$PSScriptRoot\api" -Name "Backend (Express)" -Command "npm run dev"
-
-        Write-Host "`nBoth servers started in separate windows." -ForegroundColor Green
-        Write-Host "Check the individual windows for server status." -ForegroundColor Yellow
+        Write-Host "`nStarting Nuxt 4 development server..." -ForegroundColor Cyan
+        Start-Server -Path $appPath -Name "Nuxt 4 Development" -Command "npm run dev"
+        Write-Host "`nNuxt 4 server started." -ForegroundColor Green
     }
 
     "G" {
         Write-Host "`nGenerating site..." -ForegroundColor Cyan
-        Start-Server -Path "$PSScriptRoot\app" -Name "Site Generator" -Command "npm run generate"
+        Start-Server -Path $appPath -Name "Site Generator" -Command "npm run generate"
     }
 
     "B" {
         Write-Host "`nBuilding site..." -ForegroundColor Cyan
-        Start-Server -Path "$PSScriptRoot\app" -Name "Site Builder" -Command "npm run build"
+        Start-Server -Path $appPath -Name "Site Builder" -Command "npm run build"
     }
 
     default {

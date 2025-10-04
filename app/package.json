@@ -1,11 +1,13 @@
 {
   "name": "nuxt-app",
   "private": true,
+  "description": "Front-end pour djason-chery.dev",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nuxt dev",
-    "build": "cross-env NODE_ENV=production nuxt build",
-    "generate": "cross-env NODE_ENV=production nuxt generate",
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "start": "node .output/server/index.mjs",
+    "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
@@ -14,7 +16,6 @@
     "@nuxt/image": "^1.11.0",
     "@nuxtjs/robots": "^5.5.5",
     "@nuxtjs/sitemap": "^7.4.7",
-    "cross-env": "^10.0.0",
     "gsap": "^3.13.0",
     "intersection-observer": "^0.12.2",
     "nuxt": "^4.1.2",
