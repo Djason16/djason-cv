@@ -17,7 +17,7 @@
   <a href="tel:+33758204726">
     <img src="https://img.shields.io/badge/Phone-%2352616B?style=for-the-badge&logo=phone&logoColor=%23FFFFFF" alt="Djason Chery | Phone" />
   </a>
-  <a href="mailto:djason.chery@yahoo.com">
+  <a href="mailto:contact@djason-chery.dev">
     <img src="https://img.shields.io/badge/Email-%231E2022?style=for-the-badge&logo=gmail&logoColor=%23FFFFFF" alt="Djason Chery | Email" />
   </a>
   <a href="https://wa.me/33758204726" target="_blank">
@@ -222,30 +222,66 @@ cd djason-cv</code></pre>
 
 <h3>3. Set up environment variables</h3>
 
-<p>Create a <code>.env.development</code> file at the root of the project for development:</p>
+<p>Copy the example file to create your own <code>.env</code>:</p>
 
-<pre><code># .env.development
+<pre><code>cp .env.example .env.development</code></pre> 
+
+<p>Edit <code>.env.development</code> for development:</p>
+
+<pre>
+<code>
+# Environment
 NODE_ENV=development
-FRONTEND_DOMAIN=http://localhost:3000
-STRIPE_PUBLIC_KEY=pk_test_xxxxx
-STRIPE_SECRET_KEY=sk_test_xxxxx
+
+# Nuxt Frontend
+NUXT_PUBLIC_FRONTEND_DOMAIN=http://localhost:3000
+
+# Stripe (Payments)
+# Get your keys from: https://dashboard.stripe.com/apikeys 
+NUXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_... 
+
+# Default Admin User
+NUXT_ADMIN_EMAIL=your-email@example.com
+NUXT_ADMIN_PASSWORD=your-password 
+NUXT_ADMIN_NAME=Your Name 
 </code></pre>
 
-<p>For production, create a <code>.env.production</code> file:</p>
+<p>For production, create <code>.env.production</code>:</p> 
 
-<pre><code># .env.production
-NODE_ENV=production
-FRONTEND_DOMAIN=https://djason-chery.dev
-STRIPE_PUBLIC_KEY=pk_live_xxxxx
-STRIPE_SECRET_KEY=sk_live_xxxxx
+<pre>
+<code>
+# Environment
+NODE_ENV=production 
+
+# Nuxt Frontend
+NUXT_PUBLIC_FRONTEND_DOMAIN=https://djason-chery.dev
+
+# Stripe (Payments)
+# Get your keys from: https://dashboard.stripe.com/apikeys 
+NUXT_PUBLIC_STRIPE_PUBLIC_KEY=pk_live_...
+STRIPE_SECRET_KEY=sk_live_... 
+
+# Default Admin User 
+NUXT_ADMIN_EMAIL=your-email@example.com
+NUXT_ADMIN_PASSWORD=your-password
+NUXT_ADMIN_NAME=Your Name
 </code></pre>
 
-<p><strong>⚠️ IMPORTANT:</strong> Never commit <code>.env.development</code> or <code>.env.production</code> files to Git. Add them to <code>.gitignore</code>.</p>
+<p><strong>⚠️ Important:</strong> Never commit <code>.env.development</code> or <code>.env.production</code> files to Git. Add them to <code>.gitignore</code>.</p>
 
-<h3>4. Run the development server</h3>
-<pre><code>npm run dev</code></pre>
+<h3>First-Time Setup Checklist</h3>
+<p>Before running the project for the first time:</p>
+<ul>
+  <li>✅ Install Node.js 18+ (<code>node -v</code> to check)</li>
+  <li>✅ Clone the repository</li>
+  <li>✅ Run <code>npm install</code></li>
+  <li>✅ Copy <code>.env.example</code> to <code>.env.development</code> and update values</li>
+  <li>✅ Add your Stripe test keys</li>
+  <li>✅ Run <code>npm run dev</code> (Windows users can also use <code>start.bat</code>)</li>
+</ul>
 
-<p>The application will be available at <a href="http://localhost:3000">http://localhost:3000</a></p>
+<p>Your site will be available at <a href="http://localhost:3000">http://localhost:3000</a></p>
 
 <p>Both frontend and API routes are served by the same Nuxt server:</p>
 <ul>
@@ -380,7 +416,7 @@ pm2 startup
 
 <h2 id="contact">Contact</h2>
 <p align="center">
-  <strong>📩 Email:</strong> <a href="mailto:djason.chery@yahoo.com">djason.chery@yahoo.com</a><br>
+  <strong>📩 Email:</strong> <a href="mailto:contact@djason-chery.dev">contact@djason-chery.dev</a><br>
   <strong>📞 Phone:</strong> <a href="tel:+33758204726">07 58 20 47 26</a><br>
   <strong>🌐 Website:</strong> <a href="https://djason-chery.dev/">djason-chery.dev</a>
 </p>

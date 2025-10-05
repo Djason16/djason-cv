@@ -19,7 +19,8 @@
                 </NavLink>
 
                 <!-- Static link to payment page -->
-                <NuxtLink to="/pay-me" class="nav-link text-normal text-bold text-uppercase" rel="noopener noreferrer">
+                <NuxtLink :to="withTrailingSlash('/pay-me')" class="nav-link text-normal text-bold text-uppercase"
+                    rel="noopener noreferrer">
                     <span class="nav-text">{{ $lang.getTranslation('payMe') }}</span>
                     <i class="fas fa-credit-card nav-icon text-normal" aria-label="Pay Me"></i>
                 </NuxtLink>
@@ -29,6 +30,7 @@
 </template>
 
 <script setup>
+import { withTrailingSlash } from '@/utils/pathHelpers'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import NavLink from '~/components/ui/Nav/NavLink.vue'

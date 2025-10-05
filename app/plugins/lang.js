@@ -1,31 +1,29 @@
-import { defineNuxtPlugin } from '#app';
-import { computed, ref } from 'vue';
-import en from './translations/en.js';
-import fr from './translations/fr.js';
+import { defineNuxtPlugin, useHead } from '#app'
+import { ref, computed } from 'vue'
+import en from './translations/en.js'
+import fr from './translations/fr.js'
 
-// LANGUAGE PLUGIN: handles multilingual support and variable replacements
 export default defineNuxtPlugin(() => {
-    const currentLang = ref('french'); // reactive current language
-    const translations = { english: en, french: fr }; // all available translations
+    const currentLang = ref('french')
+    const translations = { english: en, french: fr }
+    const locale = computed(() => (currentLang.value === 'french' ? 'fr' : 'en'))
 
-    // Replace placeholders in a string with values from variables object
-    const replaceVariables = (str, vars) =>
-        str.replace(/{{(.*?)}}/g, (_, key) => vars[key.trim()] || _);
+    // Reactively update <html lang>
+    useHead({ htmlAttrs: { lang: locale } })
+
+    // Translate with optional variable replacements
+    const t = (key, vars = {}) =>
+        (translations[currentLang.value]?.[key] || key).replace(/{{(.*?)}}/g, (_, k) => vars[k.trim()] || _)
 
     return {
         provide: {
             lang: {
                 current: currentLang,
-                locale: computed(() => (currentLang.value === 'french' ? 'fr' : 'en')), // locale code
+                locale,
                 availableLanguages: Object.keys(translations),
-
-                // Switch current language if valid
-                setLang: (lang) => translations[lang] && (currentLang.value = lang),
-
-                // Retrieve translation with optional variable replacements
-                getTranslation: (key, vars = {}) =>
-                    replaceVariables(translations[currentLang.value]?.[key] || key, vars),
-            },
-        },
-    };
-});
+                setLang: l => translations[l] && (currentLang.value = l),
+                getTranslation: t
+            }
+        }
+    }
+})

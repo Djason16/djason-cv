@@ -1,27 +1,31 @@
-import { config as loadEnv } from 'dotenv'
-import { defineNuxtConfig } from 'nuxt/config'
-import { resolve } from 'path'
-
-// Load the .env corresponding to the NODE_ENV
-const envPath = `.env.${process.env.NODE_ENV || 'development'}`
-loadEnv({ path: resolve(process.cwd(), envPath) })
+import { config as loadEnv } from 'dotenv';
+import { defineNuxtConfig } from 'nuxt/config';
+import { resolve } from 'path';
+import { TRAILING_SLASH_ENABLED } from './utils/pathHelpers.js';
 
 // Import personalInfo
 const { personalInfo } = await import('./utils/personalInfo.js')
 
 // Common prerender and sitemap routes
-const routes: string[] = ['/', '/legal', '/pay-me', '/privacy', '/refund-policy', '/terms']
+const routes: string[] = ['/', '/legal', '/pay-me', '/privacy', '/refund-policy', '/terms', '/login', '/admin']
 
 // Detection mode
 const isDev = process.env.NODE_ENV !== 'production'
-console.log(`⚡ Chargement de ${envPath}`)
-console.log('🔍 NUXT_PUBLIC_FRONTEND_DOMAIN:', process.env.NUXT_PUBLIC_FRONTEND_DOMAIN)
+
+// Load the .env corresponding to the NODE_ENV
+if (!process.env.CONFIG_LOADED) {
+  const envPath = `.env.${process.env.NODE_ENV || 'development'}`
+  loadEnv({ path: resolve(process.cwd(), envPath) })
+  process.env.CONFIG_LOADED = 'true'
+  console.log(`⚡ Loading ${envPath}`)
+  console.log('🔍 NUXT_PUBLIC_FRONTEND_DOMAIN:', process.env.NUXT_PUBLIC_FRONTEND_DOMAIN)
+}
 
 export default defineNuxtConfig({
   site: {
     name: personalInfo.name,
     url: process.env.NUXT_PUBLIC_FRONTEND_DOMAIN,
-    trailingSlash: true,
+    trailingSlash: TRAILING_SLASH_ENABLED,
   },
 
   ssr: true,
@@ -50,6 +54,18 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    experimental: {
+      wasm: true,
+      database: true
+    },
+    database: {
+      default: {
+        connector: 'sqlite',
+        options: {
+          filename: resolve('./.data/db.sqlite')
+        }
+      }
+    },
     prerender: {
       crawlLinks: true,
       routes,
@@ -61,7 +77,6 @@ export default defineNuxtConfig({
       retryDelay: 1000,
       ignoreUnprefixedPublicAssets: true,
     },
-    experimental: { wasm: true },
   },
 
   modules: [
@@ -91,14 +106,10 @@ export default defineNuxtConfig({
         Sitemap: `${process.env.NUXT_PUBLIC_FRONTEND_DOMAIN}/sitemap.xml`,
       },
     ],
-    '@nuxt/image',
-  ],
+    '@nuxt/image'],
 
   app: {
     head: {
-      htmlAttrs: {
-        lang: 'fr',
-      },
       link: [
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
         { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
@@ -124,8 +135,11 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // Private variables (server only)
+    // Private variables (server only) - must match env variable names
     stripeSecretKey: process.env.STRIPE_SECRET_KEY,
+    adminEmail: process.env.NUXT_ADMIN_EMAIL,
+    adminPassword: process.env.NUXT_ADMIN_PASSWORD,
+    adminName: process.env.NUXT_ADMIN_NAME,
     // Public variables (client + server)
     public: {
       frontendDomain: process.env.NUXT_PUBLIC_FRONTEND_DOMAIN,

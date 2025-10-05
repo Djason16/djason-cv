@@ -1,0 +1,24 @@
+export default defineEventHandler(async event => {
+    // Extract request body and database
+    const { email, password } = await readBody(event)
+    const db = event.context.db
+
+    // Validate input
+    if (!email || !password) throw createError({ statusCode: 400, message: 'authErrorMissingFields' })
+
+    // Fetch user by email
+    const { rows } = await db.sql`SELECT id, password FROM dc_users WHERE email=${email} LIMIT 1`
+    if (!rows.length) throw createError({ statusCode: 401, message: 'invalidCredentials' })
+
+    const user = rows[0]
+
+    // Verify password
+    if (!await verifyPassword(password, user.password)) throw createError({ statusCode: 401, message: 'invalidCredentials' })
+
+    // Create session and set cookie
+    const cookie = await createSession(user.id, db)
+    setHeader(event, 'Set-Cookie', cookie)
+
+    // Return success response
+    return { success: true, userId: user.id, message: 'loginSuccess' }
+})

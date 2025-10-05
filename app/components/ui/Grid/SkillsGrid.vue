@@ -53,6 +53,7 @@ const toggleExpand = i => emit('toggleExpand', i) // Emit index when a skill is 
     cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     z-index: 1;
+    will-change: transform;
 }
 
 .skills-item.expanded {

@@ -1,41 +1,64 @@
 <template>
-    <!-- Decorative divider -->
+    <!-- Decorative SVG divider -->
     <div class="divider" aria-hidden="true">
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-            <path d="M0,256L720,160L1440,256L1440,320L0,320Z" fill="var(--fourth-color)" />
+            <path d="M0,256L720,160L1440,256L1440,320L0,320Z" :fill="`var(--fourth-color)`" />
         </svg>
     </div>
 
-    <!-- Footer bottom container -->
+    <!-- Footer main container -->
     <div class="footer-bottom">
-        <!-- Social media icons -->
+        <!-- Social icons loop -->
         <nav class="icons text-normal" aria-label="Social media links">
             <a v-for="(icon, i) in socialIcons" :key="i" :href="icon.link" target="_blank" rel="noopener noreferrer"
-                :aria-label="icon.label"><i :class="icon.class"></i></a>
+                :aria-label="icon.label">
+                <i :class="icon.class"></i>
+            </a>
         </nav>
 
-        <!-- Copyright -->
+        <!-- Copyright with dynamic year and name -->
         <p class="text-normal">
             &copy; {{ $lang.getTranslation('footerText', { year: currentYear, name: personalInfo.name }) }}
         </p>
 
-        <!-- Footer navigation links -->
+        <!-- Footer links and auth buttons -->
         <div class="footer-links text-normal">
+            <!-- Legal links -->
             <NuxtLink v-for="(link, i) in footerLinks" :key="i" :to="link.to" :aria-label="link.label">
                 {{ $lang.getTranslation(link.translationKey) }}
             </NuxtLink>
+
+            <!-- Auth link (only show after check) -->
+            <template v-if="authChecked">
+                <NuxtLink v-if="!isAuthenticated" :to="withTrailingSlash('/login')" aria-label="Login">
+                    {{ $lang.getTranslation('loginLink') }}
+                </NuxtLink>
+                <NuxtLink v-else :to="withTrailingSlash('/admin')" aria-label="Admin Dashboard">
+                    {{ $lang.getTranslation('adminLink') }}
+                </NuxtLink>
+            </template>
         </div>
     </div>
 </template>
 
 <script setup>
+import { withTrailingSlash } from '@/utils/pathHelpers'
 import { personalInfo } from '@/utils/personalInfo.js'
+import { onMounted, ref } from 'vue'
+import { useAuth } from '~/composables/useAuth'
+
 const { $lang } = useNuxtApp()
-
-// Dynamic data
+const { isAuthenticated, checkAuth } = useAuth()
 const currentYear = new Date().getFullYear()
+const authChecked = ref(false)
 
-// Social media links
+// Check user authentication on mount
+onMounted(async () => {
+    await checkAuth()
+    authChecked.value = true
+})
+
+// Social links array
 const socialIcons = [
     { link: `mailto:${personalInfo.email}`, class: 'fas fa-envelope', label: 'Email' },
     { link: `tel:${personalInfo.phone.replace(/\s+/g, '')}`, class: 'fas fa-phone', label: 'Phone' },
@@ -48,10 +71,10 @@ const socialIcons = [
 
 // Footer navigation links
 const footerLinks = [
-    { to: '/legal', label: 'Legal Notice', translationKey: 'legal' },
-    { to: '/terms', label: 'Terms and Conditions', translationKey: 'terms' },
-    { to: '/privacy', label: 'Privacy Policy', translationKey: 'privacy' },
-    { to: '/refund-policy', label: 'Refund Policy', translationKey: 'refundPolicy' },
+    { to: withTrailingSlash('/legal'), label: 'Legal Notice', translationKey: 'legal' },
+    { to: withTrailingSlash('/terms'), label: 'Terms and Conditions', translationKey: 'terms' },
+    { to: withTrailingSlash('/privacy'), label: 'Privacy Policy', translationKey: 'privacy' },
+    { to: withTrailingSlash('/refund-policy'), label: 'Refund Policy', translationKey: 'refundPolicy' },
 ]
 </script>
 
@@ -116,6 +139,12 @@ const footerLinks = [
     margin: 0.25rem;
     color: inherit;
     text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
     transition: color 0.3s ease;
 }
 

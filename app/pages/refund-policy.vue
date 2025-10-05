@@ -15,7 +15,7 @@ import { seoMetaData } from '@/utils/seo.js'
 const { $lang } = useNuxtApp()
 
 // Refund policy sections dynamically generated
-const refundPolicySections = Array.from({ length: 5 }, (_, i) => ({
+const refundPolicySections = Array.from({ length: 7 }, (_, i) => ({
     titleKey: `refundPolicySection${i + 1}Title`,
     contentKey: `refundPolicySection${i + 1}Content`
 }))

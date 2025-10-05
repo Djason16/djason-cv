@@ -42,6 +42,7 @@ defineProps({
     overflow: hidden;
     text-decoration: none;
     transition: all 0.3s ease;
+    will-change: transform, opacity;
 }
 
 .custom-button:hover {
@@ -59,6 +60,7 @@ defineProps({
     align-items: center;
     justify-content: center;
     transition: transform 0.3s ease;
+    will-change: transform, color;
 }
 
 .custom-button:hover .custom-button__icon {

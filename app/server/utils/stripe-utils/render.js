@@ -1,27 +1,29 @@
+// Payment page templates for success and cancellation
 const PAYMENT_CONFIGS = {
-  success: {
-    highlight: '#58D68D',
-    title: 'Paiement réussi !',
-    message: 'Le paiement a été effectué avec succès.',
-    english: 'Payment Successful! This window will close automatically.'
-  },
-  cancel: {
-    highlight: '#E74C3C',
-    title: 'Paiement annulé !',
-    message: 'Le paiement a été annulé.',
-    english: 'Payment Canceled. This window will close automatically.'
-  }
+    success: {
+        highlight: '#58D68D',
+        title: 'Paiement réussi !',
+        message: 'Le paiement a été effectué avec succès.',
+        english: 'Payment Successful! This window will close automatically.'
+    },
+    cancel: {
+        highlight: '#E74C3C',
+        title: 'Paiement annulé !',
+        message: 'Le paiement a été annulé.',
+        english: 'Payment Canceled. This window will close automatically.'
+    }
 }
 
+// Render HTML page for payment result
 export function renderPaymentPage(type = 'success') {
-  const config = PAYMENT_CONFIGS[type] || PAYMENT_CONFIGS.success
-  const colors = {
-    bg: '#C9D6DF',
-    text: '#1a1d1f',
-    highlight: config.highlight
-  }
+    const config = PAYMENT_CONFIGS[type] || PAYMENT_CONFIGS.success
+    const colors = {
+        bg: '#C9D6DF',
+        text: '#1a1d1f',
+        highlight: config.highlight
+    }
 
-  return `<!DOCTYPE html>
+    return `<!DOCTYPE html>
 <html lang="fr">
   <head>
     <meta charset="utf-8">

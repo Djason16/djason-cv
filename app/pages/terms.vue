@@ -15,7 +15,7 @@ import { seoMetaData } from '~/utils/seo.js'
 const { $lang } = useNuxtApp()
 
 // Generate sections dynamically
-const termsSections = Array.from({ length: 9 }, (_, i) => ({
+const termsSections = Array.from({ length: 14 }, (_, i) => ({
     titleKey: `termsSection${i + 1}Title`,
     contentKey: `termsSection${i + 1}Content`,
 }))

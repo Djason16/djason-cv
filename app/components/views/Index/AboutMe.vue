@@ -33,7 +33,7 @@ const baseImages = ['/images/matrix.jpg', '/images/moi.jpg']
 const images = Array.from({ length: 6 }, (_, i) => baseImages[i % baseImages.length])
 
 // Translation variables for dynamic interpolation
-const variables = { name: personalInfo.name, age: calculateAge(personalInfo.birthDate) }
+const variables = { name: personalInfo.name, address: personalInfo.address, age: calculateAge(personalInfo.birthDate) }
 </script>
 
 <style scoped>

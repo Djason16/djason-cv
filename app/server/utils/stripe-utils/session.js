@@ -1,24 +1,9 @@
-import Stripe from 'stripe'
-
-let stripeInstance = null
-
-export function getStripeInstance() {
-    if (!stripeInstance) {
-        const config = useRuntimeConfig()
-        stripeInstance = new Stripe(config.stripeSecretKey)
-    }
-    return stripeInstance
-}
-
-export function calculateStripeTotal(amount) {
-    return Math.ceil(amount * 1.029 + 30)
-}
-
-export async function createStripeSession({ amount, currency, email, successUrl, cancelUrl }) {
+// Create a Stripe checkout session for a payment
+export const createStripeSession = async ({ amount, currency, email, successUrl, cancelUrl }) => {
     const stripe = getStripeInstance()
     const total = calculateStripeTotal(amount)
 
-    return await stripe.checkout.sessions.create({
+    return stripe.checkout.sessions.create({
         payment_method_types: ['card'],
         line_items: [{
             price_data: {
@@ -31,11 +16,12 @@ export async function createStripeSession({ amount, currency, email, successUrl,
         mode: 'payment',
         customer_email: email,
         success_url: successUrl,
-        cancel_url: cancelUrl,
+        cancel_url: cancelUrl
     })
 }
 
-export async function getPaymentStatus(sessionId) {
+// Retrieve payment status from Stripe session
+export const getPaymentStatus = async sessionId => {
     const stripe = getStripeInstance()
     const session = await stripe.checkout.sessions.retrieve(sessionId)
     return {

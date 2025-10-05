@@ -5,12 +5,14 @@
             <div class="custom-list__item">
                 <!-- Dynamic title tag with styling and processed content -->
                 <component :is="titleTag" :class="['custom-list__title', titleClass]" :style="{ color: titleColor }">
-                    <span v-html="processText($lang.getTranslation(item.titleKey, dynamicData), dynamicData)"></span>
+                    <span
+                        v-html="processText($lang.getTranslation(item.titleKey, item.dynamicData || dynamicData), item.dynamicData || dynamicData)"></span>
                 </component>
 
                 <!-- Content paragraph with dynamic text and color -->
                 <p :class="contentClass" :style="{ color: contentColor }" class="custom-list__content">
-                    <span v-html="processText($lang.getTranslation(item.contentKey, dynamicData), dynamicData)"></span>
+                    <span
+                        v-html="processText($lang.getTranslation(item.contentKey, item.dynamicData || dynamicData), item.dynamicData || dynamicData)"></span>
                 </p>
             </div>
         </SlideInFromRight>

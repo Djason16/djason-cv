@@ -72,6 +72,7 @@ const activeServiceData = computed(() => services[activeService.value])
     color: var(--third-color);
     padding: 1rem;
     transition: transform 0.3s ease, color 0.3s ease;
+    will-change: transform;
 }
 
 .services-section__tab--active {
@@ -98,6 +99,7 @@ const activeServiceData = computed(() => services[activeService.value])
     height: 3px;
     background: var(--fourth-color);
     transition: left 0.3s ease;
+    will-change: left;
 }
 
 .services-section__content {

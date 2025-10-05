@@ -3,7 +3,7 @@
     <OtherSectionLayout pageTitleKey="privacyTitle" pageSubtitleKey="privacyIntro" :sections="privacySections"
         titleTag="h2" titleClass="text-xlarge text-bold" titleColor="var(--text-color-light)" contentClass="text-normal"
         contentColor="var(--text-color-light)"
-        :dynamicData="{ name: personalInfo.name, email: personalInfo.email, phone: personalInfo.phone }" />
+        :dynamicData="{ name: personalInfo.name, email: personalInfo.email, phone: personalInfo.phone, siret: personalInfo.siret, address: personalInfo.address }" />
 </template>
 
 <script setup>
@@ -15,7 +15,7 @@ import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout
 const { $lang } = useNuxtApp()
 
 // Privacy sections dynamically generated
-const privacySections = Array.from({ length: 8 }, (_, i) => ({
+const privacySections = Array.from({ length: 10 }, (_, i) => ({
     titleKey: `privacySection${i + 1}Title`,
     contentKey: `privacySection${i + 1}Content`
 }))
