@@ -1,13 +1,15 @@
 <template>
     <!-- Show Back-to-Top button when scrolled down -->
-    <button v-show="isVisible" @click="scrollToTop" class="back-to-top text-small">
-        <i class="fa-solid fa-arrow-up"></i>
+    <button v-show="isVisible" @click="scrollToTop" class="back-to-top text-small"
+        :aria-label="$lang.getTranslation('backToTop')" :title="$lang.getTranslation('backToTop')">
+        <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
     </button>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 
+const { $lang } = useNuxtApp()
 const isVisible = ref(false) // track button visibility
 
 // Smooth scroll to top

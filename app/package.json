@@ -1,18 +1,17 @@
 {
-  "name": "nuxt-app",
+  "name": "djason-chery-nuxt-fullstack",
   "private": true,
-  "description": "Front-end pour djason-chery.dev",
+  "description": "Application fullstack Nuxt 4 avec Nitro pour djason-chery.dev — back et front intégrés",
   "type": "module",
   "scripts": {
-    "dev": "nuxt dev",
+    "dev": "cross-env NODE_NO_WARNINGS=1 nuxt dev",
     "build": "cross-env NODE_ENV=production nuxt build",
-    "start": "node .output/server/index.mjs",
+    "start": "cross-env NODE_NO_WARNINGS=1 node .output/server/index.mjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@cloudflare/puppeteer": "^1.0.4",
     "@fortawesome/fontawesome-free": "^7.0.1",
     "@nuxt/image": "^1.11.0",
     "@nuxtjs/robots": "^5.5.5",
@@ -22,7 +21,6 @@
     "gsap": "^3.13.0",
     "intersection-observer": "^0.12.2",
     "nuxt": "^4.1.2",
-    "puppeteer": "^24.23.0",
     "stripe": "^18.5.0",
     "vue": "latest",
     "vue-router": "latest"
@@ -30,7 +28,6 @@
   "devDependencies": {
     "@types/node": "^24.5.2",
     "cross-env": "^7.0.3",
-    "pm2": "^6.0.13",
-    "wrangler": "^4.42.0"
+    "pm2": "^6.0.13"
   }
 }

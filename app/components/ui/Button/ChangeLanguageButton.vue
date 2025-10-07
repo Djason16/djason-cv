@@ -2,15 +2,16 @@
     <!-- Language switcher buttons -->
     <div class="language-switcher">
         <button v-for="lang in availableLanguages" :key="lang.code" :class="{ active: currentLanguage === lang.code }"
-            @click="switchLanguage(lang.code)" :aria-label="`Switch to ${lang.code}`">
+            @click="switchLanguage(lang.code)" :aria-label="$lang.getTranslation('switchToLang', { lang: lang.label })"
+            :title="$lang.getTranslation('switchToLang', { lang: lang.label })">
             {{ lang.short }}
         </button>
     </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { useNuxtApp } from '#app'
+import { computed } from 'vue'
 
 // Access Nuxt language plugin
 const { $lang } = useNuxtApp()
@@ -19,9 +20,9 @@ const currentLanguage = $lang.current // reactive current language
 // Prepare language options with short codes and labels
 const availableLanguages = computed(() =>
     $lang.availableLanguages.map(code => ({
-        code,
+        code, // "english" ou "french"
         short: code.slice(0, 2).toUpperCase(), // short display
-        label: `Switch to ${code}`              // accessibility
+        label: $lang.getTranslation(code) || code
     }))
 )
 

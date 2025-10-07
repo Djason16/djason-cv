@@ -4,25 +4,32 @@
         <div class="header-top__content">
             <!-- Logo linking to home -->
             <div class="header-top__title">
-                <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')">
-                    <NuxtImg :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo" format="webp" preload
-                        priority fetchpriority="high" fit="contain" />
+                <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')"
+                    :aria-label="$lang.getTranslation('home')">
+                    <NuxtImg v-if="!fallback.value" :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo"
+                        format="webp" preload priority fetchpriority="high" fit="contain" @error="onError"
+                        :title="$lang.getTranslation('home')" />
+                    <img v-else :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo" preload priority
+                        fetchpriority="high" :title="$lang.getTranslation('home')" />
                 </NuxtLink>
             </div>
 
             <!-- Navigation links -->
             <nav class="header-top__nav">
                 <!-- Loop homepage links only on home page -->
-                <NavLink v-if="isHomePage" v-for="(item, i) in homeNavItems" :key="i" :id="item.id">
+                <NavLink v-if="isHomePage" v-for="(item, i) in homeNavItems" :key="i" :id="item.id"
+                    :title="$lang.getTranslation(item.translationKey)"
+                    :aria-label="$lang.getTranslation(item.translationKey)">
                     <span class="nav-text">{{ $lang.getTranslation(item.translationKey) }}</span>
-                    <i :class="item.icon" class="nav-icon text-normal" :aria-hidden="true"></i>
+                    <i :class="item.icon" class="nav-icon text-normal" aria-hidden="true"></i>
                 </NavLink>
 
                 <!-- Static link to payment page -->
                 <NuxtLink :to="withTrailingSlash('/pay-me')" class="nav-link text-normal text-bold text-uppercase"
-                    rel="noopener noreferrer">
+                    rel="noopener noreferrer" :title="$lang.getTranslation('payMe')"
+                    :aria-label="$lang.getTranslation('payMe')">
                     <span class="nav-text">{{ $lang.getTranslation('payMe') }}</span>
-                    <i class="fas fa-credit-card nav-icon text-normal" aria-label="Pay Me"></i>
+                    <i class="fas fa-credit-card nav-icon text-normal" :aria-label="$lang.getTranslation('payMe')"></i>
                 </NuxtLink>
             </nav>
         </div>
@@ -30,6 +37,7 @@
 </template>
 
 <script setup>
+import { useImageFallback } from '@/composables/useImageFallback.js'
 import { withTrailingSlash } from '@/utils/pathHelpers'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -42,6 +50,9 @@ const logoPath = '/images/main_logo_light.png'
 
 // Only show homepage links on the root route
 const isHomePage = computed(() => router.currentRoute.value.path === '/')
+
+// Fallback for a single logo
+const { fallback, onError } = useImageFallback(false)
 
 // Navigation items for homepage links
 const homeNavItems = [

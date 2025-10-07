@@ -1,15 +1,19 @@
 <template>
     <!-- Navigation tabs for services -->
     <div class="services-section__nav">
-        <div v-for="(service, i) in services" :key="i" class="services-section__tab text-uppercase text-small text-bold"
-            :class="{ 'services-section__tab--active': activeService === i }" @click="setActiveService(i)">
+        <button v-for="(service, i) in services" :key="i" type="button" class="services-section__tab text-small"
+            :class="{ 'services-section__tab--active': activeService === i }" @click="setActiveService(i)"
+            :aria-selected="activeService === i">
             <!-- Icon for each service -->
-            <i :class="service.icon" class="services-section__tab-icon"></i>
+            <i :class="service.icon" class="services-section__tab-icon" aria-hidden="true"></i>
             <!-- Service title -->
-            <span class="services-section__tab-title">{{ $lang.getTranslation(service.titleKey) }}</span>
-        </div>
+            <span class="services-section__tab-title text-uppercase text-bold">{{
+                $lang.getTranslation(service.titleKey)
+            }}</span>
+        </button>
         <!-- Active tab indicator -->
-        <div class="services-section__indicator" :style="{ left: `${activeService * (100 / services.length)}%` }"></div>
+        <div class="services-section__indicator" :style="{ left: `${activeService * (100 / services.length)}%` }">
+        </div>
     </div>
 
     <!-- Active service content -->
@@ -62,6 +66,7 @@ const activeServiceData = computed(() => services[activeService.value])
 }
 
 .services-section__tab {
+    all: unset;
     flex: 1;
     display: flex;
     flex-direction: column;

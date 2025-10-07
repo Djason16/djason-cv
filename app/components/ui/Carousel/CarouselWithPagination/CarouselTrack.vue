@@ -20,14 +20,17 @@
                         </ul>
                         <!-- Optional external link -->
                         <a v-if="item.link" :href="item.link" target="_blank"
+                            :title="item.name + ' - ' + ($lang.getTranslation('viewMore'))"
                             class="project-link text-normal text-bold text-uppercase">
                             {{ $lang.getTranslation('viewMore') || 'View More' }}
                         </a>
                     </div>
                     <!-- Slide image -->
-                    <NuxtImg :src="item.image" :alt="item.name" class="carousel-image" :width="640" :height="480"
-                        sizes="(max-width: 768px) 90vw, 640px" format="webp" loading="lazy" densities="1x 2x"
-                        placeholder />
+                    <NuxtImg v-if="!fallbacks[index]" :src="item.image" :alt="item.name" :title="item.name"
+                        class="carousel-image" width="640" height="480" sizes="(max-width: 768px) 90vw, 640px"
+                        format="webp" loading="lazy" densities="1x 2x" @error="onError(index)" placeholder />
+                    <img v-else :src="item.image" :alt="`Fallback ${item.name}`" :title="`Fallback ${item.name}`"
+                        class="carousel-image" loading="lazy" />
                 </div>
             </slot>
         </div>
@@ -35,12 +38,17 @@
 </template>
 
 <script setup>
+import { useImageFallback } from '@/composables/useImageFallback.js';
+
 // Props: slides array, dynamic track style, and transition toggle
 defineProps({
     slides: Array,
     trackStyle: Object,
     transitionEnabled: Boolean
 })
+
+// Composable to handle multiple fallbacks
+const { fallbacks, onError } = useImageFallback(true)
 </script>
 
 <style scoped>

@@ -11,6 +11,7 @@ const { color } = defineProps({ color: { type: String, required: true } })
 <style scoped>
 .footer-top {
     padding: 2rem;
+    padding-bottom: calc(2rem + 2px);
     transition: background-color 0.3s ease-in-out;
 }
 </style>

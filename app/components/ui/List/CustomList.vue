@@ -25,7 +25,7 @@ import SlideInFromRight from '~/components/animations/SlideInFromRight.vue'
 import { useTextEscape } from '~/composables/useTextEscape'
 
 const { $lang } = useNuxtApp()
-const { processText } = useTextEscape()
+const { processText } = useTextEscape($lang)
 
 // Props for list data, dynamic styling, and optional variable substitutions
 defineProps({

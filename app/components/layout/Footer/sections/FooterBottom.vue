@@ -2,7 +2,7 @@
     <!-- Decorative SVG divider -->
     <div class="divider" aria-hidden="true">
         <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
-            <path d="M0,256L720,160L1440,256L1440,320L0,320Z" :fill="`var(--fourth-color)`" />
+            <path d="M0,256L720,160L1440,256L1440,322L0,322Z" :fill="`var(--fourth-color)`" />
         </svg>
     </div>
 
@@ -11,7 +11,8 @@
         <!-- Social icons loop -->
         <nav class="icons text-normal" aria-label="Social media links">
             <a v-for="(icon, i) in socialIcons" :key="i" :href="icon.link" target="_blank" rel="noopener noreferrer"
-                :aria-label="icon.label">
+                :aria-label="icon.labelKey ? $lang.getTranslation(icon.labelKey, icon.vars) : icon.label"
+                :title="icon.labelKey ? $lang.getTranslation(icon.labelKey, icon.vars) : icon.label">
                 <i :class="icon.class"></i>
             </a>
         </nav>
@@ -24,19 +25,23 @@
         <!-- Footer links and auth buttons -->
         <div class="footer-links text-normal">
             <!-- Legal links -->
-            <NuxtLink v-for="(link, i) in footerLinks" :key="i" :to="link.to" :aria-label="link.label">
+            <NuxtLink v-for="(link, i) in footerLinks" :key="i" :to="link.to" :aria-label="link.label"
+                :title="$lang.getTranslation(link.translationKey) || link.label">
                 {{ $lang.getTranslation(link.translationKey) }}
             </NuxtLink>
 
             <!-- Auth link (only show after check) -->
             <template v-if="authChecked">
-                <NuxtLink v-if="!isAuthenticated" :to="withTrailingSlash('/login')" aria-label="Login">
+                <NuxtLink v-if="!isAuthenticated" :to="withTrailingSlash('/login')"
+                    :aria-label="$lang.getTranslation('loginLink')" :title="$lang.getTranslation('loginLink')">
                     {{ $lang.getTranslation('loginLink') }}
                 </NuxtLink>
-                <NuxtLink v-else :to="withTrailingSlash('/admin')" aria-label="Admin Dashboard">
+                <NuxtLink v-else :to="withTrailingSlash('/admin')" :aria-label="$lang.getTranslation('adminLink')"
+                    :title="$lang.getTranslation('adminLink')">
                     {{ $lang.getTranslation('adminLink') }}
                 </NuxtLink>
             </template>
+
         </div>
     </div>
 </template>
@@ -60,8 +65,8 @@ onMounted(async () => {
 
 // Social links array
 const socialIcons = [
-    { link: `mailto:${personalInfo.email}`, class: 'fas fa-envelope', label: 'Email' },
-    { link: `tel:${personalInfo.phone.replace(/\s+/g, '')}`, class: 'fas fa-phone', label: 'Phone' },
+    { link: `mailto:${personalInfo.email}`, class: 'fas fa-envelope', labelKey: 'sendEmail', vars: { email: personalInfo.email } },
+    { link: `tel:${personalInfo.phone.replace(/\s+/g, '')}`, class: 'fas fa-phone', labelKey: 'callPhone', vars: { phone: personalInfo.phone } },
     { link: personalInfo.links.linkedin, class: 'fab fa-linkedin', label: 'LinkedIn' },
     { link: personalInfo.links.github, class: 'fab fa-github', label: 'GitHub' },
     { link: personalInfo.links.malt, class: 'fab fa-m', label: 'Malt' },
@@ -89,7 +94,7 @@ const footerLinks = [
     width: 100%;
     overflow: hidden;
     line-height: 0;
-    margin-top: -120px;
+    margin-top: -122px;
     position: relative;
     z-index: 2;
 }
@@ -97,7 +102,7 @@ const footerLinks = [
 .divider svg {
     display: block;
     width: 100%;
-    height: 120px;
+    height: 122px
 }
 
 .footer-bottom {
@@ -107,6 +112,7 @@ const footerLinks = [
     align-items: center;
     padding: 0 0 1.5rem 0;
     gap: 1.5rem;
+    z-index: 1;
 }
 
 .footer-bottom>* {

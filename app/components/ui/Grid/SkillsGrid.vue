@@ -4,7 +4,8 @@
         <div :class="`skills-grid--${gridClass} skills-grid`">
             <div v-for="(skill, i) in skills" :key="i" :class="['skills-item', { expanded: expandedSkill === i }]"
                 @click.stop="toggleExpand(i)"> <!-- Toggle expansion on click -->
-                <img :src="skill.svg" :alt="skill.name" class="skills-item__icon" loading="lazy" />
+                <img :src="skill.svg" :alt="skill.name" :title="$lang.getTranslation(skill.descriptionKey)"
+                    :aria-label="$lang.getTranslation(skill.descriptionKey)" class="skills-item__icon" loading="lazy" />
                 <!-- Skill icon -->
                 <div class="skills-item__content">
                     <h3 class="skills-item__title text-smaller text-bold">{{ skill.name }}</h3> <!-- Skill name -->

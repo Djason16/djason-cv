@@ -9,9 +9,6 @@ const { personalInfo } = await import('./utils/personalInfo.js')
 // Common prerender and sitemap routes
 const routes: string[] = ['/', '/legal', '/pay-me', '/privacy', '/refund-policy', '/terms', '/login', '/admin']
 
-// Detection mode
-const isDev = process.env.NODE_ENV !== 'production'
-
 // Load the .env corresponding to the NODE_ENV
 if (!process.env.CONFIG_LOADED) {
   const envPath = `.env.${process.env.NODE_ENV || 'development'}`
@@ -20,6 +17,9 @@ if (!process.env.CONFIG_LOADED) {
   console.log(`⚡ Loading ${envPath}`)
   console.log('🔍 NUXT_PUBLIC_FRONTEND_DOMAIN:', process.env.NUXT_PUBLIC_FRONTEND_DOMAIN)
 }
+
+// Detection mode
+const isDev = process.env.NODE_ENV !== 'production'
 
 export default defineNuxtConfig({
   site: {

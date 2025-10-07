@@ -1,10 +1,12 @@
-export const useTextEscape = () => {
+export const useTextEscape = ($lang) => {
     // Remove hidden chars and fix escaped symbols
     const cleanInvisible = txt =>
         txt?.replace(/[\u200B\u200C\u200D\uFEFF]/g, '')
             .replace(/&#8203;/g, '')
             .replace(/&#64;/g, '@')
             .replace(/&ZeroWidthSpace;/g, '') || txt
+    
+    const escapeLabel = txt => txt.replace(/[.,!?;:]$/, '')
 
     // Replace {{email}} / {{phone}} placeholders with links
     const injectVars = (txt, vars) =>
@@ -13,11 +15,14 @@ export const useTextEscape = () => {
             if (!val) return _
             if (key.trim() === 'email') {
                 const email = cleanInvisible(val)
-                return `<a href="mailto:${email}">${email}</a>`
+                const label = escapeLabel($lang.getTranslation('sendEmail', { email }))
+                return `<a href="mailto:${email}" title="${label}" aria-label="${label}">${email}</a>`
             }
             if (key.trim() === 'phone') {
                 const phone = cleanInvisible(val)
-                return `<a href="tel:${phone.replace(/[^\d+]/g, '')}">${phone}</a>`
+                const tel = phone.replace(/[^\d+]/g, '')
+                const label = escapeLabel($lang.getTranslation('callPhone', { phone }))
+                return `<a href="tel:${tel}" title="${label}" aria-label="${label}">${phone}</a>`
             }
             return val
         }) || txt
@@ -30,7 +35,10 @@ export const useTextEscape = () => {
         // Emails
         out = out.replace(
             /(\s|^)([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})(?=[\s.,!?;:]|$)/g,
-            '$1<a href="mailto:$2">$2</a>'
+            (m, before, email) => {
+                const label = escapeLabel($lang.getTranslation('sendEmail', { email }))
+                return `${before}<a href="mailto:${email}" title="${label}" aria-label="${label}">${email}</a>`
+            }
         )
 
         // Phones (ignore SIRET/SIREN and 14-digit numbers)
@@ -40,7 +48,8 @@ export const useTextEscape = () => {
                 const digits = num.replace(/[^\d]/g, '')
                 if (/SIRET|SIREN/i.test(txt.slice(txt.indexOf(num) - 10, txt.indexOf(num)))) return m
                 if (digits.length === 14) return m
-                return `${before}<a href="tel:${digits}">${num.trim()}</a>`
+                const label = escapeLabel($lang.getTranslation('callPhone', { phone: num.trim() }))
+                return `${before}<a href="tel:${digits}" title="${label}" aria-label="${label}">${num.trim()}</a>`
             }
         )
 
@@ -49,7 +58,8 @@ export const useTextEscape = () => {
             /\b((https?:\/\/|www\.)[^\s<]+?)([.,!?;:]?)(?=\s|$)/gi,
             (m, url, _, punct) => {
                 const href = url.startsWith('http') ? url : `https://${url}`
-                return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>${punct || ''}`
+                const label = escapeLabel($lang.getTranslation('visitUrl', { url }))
+                return `<a href="${href}" target="_blank" rel="noopener noreferrer" title="${label}" aria-label="${label}">${url}</a>${punct || ''}`
             }
         )
 

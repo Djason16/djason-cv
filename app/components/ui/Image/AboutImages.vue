@@ -2,39 +2,35 @@
     <div class="about-section__images">
         <div v-for="(row, r) in imageRows" :key="r" class="about-section__row">
             <div v-for="(img, i) in row" :key="i" class="about-section__image-wrapper">
-                <NuxtImg :src="img" :alt="`About Me Image ${r * 3 + i + 1}`" class="about-section__image" width="250"
-                    height="250" sizes="(max-width: 768px) 100vw, 250px" format="webp" loading="lazy" densities="1x 2x"
-                    @error="handleImageError($event, r * 3 + i)" />
+                <!-- Primary image with NuxtImg, fallback to <img> if it fails -->
+                <NuxtImg v-if="!fallbacks[r * 3 + i]" :src="img"
+                    :alt="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })"
+                    :title="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })" class="about-section__image"
+                    width="250" height="250" sizes="(max-width: 768px) 100vw, 250px" format="webp" loading="lazy"
+                    densities="1x 2x" @error="onError(r * 3 + i)" />
+                <img v-else :src="img" :alt="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })"
+                    :title="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })" class="about-section__image"
+                    loading="lazy" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { useImageFallback } from '@/composables/useImageFallback.js'
+import { computed } from 'vue'
 
-const props = defineProps({
-    images: { type: Array, default: () => [] }
-})
+const props = defineProps({ images: { type: Array, default: () => [] } })
 
-const defaultImage = '/images/default_image.jpg'
-const failedImages = ref(new Set())
+// Multiple-image fallback composable
+const { fallbacks, onError } = useImageFallback(true)
 
-// Prepare 6 images max, fallback to default if failed, split into 2 rows
+// Compute up to 6 images split into 2 rows
 const imageRows = computed(() => {
-    const imgs = [...props.images].slice(0, 6).map((img, idx) =>
-        failedImages.value.has(idx) ? defaultImage : img
-    )
-    while (imgs.length < 6) imgs.push(defaultImage)
+    const imgs = props.images.slice(0, 6)
+    while (imgs.length < 6) imgs.push(...imgs)
     return [imgs.slice(0, 3), imgs.slice(3, 6)]
 })
-
-// Mark failed images and fallback
-const handleImageError = (event, index) => {
-    console.warn(`Image failed to load: ${props.images[index]}`)
-    failedImages.value.add(index)
-    event.target.src = defaultImage
-}
 </script>
 
 <style scoped>
@@ -61,7 +57,6 @@ const handleImageError = (event, index) => {
     flex-basis: calc(33.333% - 0.67rem);
     max-width: calc(33.333% - 0.67rem);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    background: var(--background-color-secondary);
 }
 
 .about-section__image {

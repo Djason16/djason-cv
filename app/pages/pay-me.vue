@@ -14,11 +14,15 @@
                         <input v-if="field.type !== 'select'" :type="field.type" :id="field.id"
                             v-model="formData[field.model]" :placeholder="$lang.getTranslation(field.placeholderKey)"
                             :min="field.min" :required="field.required" :autocomplete="field.autocomplete"
-                            form="payment-dummy-form" @keyup.enter="startCheckout" />
+                            form="payment-dummy-form" @keyup.enter="startCheckout"
+                            :aria-label="$lang.getTranslation(field.labelKey)"
+                            :title="$lang.getTranslation(field.labelKey)" />
 
                         <select v-else :id="field.id" v-model="formData[field.model]" :autocomplete="field.autocomplete"
-                            form="payment-dummy-form">
-                            <option v-for="option in field.options" :key="option.value" :value="option.value">
+                            form="payment-dummy-form" :aria-label="$lang.getTranslation(field.labelKey)"
+                            :title="$lang.getTranslation(field.labelKey)">
+                            <option v-for="option in field.options" :key="option.value" :value="option.value"
+                                :title="$lang.getTranslation(option.labelKey)">
                                 {{ $lang.getTranslation(option.labelKey) }}
                             </option>
                         </select>
@@ -26,12 +30,13 @@
 
                     <!-- Payment button -->
                     <HeroButton :label="$lang.getTranslation('payButtonText')"
-                        :ariaLabel="$lang.getTranslation('payWithStripe')" iconClass="fas fa-credit-card"
+                        :ariaLabel="$lang.getTranslation('payButtonText')"
+                        :title="$lang.getTranslation('payButtonText')" iconClass="fas fa-credit-card"
                         @click="startCheckout" />
                 </SlideInFromRight>
 
                 <!-- Success/Error messages -->
-                <MessageBox :message="message" />
+                <MessageBox :message="translatedMessage" />
 
                 <!-- Hidden form for browser validation -->
                 <form id="payment-dummy-form" @submit.prevent="startCheckout" style="display: none;"></form>
@@ -49,6 +54,7 @@ import SlideInFromRight from '~/components/animations/SlideInFromRight.vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import MessageBox from '~/components/ui/Message/MessageBox.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
+import { useTranslatedMessage } from '~/composables/useTranslatedMessage'
 
 const { $lang } = useNuxtApp()
 
@@ -83,6 +89,9 @@ const formFields = [
     }
 ]
 
+// Computed reactive translation for current message
+const { translatedMessage } = useTranslatedMessage(message)
+
 // Validate and start Stripe checkout
 const startCheckout = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -111,6 +120,9 @@ const checkPaymentStatus = async sessionId => {
     try {
         const data = await $fetch(`/api/stripe/check-payment?sessionId=${sessionId}`)
         message.value = { key: data.success ? 'successPayment' : 'cancelPayment', type: data.success ? 'success' : 'error' }
+        if (data.success) {
+            setTimeout(() => message.value = null, 3000)
+        }
     } catch (err) {
         console.error('Status check error:', err)
         message.value = { key: 'unknownError', type: 'error' }

@@ -1,7 +1,7 @@
 <template>
     <!-- Render an anchor if 'href' exists, else a button -->
     <component :is="href ? 'a' : 'button'" class="custom-button" :href="href" :target="href ? '_blank' : undefined"
-        :rel="href ? 'noopener noreferrer' : undefined" :aria-label="ariaLabel || label">
+        :rel="href ? 'noopener noreferrer' : undefined" :aria-label="ariaLabel || label" :title="title || label">
         <!-- Icon display -->
         <span class="custom-button__icon text-normal">
             <i :class="iconClass"></i>
@@ -17,6 +17,7 @@ defineProps({
     label: { type: String, default: 'Button' },          // Display text
     href: { type: String, default: null },               // Makes it a link if provided
     ariaLabel: { type: String, default: null },          // Accessibility label
+    title: { type: String, default: null },              // Tooltip/title
     iconClass: { type: String, default: 'fas fa-circle' } // Icon for the button/link
 })
 </script>
@@ -32,6 +33,7 @@ defineProps({
     display: inline-flex;
     align-items: center;
     gap: 1rem;
+    width: fit-content;
     padding: 0.5rem 1.5rem;
     color: var(--text-color-light);
     background-color: transparent;

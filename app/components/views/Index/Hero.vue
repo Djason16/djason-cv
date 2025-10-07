@@ -17,7 +17,10 @@
             <!-- Action buttons -->
             <div class="hero-banner__actions">
                 <HeroButton v-for="(action, i) in heroActions" :key="i" :label="$lang.getTranslation(action.labelKey)"
-                    :href="action.href" :ariaLabel="action.aria" :iconClass="action.icon" />
+                    :href="action.href"
+                    :ariaLabel="$lang.getTranslation(action.ariaKey, { email: personalInfo.email, phone: personalInfo.phone })"
+                    :title="$lang.getTranslation(action.ariaKey, { email: personalInfo.email, phone: personalInfo.phone })"
+                    :iconClass="action.icon" />
             </div>
         </div>
     </div>
@@ -25,7 +28,7 @@
 
 <script setup>
 import { useNuxtApp } from '#app'
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import AvailabilityButton from '~/components/ui/Button/AvailabilityButton.vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import { getAvailability, getWorkingHours } from '~/utils/availability.js'
@@ -35,8 +38,8 @@ const { $lang } = useNuxtApp()
 
 // Action buttons for email and phone
 const heroActions = [
-    { labelKey: 'sendEmail', href: `mailto:${personalInfo.email}`, aria: `Send an email to ${personalInfo.email}`, icon: 'fas fa-envelope' },
-    { labelKey: 'callMe', href: `tel:${personalInfo.phone.replace(/\s+/g, '')}`, aria: `Call ${personalInfo.phone}`, icon: 'fas fa-phone' }
+    { labelKey: 'sendEmailButton', href: `mailto:${personalInfo.email}`, ariaKey: 'sendEmail', icon: 'fas fa-envelope' },
+    { labelKey: 'callPhoneButton', href: `tel:${personalInfo.phone.replace(/\s+/g, '')}`, ariaKey: 'callPhone', icon: 'fas fa-phone' }
 ]
 
 // Reactive availability state
