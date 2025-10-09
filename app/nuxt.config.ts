@@ -93,9 +93,6 @@ export default defineNuxtConfig({
       '/images/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
       '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
       '/_ipx/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-
-      '/api/**': { cache: false },
-      '/**': { swr: true }
     }
   },
 
