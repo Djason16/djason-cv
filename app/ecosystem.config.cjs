@@ -1,7 +1,7 @@
 module.exports = {
     apps: [
         {
-            name: 'nuxt-app',
+            name: 'djason-chery-nuxt-fullstack',
             script: '.output/server/index.mjs',
             cwd: './',
             instances: 1,

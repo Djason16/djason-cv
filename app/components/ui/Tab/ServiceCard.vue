@@ -1,39 +1,35 @@
 <template>
     <!-- Navigation tabs for services -->
-    <div class="services-section__nav">
+    <div class="services-section__nav" role="tablist">
         <button v-for="(service, i) in services" :key="i" type="button" class="services-section__tab text-small"
-            :class="{ 'services-section__tab--active': activeService === i }" @click="setActiveService(i)"
-            :aria-selected="activeService === i">
-            <!-- Icon for each service -->
+            :class="{ 'services-section__tab--active': activeService === i }" @click="setActiveService(i)" role="tab"
+            :aria-selected="activeService === i" :aria-controls="`panel-${i}`" :id="`tab-${i}`">
             <i :class="service.icon" class="services-section__tab-icon" aria-hidden="true"></i>
-            <!-- Service title -->
-            <span class="services-section__tab-title text-uppercase text-bold">{{
-                $lang.getTranslation(service.titleKey)
-            }}</span>
+            <span class="services-section__tab-title text-uppercase text-bold">
+                {{ $lang.getTranslation(service.titleKey) }}
+            </span>
         </button>
+
         <!-- Active tab indicator -->
-        <div class="services-section__indicator" :style="{ left: `${activeService * (100 / services.length)}%` }">
-        </div>
+        <div class="services-section__indicator" :style="{ left: `${activeService * (100 / services.length)}%` }"></div>
     </div>
 
-    <!-- Active service content -->
-    <div class="services-section__content fade-in" :key="activeService">
-        <!-- Title and intro -->
+    <!-- Tab panels -->
+    <div v-for="(service, i) in services" :key="i" v-show="activeService === i"
+        class="services-section__content fade-in" role="tabpanel" :id="`panel-${i}`" :aria-labelledby="`tab-${i}`">
         <h2 class="services-section__title text-xlarge text-bold text-uppercase">
-            {{ $lang.getTranslation(activeServiceData.titleKey) }}
+            {{ $lang.getTranslation(service.titleKey) }}
         </h2>
         <p class="services-section__intro text-normal">
-            {{ $lang.getTranslation(activeServiceData.introKey) }}
+            {{ $lang.getTranslation(service.introKey) }}
         </p>
 
-        <!-- List of key sections -->
-        <CustomList :items="activeServiceData.sections" titleTag="h3" titleClass="text-large text-bold"
+        <CustomList :items="service.sections" titleTag="h3" titleClass="text-large text-bold"
             titleColor="var(--text-color-light)" contentClass="text-normal" contentColor="var(--text-color-light)" />
 
-        <!-- Added value with emphasis -->
         <p class="services-section__added-value text-normal">
             {{ $lang.getTranslation('addedValue') }}
-            <span class="text-bold">{{ $lang.getTranslation(activeServiceData.addedValueKey) }}</span>
+            <span class="text-bold">{{ $lang.getTranslation(service.addedValueKey) }}</span>
         </p>
     </div>
 </template>

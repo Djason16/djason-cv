@@ -10,7 +10,6 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </header>
-
                     <div class="modal-body">
                         <slot />
                     </div>
@@ -26,7 +25,6 @@
 <script setup>
 import { ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 
-// Props and emits
 const props = defineProps({
     show: Boolean,
     title: { type: String, default: '' },
@@ -37,33 +35,58 @@ const emit = defineEmits(['close'])
 const modalEl = ref(null)
 const close = () => emit('close')
 
-// Focus modal when shown
-watch(() => props.show, async val => val && await nextTick().then(() => modalEl.value?.focus()))
+// Toggle body scroll lock when modal opens/closes
+watch(() => props.show, v => document.body.classList.toggle('modal-open', v))
 
-// Close on Escape key globally
+// Focus modal when it appears
+watch(() => props.show, async v => v && await nextTick(() => modalEl.value?.focus()))
+
+// Handle Escape key to close
 const onKeyDown = e => e.key === 'Escape' && props.show && close()
 onMounted(() => window.addEventListener('keydown', onKeyDown))
 onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 
-// --- Morph animations ---
+// Start morph animation from trigger position or center
 const beforeEnter = el => {
     const { top = window.innerHeight / 2, left = window.innerWidth / 2, size = 0 } = props.position || {}
-    Object.assign(el.style, { top: `${top}px`, left: `${left}px`, width: `${size}px`, height: `${size}px`, borderRadius: '50%', opacity: '0', padding: '0', transform: 'translate(-50%, -50%)', willChange: 'top, left, width, height, opacity, border-radius' })
+    Object.assign(el.style, {
+        top: `${top}px`, left: `${left}px`, width: `${size}px`, height: `${size}px`,
+        borderRadius: '50%', opacity: '0', padding: '0', transform: 'translate(-50%,-50%)',
+        willChange: 'top,left,width,height,opacity,border-radius'
+    })
 }
 
+// Expand smoothly to modal size
 const enter = (el, done) => {
-    el.offsetHeight // force repaint
-    Object.assign(el.style, { transition: 'all 0.4s ease', top: '50%', left: '50%', width: 'fit-content', height: 'fit-content', maxWidth: '90vw', maxHeight: '90vh', borderRadius: '12px', opacity: '1', padding: '2rem', transform: 'translate(-50%, -50%)' })
-    const inner = el.querySelector('.modal-inner'); if (inner) inner.style.opacity = '1'
+    el.offsetHeight // trigger reflow
+    const isMobile = window.innerWidth <= 1024
+    Object.assign(el.style, {
+        transition: 'all 0.4s ease', top: '50%', left: '50%',
+        width: isMobile ? '75vw' : 'fit-content',
+        height: isMobile ? 'auto' : 'fit-content',
+        minHeight: isMobile ? '50vh' : '', maxHeight: '90vh', maxWidth: !isMobile ? '90vw' : '',
+        borderRadius: '12px', opacity: '1', padding: isMobile ? '1.5rem' : '2rem', transform: 'translate(-50%,-50%)'
+    })
+    const inner = el.querySelector('.modal-inner')
+    if (inner) Object.assign(inner.style, { opacity: '1', display: 'flex' })
     setTimeout(() => { el.style.willChange = 'auto'; done() }, 400)
 }
+
 const afterEnter = el => el.style.transition = ''
 
+// Shrink back to trigger element
 const leave = (el, done) => {
     if (!props.activeButton) return setTimeout(done, 0)
     const rect = props.activeButton.getBoundingClientRect()
-    const inner = el.querySelector('.modal-inner'); if (inner) inner.style.opacity = '0'
-    Object.assign(el.style, { transition: 'all 0.4s ease', top: `${rect.top + rect.height / 2}px`, left: `${rect.left + rect.width / 2}px`, width: `${rect.width}px`, height: `${rect.width}px`, borderRadius: '50%', opacity: '0', padding: '0', transform: 'translate(-50%,-50%)', willChange: 'top, left, width, height, opacity, border-radius' })
+    const inner = el.querySelector('.modal-inner')
+    if (inner) inner.style.opacity = '0'
+    Object.assign(el.style, {
+        transition: 'all 0.4s ease',
+        top: `${rect.top + rect.height / 2}px`, left: `${rect.left + rect.width / 2}px`,
+        width: `${rect.width}px`, height: `${rect.width}px`,
+        borderRadius: '50%', opacity: '0', padding: '0', transform: 'translate(-50%,-50%)',
+        willChange: 'top,left,width,height,opacity,border-radius'
+    })
     setTimeout(() => { el.style.willChange = 'auto'; done() }, 400)
 }
 </script>
@@ -92,7 +115,7 @@ const leave = (el, done) => {
     justify-content: center;
     overflow: auto;
     box-sizing: border-box;
-    will-change: transform, opacity
+    will-change: transform, opacity;
 }
 
 .modal-header {
@@ -100,27 +123,27 @@ const leave = (el, done) => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    flex-shrink: 0
+    flex-shrink: 0;
 }
 
 .close-btn {
     background: none;
     border: none;
     cursor: pointer;
-    color: var(--text-color-light)
+    color: var(--text-color-light);
 }
 
 .modal-body {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 .modal-footer {
     border-top: 1px solid var(--text-color-grey);
     padding-top: 1rem;
     margin-top: 1rem;
-    flex-shrink: 0
+    flex-shrink: 0;
 }
 </style>

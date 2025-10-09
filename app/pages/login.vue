@@ -32,14 +32,14 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
 import { useNuxtApp, useState } from '#app'
-import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
+import { seoMetaData } from '@/utils/seo.js'
+import { computed, onMounted, ref, watch } from 'vue'
 import SlideInFromRight from '~/components/animations/SlideInFromRight.vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import MessageBox from '~/components/ui/Message/MessageBox.vue'
+import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
 import { useTranslatedMessage } from '~/composables/useTranslatedMessage'
-import { seoMetaData } from '@/utils/seo.js'
 
 const { $lang } = useNuxtApp()
 const { login, loading: authLoading, error: authError } = useAuth()
@@ -75,13 +75,11 @@ onMounted(async () => {
 // Translate error messages reactively
 const { translatedMessage } = useTranslatedMessage(errorMessage)
 
-// Handle login submission
+// Handle login submission 
 const handleLogin = async () => {
     const { email, password } = form.value
     const res = await login(email, password)
-    errorMessage.value = res.success
-        ? { type: 'success', key: 'loginSuccess' }
-        : { type: 'error', key: res.error || 'authError' }
+    errorMessage.value = res.success ? res.message : res.error
 }
 
 definePageMeta({ middleware: 'guest-server' })

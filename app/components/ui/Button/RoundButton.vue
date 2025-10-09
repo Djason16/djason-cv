@@ -2,11 +2,15 @@
     <!-- Button wrapper with optional text -->
     <div class="round-btn-wrapper">
         <button type="button" class="round-btn" :title="title" :aria-label="ariaLabel" @click="handleClick">
-            <div class="round-btn__icon-wrapper">
-                <i :class="icon" aria-hidden="true"></i>
-            </div>
-            <!-- Display text if provided -->
-            <span v-if="text" class="round-btn__text text-uppercase text-small text-bold">{{ text }}</span>
+            <transition name="fade" mode="out-in">
+                <div v-if="!hideContent" class="round-btn__content">
+                    <div class="round-btn__icon-wrapper">
+                        <i :class="icon" aria-hidden="true"></i>
+                    </div>
+                    <!-- Display text if provided -->
+                    <span v-if="text" class="round-btn__text text-uppercase text-small text-bold">{{ text }}</span>
+                </div>
+            </transition>
         </button>
     </div>
 </template>
@@ -17,7 +21,8 @@ defineProps({
     icon: { type: String, required: true },      // Font Awesome icon class
     title: { type: String, default: '' },        // Tooltip/title attribute
     ariaLabel: { type: String, default: '' },    // Screen-reader label
-    text: { type: String, default: '' }          // Optional button text
+    text: { type: String, default: '' },         // Optional button text
+    hideContent: { type: Boolean, default: false }  // Hide icon and text when modal is open
 })
 
 const emit = defineEmits(['click'])
@@ -48,7 +53,6 @@ const handleClick = (event) => {
     justify-content: center;
     align-items: center;
     gap: 0.25rem;
-    padding: 0;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
     cursor: pointer;
     opacity: 0.9;
@@ -62,19 +66,21 @@ const handleClick = (event) => {
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
-.round-btn:not(:hover) {
-    will-change: auto;
+.round-btn__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
 }
 
 .round-btn__icon-wrapper {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     margin-bottom: 0.25rem;
 }
 
 .round-btn__icon-wrapper i {
-    margin: 0;
     font-size: 2.5rem;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
@@ -83,27 +89,25 @@ const handleClick = (event) => {
     line-height: 1.2rem;
     text-align: center;
     word-wrap: break-word;
-    max-width: 90%;
+    max-width: 100%;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+    opacity: 0;
 }
 
 @media (max-width: 1024px) {
     .round-btn {
         will-change: auto;
-        opacity: 0.9;
-    }
-
-    .round-btn:hover {
-        opacity: 0.9;
         transform: none;
+        opacity: 0.9;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    }
-
-    .round-btn__icon-wrapper i {
-        will-change: auto;
-    }
-
-    .round-btn:hover .round-btn__icon-wrapper i {
-        transform: none;
     }
 }
 

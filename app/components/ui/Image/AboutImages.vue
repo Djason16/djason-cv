@@ -39,13 +39,15 @@ const imageRows = computed(() => {
     flex-direction: column;
     gap: 1rem;
     flex: 1;
-    max-width: 60%;
+    width: 100%;
+    min-width: 0;
 }
 
 .about-section__row {
     display: flex;
     justify-content: space-between;
     gap: 1rem;
+    width: 100%;
 }
 
 .about-section__image-wrapper {
@@ -54,6 +56,7 @@ const imageRows = computed(() => {
     overflow: hidden;
     width: 100%;
     aspect-ratio: 1 / 1;
+    min-width: 0;
     flex-basis: calc(33.333% - 0.67rem);
     max-width: calc(33.333% - 0.67rem);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -73,10 +76,6 @@ const imageRows = computed(() => {
 }
 
 @media (max-width: 1024px) {
-    .about-section__images {
-        max-width: 100%;
-    }
-
     .about-section__row {
         gap: 0.5rem;
     }
@@ -88,6 +87,10 @@ const imageRows = computed(() => {
 }
 
 @media (max-width: 768px) {
+    .about-section__row {
+        gap: 0.5rem;
+    }
+
     .about-section__image-wrapper {
         flex-basis: 100%;
         max-width: 100%;

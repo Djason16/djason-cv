@@ -4,32 +4,28 @@
         <div class="header-top__content">
             <!-- Logo linking to home -->
             <div class="header-top__title">
-                <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')"
-                    :aria-label="$lang.getTranslation('home')">
+                <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')">
                     <NuxtImg v-if="!fallback.value" :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo"
-                        format="webp" preload priority fetchpriority="high" fit="contain" @error="onError"
-                        :title="$lang.getTranslation('home')" />
+                        format="webp" preload priority fetchpriority="high" fit="contain" @error="onError" />
                     <img v-else :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo" preload priority
-                        fetchpriority="high" :title="$lang.getTranslation('home')" />
+                        fetchpriority="high" />
                 </NuxtLink>
             </div>
 
             <!-- Navigation links -->
-            <nav class="header-top__nav">
-                <!-- Loop homepage links only on home page -->
+            <nav class="header-top__nav" role="navigation" aria-label="Main Navigation">
                 <NavLink v-if="isHomePage" v-for="(item, i) in homeNavItems" :key="i" :id="item.id"
-                    :title="$lang.getTranslation(item.translationKey)"
-                    :aria-label="$lang.getTranslation(item.translationKey)">
+                    :title="$lang.getTranslation(item.translationKey)">
+                    <!-- Move aria-label to the interactive NavLink component -->
                     <span class="nav-text">{{ $lang.getTranslation(item.translationKey) }}</span>
                     <i :class="item.icon" class="nav-icon text-normal" aria-hidden="true"></i>
                 </NavLink>
 
-                <!-- Static link to payment page -->
+                <!-- Payment link -->
                 <NuxtLink :to="withTrailingSlash('/pay-me')" class="nav-link text-normal text-bold text-uppercase"
-                    rel="noopener noreferrer" :title="$lang.getTranslation('payMe')"
-                    :aria-label="$lang.getTranslation('payMe')">
+                    rel="noopener noreferrer" :title="$lang.getTranslation('payMe')">
                     <span class="nav-text">{{ $lang.getTranslation('payMe') }}</span>
-                    <i class="fas fa-credit-card nav-icon text-normal" :aria-label="$lang.getTranslation('payMe')"></i>
+                    <i class="fas fa-credit-card nav-icon text-normal" aria-hidden="true"></i>
                 </NuxtLink>
             </nav>
         </div>
@@ -82,25 +78,20 @@ const homeNavItems = [
 
 .header-top__content {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     width: 100%;
     height: 100%;
     position: relative;
 }
 
-.header-top__title {
-    position: relative;
-    left: 0;
-    transform: none;
-    display: flex;
-    align-items: center;
-}
-
+.header-top__title,
 .header-top__logo-link {
     display: flex;
     align-items: center;
-    height: 100%;
+    position: relative;
+    left: 0;
+    transform: none;
 }
 
 .header-top__logo {
@@ -111,8 +102,8 @@ const homeNavItems = [
 
 .header-top__nav {
     display: flex;
-    gap: 1.5rem;
     align-items: center;
+    gap: 1.5rem;
 }
 
 .header-top__nav .nav-link {
@@ -120,6 +111,7 @@ const homeNavItems = [
     color: var(--text-color-light);
     transition: color 0.3s ease;
     cursor: pointer;
+    will-change: color;
 }
 
 .header-top__nav .nav-link:hover {
@@ -133,6 +125,7 @@ const homeNavItems = [
 .nav-icon {
     display: none;
     color: var(--text-color-light);
+    will-change: transform, opacity;
 }
 
 @media (max-width: 1024px) {

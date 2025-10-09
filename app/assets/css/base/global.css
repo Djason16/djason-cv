@@ -1,6 +1,16 @@
 @import "../utils/variables.css";
 
 /* Global styles */
+html {
+    visibility: hidden;
+    /* hide page until fonts are loaded */
+}
+
+html[data-fonts-loaded] {
+    visibility: visible;
+    /* show page once fonts are ready */
+}
+
 body {
     font-family: var(--font-primary);
     color: var(--text-color-light);
@@ -11,22 +21,22 @@ body {
     height: 100dvh;
     min-height: 100vh;
     overflow-x: hidden;
-    box-shadow: 0px 5px 50px rgba(255, 255, 255, 0.05);
+    box-shadow: 0 5px 50px rgba(255, 255, 255, 0.05);
     transition: all 0.5s ease-in-out;
     touch-action: manipulation;
 }
 
-html:not([data-fonts-loaded]) {
-    visibility: hidden;
-    /* hide page until fonts are loaded */
+body.modal-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+    transition: opacity 0.5s ease-in-out;
 }
 
-html[data-fonts-loaded] {
-    visibility: visible;
-    /* show page once fonts are ready */
-}
-
-/* Default link style */
+/* Links */
 a {
     color: var(--text-color-light);
     text-decoration: none;
@@ -49,11 +59,10 @@ a:hover::after {
     width: 100%;
 }
 
-/* Responsive styles */
+/* Responsive adjustments */
 @media (max-width: 1024px) {
     body {
         width: 100vw;
-        height: 100dvh;
         box-shadow: none;
     }
 

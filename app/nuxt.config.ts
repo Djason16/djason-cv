@@ -36,7 +36,19 @@ export default defineNuxtConfig({
   build: { transpile: [] },
   experimental: { payloadExtraction: false },
 
+  devServer: {
+    host: '0.0.0.0',
+    port: 3000
+  },
+
   vite: {
+    server: {
+      allowedHosts: [
+        '.ngrok.io',
+        '.ngrok-free.app',
+        'localhost',
+      ],
+    },
     build: {
       target: 'es2020',
       cssCodeSplit: true,
@@ -45,7 +57,6 @@ export default defineNuxtConfig({
           manualChunks: (id: string) => {
             if (id.includes('stripe')) return 'stripe'
             if (id.includes('node_modules')) return 'vendor'
-            return undefined
           },
         },
       },
@@ -77,6 +88,15 @@ export default defineNuxtConfig({
       retryDelay: 1000,
       ignoreUnprefixedPublicAssets: true,
     },
+    routeRules: {
+      '/images/svg/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+      '/images/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+      '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+      '/_ipx/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
+
+      '/api/**': { cache: false },
+      '/**': { swr: true }
+    }
   },
 
   modules: [

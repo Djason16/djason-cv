@@ -97,12 +97,13 @@ const footerLinks = [
     margin-top: -122px;
     position: relative;
     z-index: 2;
+    margin-bottom: -1px;
 }
 
 .divider svg {
     display: block;
     width: 100%;
-    height: 122px
+    height: 123px;
 }
 
 .footer-bottom {

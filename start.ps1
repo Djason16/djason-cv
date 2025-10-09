@@ -51,7 +51,7 @@ $appPath = Join-Path $PSScriptRoot "app"
 switch ($key) {
     "D" {
         Write-Host "`nStarting Nuxt 4 development server..." -ForegroundColor Cyan
-        Start-Server -Path $appPath -Name "Nuxt 4 Development" -Command "npm run dev"
+        Start-Server -Path $appPath -Name "Nuxt 4 Development" -Command "npm run dev -- --host"
         Write-Host "`nNuxt 4 server started." -ForegroundColor Green
     }
 

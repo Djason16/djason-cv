@@ -39,7 +39,7 @@ export const projects = [
         name: "Djason Chery - Portfolio",
         short: "djasonCheryShort",
         img: "images/banner_portfolio.jpg",
-        skills: ["nuxt", "nodejs", "infomaniak", "github", "responsive", "figma", "photoshop"],
+        skills: ["nuxt", "nitro", "infomaniak", "github", "responsive", "figma", "photoshop"],
         date: "2024-12-05",
     },
 
