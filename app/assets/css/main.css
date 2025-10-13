@@ -1,0 +1,11 @@
+/* Importing variables from the utils/variables.css file, which likely contains global CSS variables for the project (e.g., colors, spacing, etc.) */
+@import "utils/variables.css";
+
+/* Importing global styles from base/global.css to apply general styling (e.g., reset, body styles, layout) to the entire project */
+@import "base/global.css";
+
+/* Importing typography styles from base/typography.css to define font settings, sizes, and line heights for text elements across the site */
+@import "base/typography.css";
+
+/* Importing hero typography styles from components/hero-typography.css to apply specific font styles or typography rules for hero section text */
+@import "components/hero-typography.css";
