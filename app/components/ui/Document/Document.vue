@@ -1,14 +1,14 @@
 <template>
-    <div class="invoice-container">
+    <div class="document-container">
         <div class="content">
 
-            <!-- Header: logo, invoice info, company details -->
+            <!-- Header: logo + company & document info -->
             <div class="header">
                 <div class="left-header">
                     <img :src="companyLogo" alt="Logo" class="logo" />
-                    <div class="invoice-info text-small text-bold">
+                    <div class="document-info text-small text-bold">
                         <div>{{ $lang.getTranslation('date') }}: {{ formatDate(issueDate) }}</div>
-                        <div>{{ invoiceNumber }}</div>
+                        <div>{{ documentNumber }}</div>
                     </div>
                     <div class="company-details text-small">
                         <a :href="companyWebsite">{{ companyWebsite }}</a><br />
@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <!-- Client info -->
+            <!-- Client details -->
             <div class="client-section text-small">
                 <div class="client-name text-bold">{{ client.name }}</div>
                 <div>{{ formatFullAddress(client) }}</div>
@@ -31,16 +31,16 @@
                 <div>{{ client.email }}</div>
             </div>
 
-            <!-- Delivery address for companies/freelance -->
+            <!-- Delivery address (only for company/freelance) -->
             <div v-if="!sameAsClientAddress && deliveryAddress && isCompanyOrFreelance(client.type)"
                 class="delivery-section text-small">
                 <strong>{{ $lang.getTranslation('deliveryAddress') }}:</strong> {{ deliveryAddress }}
             </div>
 
-            <!-- Invoice metadata -->
+            <!-- Document metadata -->
             <div class="object-line text-small">
                 <div v-if="description"><strong>{{ $lang.getTranslation('object') }}:</strong> {{ description }}</div>
-                <div><strong>{{ $lang.getTranslation('type') }}:</strong> {{ translatedInvoiceType }}</div>
+                <div><strong>{{ $lang.getTranslation('type') }}:</strong> {{ translatedDocumentType }}</div>
                 <div><strong>{{ $lang.getTranslation('operation') }}:</strong> {{ operationNature }}</div>
                 <div v-if="orderRef"><strong>{{ $lang.getTranslation('orderRef') }}:</strong> {{ orderRef }}</div>
             </div>
@@ -78,62 +78,78 @@
                 </tbody>
             </table>
 
-            <!-- Totals -->
+            <!-- Totals + payment info -->
             <div class="totals-section">
                 <table class="totals-table text-small">
-                    <tr>
-                        <td class="text-bold">{{ $lang.getTranslation('totalHt') }}</td>
-                        <td class="text-bold">{{ formatPrice(totalHT) }}</td>
-                    </tr>
-                    <tr v-if="hasTVA">
-                        <td class="text-bold">{{ $lang.getTranslation('totalTva') }}</td>
-                        <td class="text-bold">{{ formatPrice(totalTVA) }}</td>
-                    </tr>
-                    <tr v-if="hasTVA">
-                        <td class="text-bold">{{ $lang.getTranslation('totalTtc') }}</td>
-                        <td class="text-bold">{{ formatPrice(totalTTC) }}</td>
-                    </tr>
-                    <tr>
-                        <td class="text-bold">{{ $lang.getTranslation('currency') }}</td>
-                        <td class="text-bold">{{ currency }}</td>
-                    </tr>
 
-                    <!-- Individual deposits & installments -->
-                    <template v-if="isIndividualType(client.type) && deposit > 0">
+                    <!-- Company / freelance -->
+                    <tbody v-if="!isIndividualType(client.type)">
                         <tr>
+                            <td class="text-bold">{{ $lang.getTranslation('totalHt') }}</td>
+                            <td class="text-bold">{{ formatPrice(totalHT) }}</td>
+                        </tr>
+                        <tr v-if="hasTVA">
+                            <td class="text-bold">{{ $lang.getTranslation('totalTva') }}</td>
+                            <td class="text-bold">{{ formatPrice(totalTVA) }}</td>
+                        </tr>
+                        <tr v-if="hasTVA">
+                            <td class="text-bold">{{ $lang.getTranslation('totalTtc') }}</td>
+                            <td class="text-bold">{{ formatPrice(totalTTC) }}</td>
+                        </tr>
+                        <tr>
+                            <td class="text-bold">{{ $lang.getTranslation('monthConcerned') }}</td>
+                            <td class="text-bold">{{ monthConcerned }}</td>
+                        </tr>
+                    </tbody>
+
+                    <!-- Individual -->
+                    <tbody v-else>
+                        <tr>
+                            <td class="text-bold">{{ $lang.getTranslation('totalHt') }}</td>
+                            <td class="text-bold">{{ formatPrice(totalHT) }}</td>
+                        </tr>
+                        <tr v-if="hasTVA">
+                            <td class="text-bold">{{ $lang.getTranslation('totalTva') }}</td>
+                            <td class="text-bold">{{ formatPrice(totalTVA) }}</td>
+                        </tr>
+                        <tr v-if="hasTVA">
+                            <td class="text-bold">{{ $lang.getTranslation('totalTtc') }}</td>
+                            <td class="text-bold">{{ formatPrice(finalTotal) }}</td>
+                        </tr>
+                        <tr v-if="deposit > 0 || (nbMensualites > 0 && amountPaid > 0)">
                             <td class="text-bold">{{ $lang.getTranslation('paid') }}</td>
-                            <td class="text-bold">{{ formatPrice(deposit) }}</td>
+                            <td class="text-bold">{{ formatPrice(amountPaid) }}</td>
                         </tr>
                         <tr v-if="remainingToPay > 0">
                             <td class="text-bold">{{ $lang.getTranslation('remaining') }}</td>
                             <td class="text-bold">{{ formatPrice(remainingToPay) }}</td>
                         </tr>
                         <tr v-if="nbMensualites > 0 && remainingToPay > 0">
-                            <td class="text-bold">{{ $lang.getTranslation('installments') }} ({{ nbMensualites }} {{
-                                $lang.getTranslation('months') }})</td>
+                            <td class="text-bold">
+                                {{ $lang.getTranslation('installments') }} ({{ nbMensualites }} {{
+                                    $lang.getTranslation('months') }})
+                            </td>
                             <td class="text-bold">{{ formatPrice(monthlyPayment) }}</td>
                         </tr>
-                    </template>
+                    </tbody>
 
-                    <!-- Company month concerned -->
-                    <template v-else>
+                    <!-- Always visible -->
+                    <tbody>
                         <tr>
-                            <td class="text-bold">{{ $lang.getTranslation('monthConcerned') }}</td>
-                            <td class="text-bold">{{ monthConcerned }}</td>
+                            <td class="text-bold">{{ $lang.getTranslation('currency') }}</td>
+                            <td class="text-bold">{{ currency }}</td>
                         </tr>
-                    </template>
+                    </tbody>
                 </table>
             </div>
 
-            <!-- Legal & payment -->
+            <!-- Legal & payment section -->
             <div v-if="showLegalText" class="legal-text text-small">{{ legalText }}</div>
             <div v-if="showPaymentConditions" class="payment-conditions text-small">
                 <strong>{{ $lang.getTranslation('paymentMethod') }}:</strong> {{ paymentMethod }}<br />
-                <span v-if="isIndividualType(client.type)">
-                    <strong>{{ $lang.getTranslation('termsInvoice') }}:</strong> {{ paymentTerms }}<br />
-                </span>
                 <strong>{{ $lang.getTranslation('due') }}:</strong> {{ isIndividualType(client.type) && nbMensualites >
-                    0 ? monthlyPaymentInfo : paymentDue }}
+                    0
+                    ? monthlyPaymentInfo : paymentDue }}
             </div>
 
             <!-- Bank info -->
@@ -164,108 +180,88 @@ import { computed } from 'vue'
 import { personalInfo } from '~/utils/personalInfo'
 
 const props = defineProps({
-    type: { type: String, default: 'invoice' },
+    type: { type: String, default: 'document' }, // invoice or quote
     client: { type: Object, required: true },
     items: { type: Array, default: () => [] },
     issueDate: { type: String, default: new Date().toISOString() },
     description: { type: String, default: '' },
     deposit: { type: Number, default: 0 },
     monthConcerned: { type: String, default: '' },
-    invoiceType: { type: String, default: 'invoice' },
+    documentType: { type: String, default: 'invoice' },
     deliveryAddress: { type: String, default: '' },
     sameAsClientAddress: { type: Boolean, default: true },
     orderRef: { type: String, default: '' },
-    customInvoiceNumber: { type: String, default: '' },
+    customDocumentNumber: { type: String, default: '' },
     customPaymentDue: { type: String, default: '' },
     nbMensualites: { type: Number, default: 0 },
     monthlyPayment: { type: Number, default: 0 },
-    remainingToPay: { type: Number, default: 0 }
+    remainingToPay: { type: Number, default: 0 },
+    amountPaid: { type: Number, default: 0 }
 })
 
+// Type helpers
 const isIndividualType = t => t === 'individual'
 const isCompanyType = t => t === 'company'
 const isFreelanceType = t => t === 'freelance'
 const isCompanyOrFreelance = t => isCompanyType(t) || isFreelanceType(t)
 
 const config = useRuntimeConfig()
+const { $lang } = useNuxtApp()
 const { invoiceAddress: companyAddress, siret: companySiret, tvaNumber: companyTvaNumber, phone: companyPhone, email: companyEmail, name: signerName, bank: bankInfo } = personalInfo
 const companyLogo = '/images/main_logo_dark.png'
 const companyWebsite = config.public.frontendDomain
-const { $lang } = useNuxtApp()
-const currency = computed(() => ($lang.locale.value === 'fr' ? 'EUR' : 'USD'))
+const currency = computed(() => $lang.locale.value === 'fr' ? 'EUR' : 'USD')
 
+// VAT logic
 const TVA_RATE = 0.2
 const tvaRateLabel = '20%'
 const hasTVA = computed(() => props.items.some(i => i.tvaApplicable))
-
 const calculateItemTTC = i => (i.unitPrice * i.quantity) * (i.tvaApplicable ? 1 + TVA_RATE : 1)
-const totalHT = computed(() => props.items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0))
-const totalTVA = computed(() => props.items.reduce((sum, i) => sum + (i.tvaApplicable ? i.unitPrice * i.quantity * TVA_RATE : 0), 0))
+const totalHT = computed(() => props.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0))
+const totalTVA = computed(() => props.items.reduce((s, i) => s + (i.tvaApplicable ? i.unitPrice * i.quantity * TVA_RATE : 0), 0))
 const totalTTC = computed(() => hasTVA.value ? totalHT.value + totalTVA.value : totalHT.value)
+const finalTotal = computed(() => hasTVA.value ? totalTTC.value : totalHT.value)
 
-// Important : utiliser la valeur transmise pour rester cohérent avec le calcul dans downloadInvoice
-const remainingToPay = computed(() => props.remainingToPay)
-const deposit = computed(() => props.deposit)
-const nbMensualites = computed(() => props.nbMensualites)
-const monthlyPayment = computed(() => props.monthlyPayment)
-
+// Formatters
 const formatFullAddress = c => [c.address, c.postal_code, c.city].filter(Boolean).join(', ')
-const formatPrice = v => $lang.locale.value === 'fr'
-    ? (v ?? 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'
-    : '$' + (v ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const formatPrice = v => $lang.locale.value === 'fr' ? (v ?? 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €' : '$' + (v ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 const formatDate = d => new Date(d).toLocaleDateString($lang.locale.value === 'fr' ? 'fr-FR' : 'en-US', { weekday: 'short', year: 'numeric', month: 'short', day: '2-digit' })
 const getColspan = () => 5 + (isCompanyOrFreelance(props.client.type) ? 3 : 0) + (hasTVA.value ? 1 : 0)
 
-const invoiceNumber = computed(() => props.customInvoiceNumber || (() => {
+// Document details
+const documentNumber = computed(() => props.customDocumentNumber || (() => {
     const y = new Date(props.issueDate).getFullYear()
-    return props.type === 'quotes' ? `DE-${y}-0001` : isIndividualType(props.client.type) ? `CL-${y}-0001` : `FA-${y}-0001`
+    return props.type === 'quote' ? `DE-${y}-0001` : isIndividualType(props.client.type) ? `CL-${y}-0001` : `FA-${y}-0001`
 })())
 const operationNature = $lang.getTranslation('serviceProvision')
 const legalText = $lang.getTranslation('latePaymentNotice')
 const paymentMethod = $lang.getTranslation('bankTransfer')
-const paymentTerms = $lang.getTranslation('asPerContractTerms')
 const paymentDue = computed(() => props.customPaymentDue ? $lang.getTranslation('paymentDueBy', { date: props.customPaymentDue }) : $lang.getTranslation('seeContractConditions'))
 const showLegalText = true
 const showPaymentConditions = true
-const translatedInvoiceType = computed(() => {
-    if (!props.invoiceType) return ''
-    const key = props.invoiceType.toLowerCase()
-    if (key === 'invoice' || key === 'quote') {
-        const translated = $lang.getTranslation(key)
-        return translated !== key ? translated : props.invoiceType
-    }
-    return props.invoiceType
+
+// Translations and monthly info
+const translatedDocumentType = computed(() => {
+    if (!props.documentType) return ''
+    const key = props.documentType.toLowerCase()
+    const translated = $lang.getTranslation(key)
+    return (key === 'invoice' || key === 'quote') ? (translated !== key ? translated : props.documentType) : props.documentType
 })
 
-// Calcul du message des mensualités avec date formatée
 const monthlyPaymentInfo = computed(() => {
     if (!isIndividualType(props.client.type) || props.nbMensualites <= 0) return ''
-    if (!$lang.locale.value) return ''
-
-    // Date première mensualité formatée
     const firstPaymentDateStr = props.customPaymentDue || new Date().toISOString().slice(0, 10)
-    const [dayStr, monthStr, yearStr] = firstPaymentDateStr.split('/')
-    const firstPaymentDate = new Date(`${yearStr}-${monthStr}-${dayStr}`)
-
-    const formattedStartDate = firstPaymentDate.toLocaleDateString($lang.locale.value === 'fr' ? 'fr-FR' : 'en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric'
-    })
-
-    return $lang.getTranslation('monthlyPaymentStartInfo', {
-        startDate: formattedStartDate,
-        day: firstPaymentDate.getDate(),
-        months: props.nbMensualites
-    })
+    // Adjust date parsing to ISO format if needed
+    const firstPaymentDate = new Date(firstPaymentDateStr.split('/').reverse().join('-')) || new Date(firstPaymentDateStr)
+    const formattedStartDate = firstPaymentDate.toLocaleDateString($lang.locale.value === 'fr' ? 'fr-FR' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+    return $lang.getTranslation('monthlyPaymentStartInfo', { startDate: formattedStartDate, day: firstPaymentDate.getDate(), months: props.nbMensualites })
 })
 </script>
 
 <style scoped>
-.invoice-container {
+.document-container {
     max-width: 210mm;
-    min-height: 297mm;
+    height: auto;
     margin: auto;
     background: var(--zero-color);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -291,7 +287,7 @@ const monthlyPaymentInfo = computed(() => {
     width: 130px;
 }
 
-.invoice-info,
+.document-info,
 .company-details,
 .client-section,
 .delivery-section,
@@ -301,7 +297,7 @@ const monthlyPaymentInfo = computed(() => {
     color: var(--text-color-dark);
 }
 
-.invoice-info,
+.document-info,
 .client-section,
 .delivery-section,
 .items-table td:last-child,
@@ -325,7 +321,7 @@ table {
 .bank-table,
 .legal-text,
 .payment-conditions {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .items-table th,
@@ -393,7 +389,7 @@ table {
         padding: 0;
     }
 
-    .invoice-container {
+    .document-container {
         box-shadow: none;
         margin: 0;
     }
