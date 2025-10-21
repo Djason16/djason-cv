@@ -23,6 +23,7 @@
 /* Root variables */
 :root {
     /* Color variables */
+    --zero-color: #ffffff;
     --first-color: #F0F5F9;
     --second-color: #C9D6DF;
     --third-color: #52616B;
@@ -38,6 +39,7 @@
     --accent-yellow: #F4D03F;
     --accent-green: #58D68D;
     --accent-red: #E74C3C;
+    --accent-blue: #5DADE2;
 
     /* Font variables */
     --font-primary: "Barlow Condensed", "Roboto Condensed", roboto, oxygen, "Fira Sans", arial, sans-serif;

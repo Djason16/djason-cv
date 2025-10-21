@@ -49,6 +49,9 @@ import RoundButton from '~/components/ui/Button/RoundButton.vue'
 import MessageBox from '~/components/ui/Message/MessageBox.vue'
 import ClientListModal from '~/components/ui/Modal/ModalDialog/ClientListModal.vue'
 import CreateClientModal from '~/components/ui/Modal/ModalDialog/CreateClientModal.vue'
+import CreateMissionModal from '~/components/ui/Modal/ModalDialog/CreateMissionModal.vue'
+import InvoicesModal from '~/components/ui/Modal/ModalDialog/InvoicesModal.vue'
+import MissionListModal from '~/components/ui/Modal/ModalDialog/MissionListModal.vue'
 import PasswordModal from '~/components/ui/Modal/ModalDialog/PasswordModal.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
 import { useAuth } from '~/composables/useAuth'
@@ -70,7 +73,8 @@ const activeModal = ref(null)
 const adminButtons = [
     { icon: 'fas fa-user-plus', textKey: 'adminCreateClients', action: 'createClients' },
     { icon: 'fas fa-users', textKey: 'adminClients', action: 'clients' },
-    { icon: 'fas fa-tasks', textKey: 'adminAddMissions', action: 'addMissions' },
+    { icon: 'fas fa-plus-circle', textKey: 'adminCreateMissions', action: 'createMissions' },
+    { icon: 'fas fa-tasks', textKey: 'adminMissions', action: 'missions' },
     { icon: 'fas fa-file-contract', textKey: 'adminQuotes', action: 'quotes' },
     { icon: 'fas fa-file-signature', textKey: 'adminContracts', action: 'contracts' },
     { icon: 'fas fa-file-invoice-dollar', textKey: 'adminInvoices', action: 'invoices' },
@@ -79,6 +83,9 @@ const adminButtons = [
 const activeModals = [
     { action: 'createClients', component: CreateClientModal },
     { action: 'clients', component: ClientListModal },
+    { action: 'createMissions', component: CreateMissionModal },
+    { action: 'missions', component: MissionListModal },
+    { action: 'invoices', component: InvoicesModal },
     { action: 'password', component: PasswordModal }
 ]
 
@@ -156,11 +163,17 @@ definePageMeta({ middleware: 'auth-server' })
 
 .admin-nav :deep(.slide-in-from-right) {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
+    grid-template-columns: repeat(6, 1fr);
     justify-items: center;
     gap: calc(2rem + 1vw);
     padding: 0 2.5vw;
     transition: grid-template-columns .3s ease, gap .3s ease;
+}
+
+.admin-nav :deep(.slide-in-from-right > *:nth-child(7)),
+.admin-nav :deep(.slide-in-from-right > *:nth-child(8)) {
+    grid-column: span 3;
+    justify-self: center;
 }
 
 .login-buttons {
@@ -171,30 +184,11 @@ definePageMeta({ middleware: 'auth-server' })
 
 @media (max-width: 1920px) {
     .admin-nav :deep(.slide-in-from-right) {
-        grid-template-columns: repeat(6, 1fr);
-    }
-
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(7):last-child) {
-        grid-column: 1 / -1;
-        justify-self: center;
+        gap: 1.5rem;
     }
 }
 
 @media (max-width: 1440px) {
-    .admin-nav :deep(.slide-in-from-right) {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-    }
-
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(5):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(6):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(7):last-child) {
-        grid-column: 1 / -1;
-        justify-self: center;
-    }
-}
-
-@media (max-width: 1024px) {
     .admin-nav :deep(.slide-in-from-right) {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -214,20 +208,16 @@ definePageMeta({ middleware: 'auth-server' })
         gap: 1rem;
     }
 
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(3):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(4):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(5):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(6):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(7):last-child) {
-        grid-column: 1 / -1;
+    .admin-nav :deep(.slide-in-from-right > *:nth-child(n+7)) {
+        grid-column: span 2;
         justify-self: center;
     }
 }
 
 @media (max-width: 425px) {
-    .admin-nav :deep(.slide-in-from-right) {
-        grid-template-columns: 1fr;
-        gap: 1rem;
+    .admin-nav :deep(.slide-in-from-right > *) {
+        grid-column: 1 / -1;
+        justify-self: center;
     }
 }
 </style>

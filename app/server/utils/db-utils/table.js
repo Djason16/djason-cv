@@ -54,6 +54,23 @@ export const createServicesTable = async db => db.sql`
   )
 `
 
+export const createMissionsTable = async db => db.sql`
+  CREATE TABLE IF NOT EXISTS dc_missions (
+    id TEXT PRIMARY KEY,
+    client_id TEXT NOT NULL,
+    service_id TEXT NOT NULL,
+    title TEXT,
+    date DATE,
+    duration REAL DEFAULT 0,
+    quantity REAL DEFAULT 1,
+    unit_price REAL DEFAULT 0,
+    vat_applicable INTEGER DEFAULT 0,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(client_id) REFERENCES dc_clients(id) ON DELETE CASCADE,
+    FOREIGN KEY(service_id) REFERENCES dc_services(id) ON DELETE CASCADE
+  )
+`
+
 export const createQuotesTable = async db => db.sql`
   CREATE TABLE IF NOT EXISTS dc_quotes (
     id TEXT PRIMARY KEY,

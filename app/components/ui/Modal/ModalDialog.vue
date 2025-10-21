@@ -50,18 +50,42 @@ onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 // Animate from trigger or center
 const beforeEnter = el => {
     const { top = innerHeight / 2, left = innerWidth / 2, size = 0 } = props.position || {}
-    Object.assign(el.style, { top: `${top}px`, left: `${left}px`, width: `${size}px`, height: `${size}px`, borderRadius: '50%', opacity: '0', padding: '0', transform: 'translate(-50%,-50%)', willChange: 'top,left,width,height,opacity,border-radius' })
+    Object.assign(el.style, {
+        position: 'fixed',
+        top: `${top}px`,
+        left: `${left}px`,
+        width: `${size}px`,
+        height: `${size}px`,
+        borderRadius: '50%',
+        opacity: '0',
+        padding: '0',
+        transform: 'translate(-50%, -50%)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        willChange: 'transform, width, height, border-radius, opacity'
+    })
 }
 
 // Animate to final size
 const enter = (el, done) => {
-    el.offsetHeight // trigger reflow
+    el.offsetHeight
     const isMobile = innerWidth <= 1024
     Object.assign(el.style, {
-        transition: 'all 0.4s ease', top: '50%', left: '50%',
-        width: isMobile ? '75vw' : 'fit-content', height: isMobile ? 'auto' : 'fit-content',
-        minHeight: isMobile ? '50vh' : '', maxHeight: '90vh', maxWidth: !isMobile ? '90vw' : '',
-        borderRadius: '12px', opacity: '1', padding: isMobile ? '1.5rem' : '2rem', transform: 'translate(-50%,-50%)'
+        transition: 'all 0.4s ease',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: isMobile ? '75vw' : 'fit-content',
+        height: isMobile ? 'auto' : 'fit-content',
+        minHeight: isMobile ? '50vh' : '',
+        maxWidth: !isMobile ? '90vw' : '',
+        maxHeight: '90vh',
+        borderRadius: '12px',
+        opacity: '1',
+        padding: isMobile ? '1.5rem' : '2rem',
+        justifyContent: 'center',
+        alignItems: 'center'
     })
     const inner = el.querySelector('.modal-inner')
     if (inner) inner.style.opacity = '1'
@@ -105,8 +129,6 @@ const leave = (el, done) => {
     justify-content: center;
     align-items: center;
     background: linear-gradient(180deg, var(--second-color), var(--third-color));
-    background-size: 200% 200%;
-    background-position: center;
     z-index: 999;
     overflow: hidden;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1)

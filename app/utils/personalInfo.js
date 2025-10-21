@@ -5,12 +5,21 @@ export const personalInfo = {
     phone: "+33758204726",                 // Contact phone
     birthDate: new Date("1998-07-16"),     // Birth date
     siret: "93970399700014",              // SIRET number (14 digits)
+    tvaNumber: "",                              // VAT number
     address: "Thourotte, France",              // City only for public display (RGPD protection)
+    invoiceAddress: "16 Rue Jean Jaurès, 60150 Thourotte, France", // Full invoice address
+
+    // Bank details
+    bank: {
+        iban: "FR76 2823 3000 0115 6546 6214 086",
+        bic: "REVOFRP2"
+    },
 
     // Availability settings
     manualOverride: false,              // Set to true to force unavailable (vacations, etc.)
     manualStatus: "unavailable",        // Status when manual override is true
 
+    // Weekly schedule
     workingHours: {
         timezone: "Europe/Paris",
         schedule: {

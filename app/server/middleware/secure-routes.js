@@ -1,10 +1,10 @@
 import { useDatabase } from '#imports'
-import { defineEventHandler, createError, sendError } from 'h3'
+import { createError, defineEventHandler, sendError } from 'h3'
 
 export default defineEventHandler(async event => {
     const url = event.node.req.url || ''
     const publicRoutes = ['/api/database/setup']
-    const protectedRoutes = ['/api/clients/', '/api/database/']
+    const protectedRoutes = ['/api/clients/', '/api/services/', '/api/missions/', '/api/database/']
 
     // Skip public routes
     if (publicRoutes.some(route => url.startsWith(route))) return

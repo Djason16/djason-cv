@@ -1,11 +1,11 @@
 <template>
     <ModalDialog :show="show" :title="$lang.getTranslation('addClient')" @close="close">
         <form ref="formRef" @submit.prevent="handleSubmit" class="client-form" :class="{ 'has-scroll': hasScroll }">
-            <!-- Hidden dummy input to avoid password manager interference -->
+            <!-- Hidden input to prevent password manager interference -->
             <input type="text" name="dummy" autocomplete="username"
                 style="position:absolute;opacity:0;width:0;height:0;border:none;margin:0;padding:0" tabindex="-1" />
 
-            <!-- Render dynamic field groups -->
+            <!-- Dynamic grouped fields -->
             <div v-for="(group, i) in groupedFields" :key="i" class="row-group">
                 <div v-for="f in group" :key="f.id" class="form-group">
                     <label :for="f.id">{{ $lang.getTranslation(f.labelKey) }}</label>
@@ -16,10 +16,11 @@
                 </div>
             </div>
 
-            <!-- Client type select -->
+            <!-- Client type selector -->
             <div class="form-group">
                 <label for="type">{{ $lang.getTranslation('clientType') }}</label>
-                <select id="type" v-model="refsMap.type" required>
+                <select id="type" v-model="refsMap.type" required :title="$lang.getTranslation('clientType')"
+                    :aria-label="$lang.getTranslation('clientType')">
                     <option value="individual">{{ $lang.getTranslation('individual') }}</option>
                     <option value="company">{{ $lang.getTranslation('company') }}</option>
                     <option value="freelance">{{ $lang.getTranslation('freelance') }}</option>
@@ -33,8 +34,8 @@
                 <HeroButton type="button" :label="$lang.getTranslation('cancel')" iconClass="fas fa-times"
                     @click="close" />
                 <HeroButton type="submit"
-                    :label="loading ? $lang.getTranslation('saving') : $lang.getTranslation('save')"
-                    iconClass="fas fa-check" :disabled="loading" />
+                    :label="formLoading ? $lang.getTranslation('saving') : $lang.getTranslation('save')"
+                    iconClass="fas fa-check" :disabled="formLoading" />
             </div>
         </form>
     </ModalDialog>
@@ -42,65 +43,33 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
-import { useNuxtApp } from '#app'
-import ModalDialog from '../ModalDialog.vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import MessageBox from '~/components/ui/Message/MessageBox.vue'
+import ModalDialog from '../ModalDialog.vue'
+import { useClients } from '~/composables/useClients'
 import { useMessage } from '~/composables/useMessage'
 
-const { $lang } = useNuxtApp()
-const { translatedMessage, showMessage, clearMessage } = useMessage()
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close', 'saved'])
 
-const loading = ref(false)
+const { $lang, getVisibleFields, groupFields } = useClients()
+const { translatedMessage, showMessage, clearMessage } = useMessage()
+
 const formRef = ref(null)
+const formLoading = ref(false)
 const hasScroll = ref(false)
 
 // Reactive form data
-const refsMap = reactive({
-    firstname: '', lastname: '', company_name: '', email: '', phone: '',
-    address: '', postal_code: '', city: '', siret: '', type: 'individual'
-})
+const refsMap = reactive({ firstname: '', lastname: '', company_name: '', email: '', phone: '', address: '', postal_code: '', city: '', siret: '', type: 'individual' })
 
-// Field definitions
-const clientFields = [
-    { id: 'firstname', labelKey: 'firstName', placeholderKey: 'enterFirstName', type: 'text', required: true, autocomplete: 'given-name' },
-    { id: 'lastname', labelKey: 'lastName', placeholderKey: 'enterLastName', type: 'text', required: true, autocomplete: 'family-name' },
-    { id: 'company_name', labelKey: 'companyName', placeholderKey: 'enterCompanyName', type: 'text', required: true, autocomplete: 'organization' },
-    { id: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', type: 'email', required: true, autocomplete: 'email' },
-    { id: 'phone', labelKey: 'phoneNumber', placeholderKey: 'enterPhone', type: 'tel', required: false, autocomplete: 'tel' },
-    { id: 'address', labelKey: 'address', placeholderKey: 'enterAddress', type: 'text', required: false, autocomplete: 'street-address' },
-    { id: 'postal_code', labelKey: 'postalCode', placeholderKey: 'enterPostalCode', type: 'text', required: false, autocomplete: 'postal-code' },
-    { id: 'city', labelKey: 'city', placeholderKey: 'enterCity', type: 'text', required: false, autocomplete: 'address-level2' },
-    { id: 'siret', labelKey: 'siret', placeholderKey: 'enterSiret', type: 'text', required: true, autocomplete: 'off' }
-]
+// Compute visible fields and group them by layout
+const visibleFields = computed(() => getVisibleFields(refsMap.type))
+const groupedFields = computed(() => groupFields(visibleFields.value))
 
-// Filter visible fields by client type
-const visibleFields = computed(() => {
-    if (refsMap.type === 'company') return clientFields.filter(f => !['firstname', 'lastname'].includes(f.id))
-    if (refsMap.type === 'freelance') return clientFields.filter(f => f.id !== 'company_name')
-    return clientFields.filter(f => !['company_name', 'siret'].includes(f.id))
-})
-
-// Group fields for row layout
-const groupedFields = computed(() => {
-    const groups = []
-    const addGroup = ids => { const g = visibleFields.value.filter(f => ids.includes(f.id)); if (g.length) groups.push(g) }
-    addGroup(['firstname', 'lastname'])
-    addGroup(['email', 'phone'])
-    addGroup(['address'])
-    addGroup(['postal_code', 'city'])
-    addGroup(['company_name', 'siret'])
-    const usedIds = groups.flat().map(f => f.id)
-    visibleFields.value.filter(f => !usedIds.includes(f.id)).forEach(f => groups.push([f]))
-    return groups
-})
-
-// Detect scroll for form
+// Check if form content exceeds container height
 const checkScroll = () => formRef.value && (hasScroll.value = formRef.value.scrollHeight > formRef.value.clientHeight)
 
-// Watch resize & DOM changes
+// Observe DOM changes and window resize
 let observer
 onMounted(() => {
     checkScroll()
@@ -111,28 +80,30 @@ onMounted(() => {
     }
 })
 onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resize', checkScroll) })
+
+// Recheck scroll on modal show or type change
 watch(() => props.show, () => setTimeout(checkScroll, 100))
 watch(() => refsMap.type, () => setTimeout(checkScroll, 50))
 
-// Reset and close modal
+// Reset form and close modal
 const close = () => {
     Object.keys(refsMap).forEach(k => refsMap[k] = k === 'type' ? 'individual' : '')
     clearMessage()
-    loading.value = false
+    formLoading.value = false
     emit('close')
 }
 
-// Submit form and show messages
+// Submit form and show feedback messages
 const handleSubmit = async () => {
     clearMessage()
-    loading.value = true
+    formLoading.value = true
     try {
         await $fetch('/api/clients/create-client', { method: 'POST', body: { ...refsMap } })
         showMessage('success', $lang.getTranslation('clientAdded'), 1500)
         setTimeout(() => { close(); emit('saved') }, 1500)
     } catch (err) {
         showMessage('error', err.message || $lang.getTranslation('errorSavingClient'), 0)
-    } finally { loading.value = false }
+    } finally { formLoading.value = false }
 }
 </script>
 
@@ -167,6 +138,10 @@ const handleSubmit = async () => {
 
 .row-group .form-group {
     flex: 1
+}
+
+.form-group {
+    gap: 0.5rem
 }
 
 .modal-footer {

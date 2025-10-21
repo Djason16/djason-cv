@@ -41,7 +41,7 @@
 }
 
 .text-uppercase {
-    text-transform: uppercase;
+    text-transform: uppercase !important;
 }
 
 .text-lowercase {
@@ -83,7 +83,7 @@
     .text-smaller {
         font-size: calc(var(--font-smaller) - 0.2rem) !important;
     }
-    
+
     .text-small {
         font-size: calc(var(--font-small) - 0.2rem) !important;
     }

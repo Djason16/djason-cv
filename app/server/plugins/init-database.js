@@ -11,6 +11,7 @@ export default defineNitroPlugin(async () => {
             createSessionsTable(db),
             createClientsTable(db),
             createServicesTable(db),
+            createMissionsTable(db),
             createQuotesTable(db),
             createContractsTable(db),
             createInvoicesTable(db),
