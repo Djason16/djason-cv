@@ -48,6 +48,7 @@ import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import RoundButton from '~/components/ui/Button/RoundButton.vue'
 import MessageBox from '~/components/ui/Message/MessageBox.vue'
 import ClientListModal from '~/components/ui/Modal/ModalDialog/ClientListModal.vue'
+import ContractModal from '~/components/ui/Modal/ModalDialog/ContractModal.vue'
 import CreateClientModal from '~/components/ui/Modal/ModalDialog/CreateClientModal.vue'
 import CreateMissionModal from '~/components/ui/Modal/ModalDialog/CreateMissionModal.vue'
 import InvoicesModal from '~/components/ui/Modal/ModalDialog/InvoicesModal.vue'
@@ -87,6 +88,7 @@ const activeModals = [
     { action: 'createMissions', component: CreateMissionModal },
     { action: 'missions', component: MissionListModal },
     { action: 'quotes', component: QuotesModal },
+    { action: 'contracts', component: ContractModal },
     { action: 'invoices', component: InvoicesModal },
     { action: 'password', component: PasswordModal }
 ]
