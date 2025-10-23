@@ -113,7 +113,7 @@ const handleSubmit = async () => {
 .modal-footer {
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease
+    transition: all .3s ease
 }
 
 .client-form {
@@ -141,7 +141,7 @@ const handleSubmit = async () => {
 }
 
 .form-group {
-    gap: 0.5rem
+    gap: .5rem
 }
 
 .modal-footer {

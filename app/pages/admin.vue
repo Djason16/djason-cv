@@ -53,6 +53,7 @@ import CreateMissionModal from '~/components/ui/Modal/ModalDialog/CreateMissionM
 import InvoicesModal from '~/components/ui/Modal/ModalDialog/InvoicesModal.vue'
 import MissionListModal from '~/components/ui/Modal/ModalDialog/MissionListModal.vue'
 import PasswordModal from '~/components/ui/Modal/ModalDialog/PasswordModal.vue'
+import QuotesModal from '~/components/ui/Modal/ModalDialog/QuotesModal.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
 import { useAuth } from '~/composables/useAuth'
 import { useMessage } from '~/composables/useMessage'
@@ -85,6 +86,7 @@ const activeModals = [
     { action: 'clients', component: ClientListModal },
     { action: 'createMissions', component: CreateMissionModal },
     { action: 'missions', component: MissionListModal },
+    { action: 'quotes', component: QuotesModal },
     { action: 'invoices', component: InvoicesModal },
     { action: 'password', component: PasswordModal }
 ]

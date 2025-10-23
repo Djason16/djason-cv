@@ -1,6 +1,7 @@
 <template>
     <ModalDialog :show="show" :title="$lang.getTranslation('viewMissions')" @close="close">
         <div class="mission-list-modal">
+
             <!-- Search input -->
             <div class="search-bar">
                 <input v-model="search" id="mission-search" name="mission-search" type="text"
@@ -13,11 +14,12 @@
                 :delete-label="$lang.getTranslation('delete')" :empty-message="$lang.getTranslation('noMissionsFound')"
                 @update="handleUpdate" @delete="deleteMission" />
 
-            <!-- Footer -->
+            <!-- Footer with close button -->
             <div class="modal-footer">
                 <HeroButton type="button" iconClass="fas fa-times" :label="$lang.getTranslation('close')"
                     @click="close" />
             </div>
+
         </div>
     </ModalDialog>
 </template>
@@ -33,39 +35,51 @@ import ModalDialog from '../ModalDialog.vue'
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 
-// Missions composable
+// Composable provides missions, clients, services, search, formatting helpers
 const { $lang, missions, clients, services, search, isIndividualClient, displayValue, displayServiceName, fetchData } = useMissions()
 
-// Duration options (5 min steps up to 12h)
+// Precompute duration options for select fields
 const durationOptions = computed(() => getDurationOptions())
 
-// Table column definitions with dynamic formatting and options
+// Table columns with dynamic formatting, editable logic, and options
 const columns = computed(() => [
-    { key: 'client', label: $lang.getTranslation('client'), formatter: m => displayValue(m.company_name || [m.firstname, m.lastname].filter(Boolean).join(' ')), disabled: true },
-    { key: 'title', label: $lang.getTranslation('missionTitle'), formatter: m => isIndividualClient(m.client_id) ? '-' : displayValue(m.title), disabled: m => isIndividualClient(m.client_id), autocomplete: 'off' },
+    {
+        key: 'client',
+        label: $lang.getTranslation('client'),
+        formatter: m => displayValue(m.company_name || [m.firstname, m.lastname].filter(Boolean).join(' ')),
+        disabled: true
+    },
+    { key: 'title', label: $lang.getTranslation('missionTitle'), formatter: m => displayValue(m.title), disabled: false, autocomplete: 'off' },
     {
         key: 'service', label: $lang.getTranslation('service'), type: 'select',
-        formatter: m => {
-            const c = clients.value.find(c => c.id === m.client_id)
-            const s = services.value.find(s => s.id === m.service_id)
-            return c?.type === 'individual' ? displayServiceName(s || { name: m.service }) : displayValue(m.service)
-        },
+        formatter: m => { const c = clients.value.find(c => c.id === m.client_id); const s = services.value.find(s => s.id === m.service_id); return c?.type === 'individual' ? displayServiceName(s || { name: m.service }) : displayValue(m.service) },
         editValue: m => m.service_id,
         disabled: m => ['freelance', 'company'].includes(clients.value.find(c => c.id === m.client_id)?.type),
         get options() { return services.value.filter(s => !['Corporate Mission', 'corporateMission'].includes(s.name)).map(s => ({ value: s.id, label: displayServiceName(s) })) }
     },
-    { key: 'date', label: $lang.getTranslation('missionDate'), formatter: m => displayValue(m.date), inputType: 'date', autocomplete: 'off' },
-    { key: 'tjm', label: $lang.getTranslation('hourlyRate') || '€/h', formatter: m => isIndividualClient(m.client_id) ? '-' : displayValue(m.tjm), disabled: m => isIndividualClient(m.client_id), autocomplete: 'off', inputType: 'number' },
-    { key: 'duration', label: $lang.getTranslation('missionDuration'), type: 'select', formatter: m => isIndividualClient(m.client_id) ? '-' : (durationOptions.value.find(o => parseFloat(o.value) === parseFloat(m.duration))?.label || displayValue(m.duration)), editValue: m => parseFloat(m.duration).toFixed(2), disabled: m => isIndividualClient(m.client_id), get options() { return durationOptions.value } },
-    { key: 'quantity', label: $lang.getTranslation('quantity'), formatter: m => displayValue(m.quantity), autocomplete: 'off', inputType: 'number' },
-    { key: 'unit_price', label: $lang.getTranslation('unitPrice') + ' / ' + ($lang.getTranslation('totalAmount') || 'Total'), formatter: m => displayValue(m.unit_price), autocomplete: 'off', inputType: 'number' },
-    { key: 'vat_applicable', label: $lang.getTranslation('tvaApplicable'), type: 'select', formatter: m => m.vat_applicable ? $lang.getTranslation('yes') : $lang.getTranslation('no'), editValue: m => m.vat_applicable ? 1 : 0, options: [{ value: 1, label: $lang.getTranslation('yes') }, { value: 0, label: $lang.getTranslation('no') }] }
+    { key: 'date', label: $lang.getTranslation('missionDate'), formatter: m => m.date ? `${String(new Date(m.date).getDate()).padStart(2, '0')}/${String(new Date(m.date).getMonth() + 1).padStart(2, '0')}/${new Date(m.date).getFullYear()}` : '-', inputType: 'date', autocomplete: 'off' },
+    { key: 'tjm', label: $lang.getTranslation('hourlyRate') || '€/h', formatter: m => isIndividualClient(m.client_id) ? '-' : displayValue(m.tjm), disabled: m => isIndividualClient(m.client_id), inputType: 'number', autocomplete: 'off' },
+    {
+        key: 'duration', label: $lang.getTranslation('missionDuration'), type: 'select',
+        formatter: m => isIndividualClient(m.client_id) ? '-' : (durationOptions.value.find(o => parseFloat(o.value) === parseFloat(m.duration))?.label || displayValue(m.duration)),
+        editValue: m => parseFloat(m.duration).toFixed(2),
+        disabled: m => isIndividualClient(m.client_id),
+        get options() { return durationOptions.value }
+    },
+    { key: 'quantity', label: $lang.getTranslation('quantity'), formatter: m => displayValue(m.quantity), inputType: 'number', autocomplete: 'off' },
+    { key: 'unit_price', label: $lang.getTranslation('unitPrice') + ' / ' + ($lang.getTranslation('totalAmount') || 'Total'), formatter: m => displayValue(m.unit_price), inputType: 'number', autocomplete: 'off' },
+    {
+        key: 'vat_applicable', label: $lang.getTranslation('tvaApplicable'), type: 'select',
+        formatter: m => m.vat_applicable ? $lang.getTranslation('yes') : $lang.getTranslation('no'),
+        editValue: m => m.vat_applicable ? 1 : 0,
+        options: [{ value: 1, label: $lang.getTranslation('yes') }, { value: 0, label: $lang.getTranslation('no') }]
+    }
 ])
 
 // Recalculate unit price based on TJM, duration, and quantity
 const recalcPrice = m => { if (!isIndividualClient(m.client_id) && m.tjm && m.duration && m.quantity) m.unit_price = Math.round(m.tjm * m.duration * m.quantity * 100) / 100 }
 
-// Fetch missions and compute TJM
+// Fetch missions and compute TJM per mission
 const fetchMissionsData = async () => {
     await fetchData()
     missions.value = missions.value.map(m => ({ ...m, tjm: m.duration && m.quantity && m.unit_price ? Math.round((m.unit_price / (m.duration * m.quantity)) * 100) / 100 : 0 }))
@@ -74,10 +88,10 @@ const fetchMissionsData = async () => {
 // Fetch data when modal opens
 watch(() => props.show, val => val && fetchMissionsData())
 
-// Filter missions based on search query
+// Filter missions by search query
 const filteredMissions = computed(() => missions.value.filter(m => [m.firstname, m.lastname, m.company_name, m.title, m.service].filter(Boolean).some(v => v.toLowerCase().includes(search.value.toLowerCase()))))
 
-// Handle inline mission updates
+// Handle inline updates and recalc price if needed
 const handleUpdate = async ({ item, field, value }) => {
     const oldQty = item.quantity || 1
     if (field === 'service') item.service_id = value

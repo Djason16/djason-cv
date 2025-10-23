@@ -27,7 +27,7 @@
                         </option>
                     </select>
                 </div>
-                <div v-else class="form-group">
+                <div class="form-group">
                     <label for="title">{{ $lang.getTranslation('missionTitle') }}</label>
                     <input id="title" name="title" v-model="refsMap.title" type="text"
                         :placeholder="$lang.getTranslation('enterMissionTitle')" required
@@ -193,7 +193,7 @@ watch(() => refsMap.clientId, () => { if (!refsMap.serviceId && services.value.l
 
 .mission-form {
     gap: 2rem;
-    min-width: 30vw;
+    min-width: 25vw;
     max-width: 90vw;
     max-height: 60vh;
     overflow-y: auto;

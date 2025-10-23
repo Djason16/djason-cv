@@ -5,9 +5,9 @@ export const personalInfo = {
     phone: "+33758204726",                 // Contact phone
     birthDate: new Date("1998-07-16"),     // Birth date
     siret: "93970399700014",              // SIRET number (14 digits)
-    tvaNumber: "",                              // VAT number
+    tvaNumber: "FR33939703997",            // VAT number
     address: "Thourotte, France",              // City only for public display (RGPD protection)
-    invoiceAddress: "16 Rue Jean Jaurès, 60150 Thourotte, France", // Full invoice address
+    invoiceAddress: "16 Rue Jean Jaurès, 60150 Thourotte", // Full invoice address
 
     // Bank details
     bank: {

@@ -12,11 +12,6 @@ export default defineNitroPlugin(async () => {
             createClientsTable(db),
             createServicesTable(db),
             createMissionsTable(db),
-            createQuotesTable(db),
-            createContractsTable(db),
-            createInvoicesTable(db),
-            createQuoteServicesTable(db),
-            createInvoiceServicesTable(db),
         ])
         console.log('✅ All tables verified')
 

@@ -1,19 +1,20 @@
 <template>
-    <ModalDialog :show="show" :title="$lang.getTranslation('downloadInvoices')" @close="close">
-        <div class="invoices-modal">
-            <!-- Search field to filter invoice list -->
+    <ModalDialog :show="show" :title="$lang.getTranslation('downloadQuotes')" @close="close">
+        <div class="quotes-modal">
+            <!-- Filter input -->
             <div class="search-bar">
-                <input v-model="search" type="text" :placeholder="$lang.getTranslation('searchInvoices')"
+                <input v-model="search" type="text" :placeholder="$lang.getTranslation('searchQuotes')"
                     class="text-small" autocomplete="off" />
             </div>
 
-            <!-- Editable table listing invoice groups with download actions -->
-            <EditableTable :items="groupedMissions" :columns="columns" :actions-label="$lang.getTranslation('actions')"
-                :delete-label="$lang.getTranslation('delete')" :download-label="$lang.getTranslation('downloadInvoice')"
+            <!-- Table of individual missions with download -->
+            <EditableTable :items="individualMissions" :columns="columns"
+                :actions-label="$lang.getTranslation('actions')" :delete-label="$lang.getTranslation('delete')"
+                :download-label="$lang.getTranslation('downloadQuote')"
                 :empty-message="$lang.getTranslation('noMissionsFound')" :show-delete="false" :show-download="true"
-                @download="downloadInvoice" />
+                @download="downloadQuote" />
 
-            <!-- Footer with close button -->
+            <!-- Footer actions -->
             <div class="modal-footer">
                 <HeroButton type="button" iconClass="fas fa-times" :label="$lang.getTranslation('close')"
                     @click="close" />
@@ -24,12 +25,12 @@
 
 <script setup>
 import { useNuxtApp } from '#app'
-import { watch } from 'vue'
+import { computed, watch } from 'vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import EditableTable from '~/components/ui/Table/EditableTable.vue'
 import { useDocumentPDF } from '~/composables/useDocumentPDF'
 import { useDocumentsData } from '~/composables/useDocumentsData'
-import { usePaymentCalculator } from '~/composables/usePaymentCalculator'
+import { useQuoteCalculator } from '~/composables/useQuoteCalculator'
 import { getServiceTranslationKey, serviceTranslations } from '~/utils/serviceTranslations'
 import ModalDialog from '../ModalDialog.vue'
 
@@ -38,44 +39,37 @@ const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
 const { renderAndExport } = useDocumentPDF()
 const { groupedMissions, columns, fetchAllData, search } = useDocumentsData(props)
+const individualMissions = computed(() => groupedMissions.value.filter(g => g.clientType === 'individual'))
+const isIndividualType = t => t === 'individual'
 
-const close = () => emit('close')
-
-// Translate service name if available, fallback to raw name
+// Get translated service name or fallback
 const translateServiceName = n => {
     const key = n ? serviceTranslations[n] || getServiceTranslationKey(n) : ''
     const t = $lang.getTranslation(key)
     return t !== key ? t : n
 }
 
-// Load data when modal opens
+// Refresh data when modal opens
 watch(() => props.show, v => v && fetchAllData())
 
-// Generate invoice PDF dynamically based on client type
-const downloadInvoice = async group => {
-    if (process.server) return
-    const { calculateTotals, promptIndividualPayment, promptDocumentInfo, getCompanyPaymentData } = usePaymentCalculator()
-    const docInfo = await promptDocumentInfo(group)
-    if (!docInfo) return
+// Generate quote PDF (individual clients only)
+const downloadQuote = async group => {
+    if (process.server || !isIndividualType(group.clientType)) return
+    const { calculateTotals, promptQuoteInfo, getQuoteValidityDate, getIndividualPaymentOptions } = useQuoteCalculator()
+    const quoteInfo = await promptQuoteInfo(group)
+    if (!quoteInfo) return
 
-    const { invoiceNumber, objectDescription, orderReference, deliveryAddress, sameAsClient } = docInfo
+    const { quoteNumber, objectDescription, orderReference, deliveryAddress, sameAsClient } = quoteInfo
     const { totalHT, totalTVA, totalTTC } = calculateTotals(group.missions)
     const issueDate = new Date().toISOString()
-    const isIndividual = group.clientType === 'individual'
+    const validityDate = getQuoteValidityDate(issueDate)
+    const paymentOptions = getIndividualPaymentOptions(group.missions[0]?.service_name || '', totalTTC)
+    const fileName = `DE-${new Date().getFullYear()}-${quoteNumber.padStart(4, '0')}`
 
-    // Fetch correct payment flow depending on client type
-    const paymentData = isIndividual
-        ? await promptIndividualPayment(group.missions[0]?.service_name || '', totalTTC)
-        : getCompanyPaymentData()
-
-    const { depositAmount, amountPaid, remainingToPay, nbMensualites, monthlyPayment, paymentDueDate } = paymentData
-    const fileName = `${isIndividual ? 'CL' : 'FA'}-${new Date().getFullYear()}-${invoiceNumber.padStart(4, '0')}`
-
-    // Generate PDF with all dynamic fields
     await renderAndExport({
         fileName,
         componentProps: {
-            type: 'invoice',
+            type: 'quote',
             client: {
                 name: group.client,
                 address: group.client_address,
@@ -89,36 +83,35 @@ const downloadInvoice = async group => {
             deliveryAddress,
             sameAsClientAddress: sameAsClient,
             items: group.missions.map(m => ({
-                name: m.title?.trim() || (isIndividual ? translateServiceName(m.service_name) : m.service_name) || '-',
+                name: m.title?.trim() || translateServiceName(m.service_name) || '-',
                 date: m.date,
                 hours: m.duration,
-                mission: !isIndividual ? m.title || m.service_name || '-' : '',
+                mission: '',
                 quantity: m.quantity || 1,
                 unitPrice: m.unit_price,
                 tvaApplicable: !!m.vat_applicable
             })),
             issueDate,
-            documentType: 'invoice',
-            description: isIndividual ? translateServiceName(group.missions[0]?.service_name || '') : objectDescription,
+            documentType: 'quote',
+            description: translateServiceName(group.missions[0]?.service_name || '') || objectDescription,
             orderRef: orderReference,
-            deposit: depositAmount,
             monthConcerned: group.month || '',
             customDocumentNumber: fileName,
-            customPaymentDue: paymentDueDate,
-            nbMensualites,
-            monthlyPayment,
-            remainingToPay,
-            amountPaid,
+            customPaymentDue: validityDate,
+            quoteValidityDays: 30,
+            paymentOptions,
             totalHT,
             totalTVA,
             totalTTC
         }
     })
 }
+
+const close = () => emit('close')
 </script>
 
 <style scoped>
-.invoices-modal {
+.quotes-modal {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
