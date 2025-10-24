@@ -1,66 +1,60 @@
 import { useNuxtApp } from '#app'
+import { usePaymentConfig } from './usePaymentConfig'
 
+// Utilities to normalize service types and compute contract payments
 export const useContractCalculator = () => {
     const { $lang } = useNuxtApp()
+    const { normalizeServiceType, getServicePaymentConfig, getServicePaymentConfigByChoice, getServicePaymentRules } = usePaymentConfig()
 
-    // Validate contract number is numeric only
-    const isValidContractNumber = num => /^\d+$/.test(num?.trim())
-
-    // Prompt with validation loop until valid input or cancellation
-    const promptWithValidation = (msgKey, validator, errorKey) => {
-        while (true) {
-            const input = prompt($lang.getTranslation(msgKey))
-            if (input === null) return null
-            if (!input.trim()) return ''
-            if (validator(input)) return input.trim()
-            alert($lang.getTranslation(errorKey))
-        }
+    // Compute payment config using default or user choice
+    const getPaymentConfig = (total, serviceType, paymentChoice = null) => {
+        const type = normalizeServiceType(serviceType)
+        return paymentChoice ? getServicePaymentConfigByChoice(total, type, paymentChoice) : getServicePaymentConfig(total, type)
     }
 
-    // Collect contract number and date with validation
-    const promptContractInfo = async group => {
-        const contractNumber = promptWithValidation('enterContractNumber', isValidContractNumber, 'invalidContractNumber')
-        if (contractNumber === null) return null
-        if (!contractNumber) {
-            alert($lang.getTranslation('contractNumberRequired'))
-            return null
+    // Get all available payment options with formatted labels and details
+    const getPaymentOptions = (total, serviceType) => {
+        const rules = getServicePaymentRules(serviceType)
+        const formatPrice = v => $lang.locale.value === 'fr'
+            ? `${(v ?? 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
+            : `${(v ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+
+        const options = []
+
+        if (rules.monthlyInstallments > 0) {
+            const monthly = total / rules.monthlyInstallments
+            options.push({
+                value: 'monthly',
+                label: $lang.getTranslation('monthlyPaymentOption'),
+                details: [
+                    `${$lang.getTranslation('numberOfInstallments')}: ${rules.monthlyInstallments}`,
+                    `${$lang.getTranslation('monthlyPayment')}: ${formatPrice(monthly)}`
+                ]
+            })
         }
 
-        const contractDate = prompt($lang.getTranslation('enterContractDate')) || ''
-        if (contractDate === null) return null
-
-        return { contractNumber, contractDate }
-    }
-
-    // Split payment into 12 equal monthly installments
-    const calculateMonthlyPayments = total => ({
-        totalAmount: total,
-        depositAmount: 0,
-        nbMensualites: 12,
-        monthlyPayment: total / 12
-    })
-
-    // Calculate upfront deposit with remaining balance
-    const calculateDepositPayment = (total, rate = 0.5) => ({
-        totalAmount: total,
-        depositAmount: total * rate,
-        nbMensualites: 0,
-        monthlyPayment: 0
-    })
-
-    // Determine payment structure based on service type
-    const getPaymentConfig = (total, type) => {
-        switch (type) {
-            case 'web':
-                return calculateMonthlyPayments(total)
-            case 'video':
-                return calculateDepositPayment(total, 0.5)
-            case 'repair':
-                return { totalAmount: total, depositAmount: 0, nbMensualites: 0, monthlyPayment: 0 }
-            default:
-                return calculateMonthlyPayments(total)
+        if (rules.depositRate > 0) {
+            const deposit = total * rules.depositRate
+            options.push({
+                value: 'deposit',
+                label: $lang.getTranslation('upfrontPaymentOption'),
+                details: [
+                    `${$lang.getTranslation('deposit')}: ${formatPrice(deposit)} (${Math.round(rules.depositRate * 100)}%)`,
+                    `${$lang.getTranslation('remainingBalance')}: ${formatPrice(total - deposit)}`
+                ]
+            })
         }
+
+        if (rules.defaultPaymentType === 'full') {
+            options.push({
+                value: 'full',
+                label: $lang.getTranslation('fullPaymentAfterIntervention'),
+                details: [`${$lang.getTranslation('totalAmount')}: ${formatPrice(total)}`]
+            })
+        }
+
+        return options
     }
 
-    return { getPaymentConfig, promptContractInfo }
+    return { normalizeServiceType, getPaymentConfig, getPaymentOptions }
 }

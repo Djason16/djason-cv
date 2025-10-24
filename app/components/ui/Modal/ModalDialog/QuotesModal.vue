@@ -1,20 +1,17 @@
 <template>
     <ModalDialog :show="show" :title="$lang.getTranslation('downloadQuotes')" @close="close">
         <div class="quotes-modal">
-            <!-- Filter input -->
             <div class="search-bar">
                 <input v-model="search" type="text" :placeholder="$lang.getTranslation('searchQuotes')"
                     class="text-small" autocomplete="off" />
             </div>
 
-            <!-- Table of individual missions with download -->
             <EditableTable :items="individualMissions" :columns="columns"
                 :actions-label="$lang.getTranslation('actions')" :delete-label="$lang.getTranslation('delete')"
                 :download-label="$lang.getTranslation('downloadQuote')"
                 :empty-message="$lang.getTranslation('noMissionsFound')" :show-delete="false" :show-download="true"
                 @download="downloadQuote" />
 
-            <!-- Footer actions -->
             <div class="modal-footer">
                 <HeroButton type="button" iconClass="fas fa-times" :label="$lang.getTranslation('close')"
                     @click="close" />
@@ -24,90 +21,82 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
 import { computed, watch } from 'vue'
+import { useNuxtApp } from '#app'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import EditableTable from '~/components/ui/Table/EditableTable.vue'
-import { useDocumentPDF } from '~/composables/useDocumentPDF'
-import { useDocumentsData } from '~/composables/useDocumentsData'
-import { useQuoteCalculator } from '~/composables/useQuoteCalculator'
-import { getServiceTranslationKey, serviceTranslations } from '~/utils/serviceTranslations'
+import DocumentContainer from '~/components/ui/Document/DocumentContainer.vue'
 import ModalDialog from '../ModalDialog.vue'
+import { usePDFExport } from '~/composables/usePDFExport'
+import { useDocumentsData } from '~/composables/useDocumentsData'
+import { useFinancialCalculations } from '~/composables/useFinancialCalculations'
+import { useDocumentInfo } from '~/composables/useDocumentInfo'
+import { useQuoteCalculator } from '~/composables/useQuoteCalculator'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
-const { renderAndExport } = useDocumentPDF()
-const { groupedMissions, columns, fetchAllData, search } = useDocumentsData(props)
-const individualMissions = computed(() => groupedMissions.value.filter(g => g.clientType === 'individual'))
-const isIndividualType = t => t === 'individual'
 
-// Get translated service name or fallback
-const translateServiceName = n => {
-    const key = n ? serviceTranslations[n] || getServiceTranslationKey(n) : ''
-    const t = $lang.getTranslation(key)
-    return t !== key ? t : n
-}
+const { renderAndExport } = usePDFExport()
+const { groupedData, columns, fetchAllData, search, translateServiceName } = useDocumentsData(props)
+const { calculateTotals } = useFinancialCalculations()
+const { promptDocumentNumber, promptDeliveryAddress, promptOptionalInfo } = useDocumentInfo()
+const { getQuoteValidityDate, getIndividualPaymentOptions } = useQuoteCalculator()
 
-// Refresh data when modal opens
+// Only individual clients
+const individualMissions = computed(() => groupedData.value.filter(g => g.clientType === 'individual'))
+
+const close = () => emit('close')
+
+// Fetch data when modal opens
 watch(() => props.show, v => v && fetchAllData())
 
-// Generate quote PDF (individual clients only)
+// Handle quote download
 const downloadQuote = async group => {
-    if (process.server || !isIndividualType(group.clientType)) return
-    const { calculateTotals, promptQuoteInfo, getQuoteValidityDate, getIndividualPaymentOptions } = useQuoteCalculator()
-    const quoteInfo = await promptQuoteInfo(group)
-    if (!quoteInfo) return
+    if (process.server || group.clientType !== 'individual') return
 
-    const { quoteNumber, objectDescription, orderReference, deliveryAddress, sameAsClient } = quoteInfo
+    // Prompt for document number, delivery info, and optional info
+    const quoteNumber = await promptDocumentNumber('quote')
+    if (!quoteNumber) return
+    const deliveryInfo = await promptDeliveryAddress(group.clientType)
+    if (!deliveryInfo) return
+    const optionalInfo = await promptOptionalInfo(group.clientType)
+    if (!optionalInfo) return
+
+    // Calculate totals and get validity/payment info
     const { totalHT, totalTVA, totalTTC } = calculateTotals(group.missions)
     const issueDate = new Date().toISOString()
     const validityDate = getQuoteValidityDate(issueDate)
     const paymentOptions = getIndividualPaymentOptions(group.missions[0]?.service_name || '', totalTTC)
+
     const fileName = `DE-${new Date().getFullYear()}-${quoteNumber.padStart(4, '0')}`
 
     await renderAndExport({
-        fileName,
+        component: DocumentContainer,
         componentProps: {
             type: 'quote',
             client: {
-                name: group.client,
-                address: group.client_address,
-                postal_code: group.client_postal_code,
-                city: group.client_city,
-                siret: group.client_siret,
-                phone: group.client_phone,
-                email: group.client_email,
-                type: group.clientType
+                name: group.client, address: group.client_address, postal_code: group.client_postal_code,
+                city: group.client_city, siret: group.client_siret, phone: group.client_phone,
+                email: group.client_email, type: group.clientType
             },
-            deliveryAddress,
-            sameAsClientAddress: sameAsClient,
+            deliveryAddress: deliveryInfo.deliveryAddress,
+            sameAsClientAddress: deliveryInfo.sameAsClient,
             items: group.missions.map(m => ({
                 name: m.title?.trim() || translateServiceName(m.service_name) || '-',
-                date: m.date,
-                hours: m.duration,
-                mission: '',
-                quantity: m.quantity || 1,
-                unitPrice: m.unit_price,
-                tvaApplicable: !!m.vat_applicable
+                date: m.date, hours: m.duration, mission: '', quantity: m.quantity || 1,
+                unitPrice: m.unit_price, tvaApplicable: !!m.vat_applicable
             })),
-            issueDate,
-            documentType: 'quote',
-            description: translateServiceName(group.missions[0]?.service_name || '') || objectDescription,
-            orderRef: orderReference,
-            monthConcerned: group.month || '',
-            customDocumentNumber: fileName,
-            customPaymentDue: validityDate,
-            quoteValidityDays: 30,
-            paymentOptions,
-            totalHT,
-            totalTVA,
-            totalTTC
-        }
+            issueDate, documentType: 'quote',
+            description: translateServiceName(group.missions[0]?.service_name || '') || optionalInfo.objectDescription,
+            orderRef: optionalInfo.orderReference, monthConcerned: group.month || '',
+            customDocumentNumber: fileName, customPaymentDue: validityDate,
+            quoteValidityDays: 30, paymentOptions, totalHT, totalTVA, totalTTC
+        },
+        fileName,
+        containerClass: '.document-container'
     })
 }
-
-const close = () => emit('close')
 </script>
 
 <style scoped>
@@ -120,17 +109,17 @@ const close = () => emit('close')
     min-width: 60vw;
     max-height: 80vh;
     overflow: hidden;
-    color: var(--text-color-dark);
+    color: var(--text-color-dark)
 }
 
 .search-bar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end
 }
 
 .modal-footer {
     display: flex;
     gap: 1rem;
-    margin-top: auto;
+    margin-top: auto
 }
 </style>

@@ -79,9 +79,14 @@
 <ul>
   <li><strong>Nitro</strong> server (built into Nuxt 4)</li>
   <li><strong>Stripe API</strong> integration for secure payment processing</li>
+  <li><strong>Complete Client Management System</strong> - CRUD operations for client data</li>
+  <li><strong>Mission Management</strong> - Track and manage missions with client associations</li>
+  <li><strong>Service Management</strong> - Organize and categorize services</li>
+  <li><strong>Automatic Document Generation</strong> - Generate quotes, invoices, and contracts</li>
   <li>RESTful API routes in <code>server/api/</code></li>
   <li>Server utilities and middleware</li>
   <li>Environment-based configuration</li>
+  <li><strong>MySQL Database</strong> integration for data persistence</li>
 </ul>
 
 <h3>Deployment</h3>
@@ -363,31 +368,112 @@ package-lock.json      # Lock file
 <p>The following API routes are available:</p>
 
 <table>
-  <tr>
-    <th>Method</th>
-    <th>Endpoint</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td>GET</td>
-    <td><code>/api/</code></td>
-    <td>API health check</td>
-  </tr>
-  <tr>
-    <td>POST</td>
-    <td><code>/api/stripe/create-checkout-session</code></td>
-    <td>Create Stripe payment session</td>
-  </tr>
-  <tr>
-    <td>GET</td>
-    <td><code>/api/stripe/payment-result</code></td>
-    <td>Payment success/cancel page</td>
-  </tr>
-  <tr>
-    <td>GET</td>
-    <td><code>/api/stripe/check-payment-status</code></td>
-    <td>Verify payment status</td>
-  </tr>
+    <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td><code>/api/</code></td>
+        <td>API health check</td>
+    </tr>
+</table>
+
+<h3>Stripe Payment</h3>
+<table>
+    <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>POST</td>
+        <td><code>/api/stripe/create-checkout-session</code></td>
+        <td>Create Stripe payment session</td>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td><code>/api/stripe/payment-result</code></td>
+        <td>Payment success/cancel page</td>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td><code>/api/stripe/check-payment-status</code></td>
+        <td>Verify payment status</td>
+    </tr>
+</table>
+
+<h3>Client Management</h3>
+<table>
+    <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td><code>/api/clients/list</code></td>
+        <td>List all clients</td>
+    </tr>
+    <tr>
+        <td>POST</td>
+        <td><code>/api/clients/create-client</code></td>
+        <td>Create a new client</td>
+    </tr>
+    <tr>
+        <td>PUT</td>
+        <td><code>/api/clients/edit-client</code></td>
+        <td>Update an existing client</td>
+    </tr>
+    <tr>
+        <td>DELETE</td>
+        <td><code>/api/clients/delete-client</code></td>
+        <td>Delete a client</td>
+    </tr>
+</table>
+
+<h3>Mission Management</h3>
+<table>
+    <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td><code>/api/missions/list</code></td>
+        <td>List all missions</td>
+    </tr>
+    <tr>
+        <td>POST</td>
+        <td><code>/api/missions/create-mission</code></td>
+        <td>Create a new mission</td>
+    </tr>
+    <tr>
+        <td>PUT</td>
+        <td><code>/api/missions/edit-mission</code></td>
+        <td>Update an existing mission</td>
+    </tr>
+    <tr>
+        <td>DELETE</td>
+        <td><code>/api/missions/delete-mission</code></td>
+        <td>Delete a mission</td>
+    </tr>
+</table>
+
+<h3>Service Management</h3>
+<table>
+    <tr>
+        <th>Method</th>
+        <th>Endpoint</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>GET</td>
+        <td><code>/api/services/list</code></td>
+        <td>List all services</td>
+    </tr>
 </table>
 
 <hr>

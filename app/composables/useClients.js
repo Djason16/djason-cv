@@ -55,7 +55,6 @@ export function useClients() {
         if (oldType === 'company' && ['individual', 'freelance'].includes(newType)) {
             if (item.company_name) { const [first, ...rest] = item.company_name.split(' '); item.firstname = first; item.lastname = rest.join(' ') }
             item.company_name = null
-            if (newType === 'individual') item.siret = null
         }
         else if (['individual', 'freelance'].includes(oldType) && newType === 'company') {
             item.company_name = [item.firstname, item.lastname].filter(Boolean).join(' ') || null
@@ -73,14 +72,14 @@ export function useClients() {
         { id: 'address', labelKey: 'address', placeholderKey: 'enterAddress', type: 'text', required: false, autocomplete: 'street-address' },
         { id: 'postal_code', labelKey: 'postalCode', placeholderKey: 'enterPostalCode', type: 'text', required: false, autocomplete: 'postal-code' },
         { id: 'city', labelKey: 'city', placeholderKey: 'enterCity', type: 'text', required: false, autocomplete: 'address-level2' },
-        { id: 'siret', labelKey: 'siret', placeholderKey: 'enterSiret', type: 'text', required: true, autocomplete: 'off' }
+        { id: 'siret', labelKey: 'siret', placeholderKey: 'enterSiret', type: 'text', required: false, autocomplete: 'off' }
     ]
 
     // Determine visible fields based on client type
     const getVisibleFields = type => {
         if (type === 'company') return clientFields.filter(f => !['firstname', 'lastname'].includes(f.id))
         if (type === 'freelance') return clientFields.filter(f => f.id !== 'company_name')
-        return clientFields.filter(f => !['company_name', 'siret'].includes(f.id))
+        return clientFields.filter(f => f.id !== 'company_name')
     }
 
     // Group fields into logical rows for layout

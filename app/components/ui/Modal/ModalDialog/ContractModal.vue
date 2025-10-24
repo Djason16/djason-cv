@@ -24,68 +24,103 @@
 import { useNuxtApp } from '#app'
 import { watch } from 'vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
+import ContractContainer from '~/components/ui/Contract/ContractContainer.vue'
 import EditableTable from '~/components/ui/Table/EditableTable.vue'
 import { useContractCalculator } from '~/composables/useContractCalculator'
 import { useContractData } from '~/composables/useContractData'
-import { useContractPDF } from '~/composables/useContractPDF'
+import { useDocumentInfo } from '~/composables/useDocumentInfo'
+import { usePDFExport } from '~/composables/usePDFExport'
 import ModalDialog from '../ModalDialog.vue'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
 
-const { groupedContracts, columns, fetchAllData, search } = useContractData(props)
-const { renderAndExport } = useContractPDF()
-const { getPaymentConfig, promptContractInfo } = useContractCalculator()
-
 const close = () => emit('close')
+
+// Composables
+const { renderAndExport } = usePDFExport()
+const { groupedContracts, columns, fetchAllData, search } = useContractData(props)
+const { getPaymentConfig, getPaymentOptions, normalizeServiceType } = useContractCalculator()
+const { promptDocumentNumber, promptDocumentDate } = useDocumentInfo()
+
+// Fetch contracts when modal opens
 watch(() => props.show, v => v && fetchAllData())
 
-// Map raw service type to normalized category (web/video/repair)
-const normalizeServiceType = (rawType) => {
-    if (!rawType) return 'web'
-    const normalized = rawType.toLowerCase().trim()
-    if (['web', 'video', 'repair'].includes(normalized)) return normalized
-    if (normalized.includes('web') || normalized.includes('site') || normalized.includes('development')) return 'web'
-    if (normalized.includes('video') || normalized.includes('montage') || normalized.includes('vfx')) return 'video'
-    if (normalized.includes('repair') || normalized.includes('réparation') || normalized.includes('ordinateur')) return 'repair'
-    return 'web'
+// Prompt user for payment choice, returns selected value or null if canceled
+const promptPaymentOption = (serviceType, totalAmount) => {
+    const options = getPaymentOptions(totalAmount, serviceType)
+    if (options.length === 1) return options[0].value
+
+    let message = $lang.getTranslation('contractPaymentChoice')
+    options.forEach((opt, i) => {
+        message += `${i + 1}. ${opt.label}\n`
+        opt.details?.forEach(detail => message += `   ${detail}\n`)
+        message += '\n'
+    })
+    message += $lang.getTranslation('contractPaymentChoicePrompt')
+
+    let choice = null
+    while (choice === null) {
+        const input = prompt(message)
+        if (input === null) return null
+        const num = parseInt(input)
+        if (num >= 1 && num <= options.length) choice = options[num - 1].value
+        else alert($lang.getTranslation('contractPaymentInvalidChoice'))
+    }
+    return choice
 }
 
-// Generate and download contract PDF with auto-calculated payment structure
-const downloadContract = async (group) => {
+// Handle PDF download for a contract
+const downloadContract = async group => {
     if (process.server) return
 
-    const contractInfo = await promptContractInfo(group)
-    if (!contractInfo) return
+    const contractNumber = await promptDocumentNumber('contract')
+    if (!contractNumber) return
 
-    const total = Number(group.totalAmount) || 0
-    const type = normalizeServiceType(group.serviceType)
-    const paymentConfig = getPaymentConfig(total, type)
-    const fileName = `CO-${new Date().getFullYear()}-${contractInfo.contractNumber || group.contractNumber || '0000'}`
+    const serviceType = normalizeServiceType(group.serviceType)
+    const totalAmount = Number(group.totalAmount) || 0
+    const paymentChoice = promptPaymentOption(serviceType, totalAmount)
+    if (paymentChoice === null) return
+
+    const contractDate = promptDocumentDate('contract')
+    if (contractDate === null) return
+
+    const paymentConfig = getPaymentConfig(totalAmount, serviceType, paymentChoice)
+
+    const fileName = `CO-${new Date().getFullYear()}-${contractNumber.padStart(4, '0')}`
 
     await renderAndExport({
-        fileName,
+        component: ContractContainer,
         componentProps: {
             client: {
-                name: group.client ?? '',
-                address: group.client_address ?? '',
-                postal_code: group.client_postal_code ?? '',
-                city: group.client_city ?? '',
-                siret: group.client_siret ?? '',
-                phone: group.client_phone ?? '',
-                email: group.client_email ?? '',
-                type: group.clientType ?? 'individual'
+                name: group.client || '',
+                address: group.client_address || '',
+                postal_code: group.client_postal_code || '',
+                city: group.client_city || '',
+                siret: group.client_siret || '',
+                phone: group.client_phone || '',
+                email: group.client_email || '',
+                type: group.clientType || 'individual'
             },
-            contractDate: contractInfo.contractDate || group.contractDate || new Date().toISOString(),
+            contractDate,
             contractYear: new Date().getFullYear(),
-            contractIndex: contractInfo.contractNumber || group.contractNumber || '0000',
-            serviceType: type,
+            contractIndex: contractNumber,
+            serviceType,
             totalAmount: paymentConfig.totalAmount,
             deposit: paymentConfig.depositAmount,
             nbMensualites: paymentConfig.nbMensualites,
             monthlyPayment: paymentConfig.monthlyPayment,
-            hasTVA: group.hasTVA ?? false
+            hasTVA: group.hasTVA || false
+        },
+        fileName,
+        containerClass: '.contract-container',
+        pdfOptions: {
+            margin: [8, 8, 8, 8],
+            delay: 500,
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, letterRendering: true, logging: false, removeContainer: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
+            pagebreak: { mode: ['avoid-all', 'css', 'legacy'], before: '.page-break' }
         }
     })
 }
@@ -101,17 +136,17 @@ const downloadContract = async (group) => {
     min-width: 60vw;
     max-height: 80vh;
     overflow: hidden;
-    color: var(--text-color-dark);
+    color: var(--text-color-dark)
 }
 
 .search-bar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end
 }
 
 .modal-footer {
     display: flex;
     gap: 1rem;
-    margin-top: auto;
+    margin-top: auto
 }
 </style>

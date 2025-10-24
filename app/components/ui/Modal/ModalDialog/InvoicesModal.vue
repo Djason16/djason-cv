@@ -1,19 +1,16 @@
 <template>
     <ModalDialog :show="show" :title="$lang.getTranslation('downloadInvoices')" @close="close">
         <div class="invoices-modal">
-            <!-- Search field to filter invoice list -->
             <div class="search-bar">
                 <input v-model="search" type="text" :placeholder="$lang.getTranslation('searchInvoices')"
                     class="text-small" autocomplete="off" />
             </div>
 
-            <!-- Editable table listing invoice groups with download actions -->
-            <EditableTable :items="groupedMissions" :columns="columns" :actions-label="$lang.getTranslation('actions')"
+            <EditableTable :items="groupedData" :columns="columns" :actions-label="$lang.getTranslation('actions')"
                 :delete-label="$lang.getTranslation('delete')" :download-label="$lang.getTranslation('downloadInvoice')"
                 :empty-message="$lang.getTranslation('noMissionsFound')" :show-delete="false" :show-download="true"
                 @download="downloadInvoice" />
 
-            <!-- Footer with close button -->
             <div class="modal-footer">
                 <HeroButton type="button" iconClass="fas fa-times" :label="$lang.getTranslation('close')"
                     @click="close" />
@@ -23,96 +20,90 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
 import { watch } from 'vue'
+import { useNuxtApp } from '#app'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import EditableTable from '~/components/ui/Table/EditableTable.vue'
-import { useDocumentPDF } from '~/composables/useDocumentPDF'
-import { useDocumentsData } from '~/composables/useDocumentsData'
-import { usePaymentCalculator } from '~/composables/usePaymentCalculator'
-import { getServiceTranslationKey, serviceTranslations } from '~/utils/serviceTranslations'
+import DocumentContainer from '~/components/ui/Document/DocumentContainer.vue'
 import ModalDialog from '../ModalDialog.vue'
+import { usePDFExport } from '~/composables/usePDFExport'
+import { useDocumentsData } from '~/composables/useDocumentsData'
+import { useFinancialCalculations } from '~/composables/useFinancialCalculations'
+import { useDocumentInfo } from '~/composables/useDocumentInfo'
+import { usePaymentCalculator } from '~/composables/usePaymentCalculator'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
-const { renderAndExport } = useDocumentPDF()
-const { groupedMissions, columns, fetchAllData, search } = useDocumentsData(props)
+
+const { renderAndExport } = usePDFExport()
+const { groupedData, columns, fetchAllData, search, translateServiceName } = useDocumentsData(props)
+const { calculateTotals } = useFinancialCalculations()
+const { promptDocumentNumber, promptDeliveryAddress, promptOptionalInfo } = useDocumentInfo()
+const { promptIndividualPayment, getCompanyPaymentData } = usePaymentCalculator()
 
 const close = () => emit('close')
 
-// Translate service name if available, fallback to raw name
-const translateServiceName = n => {
-    const key = n ? serviceTranslations[n] || getServiceTranslationKey(n) : ''
-    const t = $lang.getTranslation(key)
-    return t !== key ? t : n
-}
-
-// Load data when modal opens
+// Fetch data when modal opens
 watch(() => props.show, v => v && fetchAllData())
 
-// Generate invoice PDF dynamically based on client type
+// Handle invoice PDF download
 const downloadInvoice = async group => {
     if (process.server) return
-    const { calculateTotals, promptIndividualPayment, promptDocumentInfo, getCompanyPaymentData } = usePaymentCalculator()
-    const docInfo = await promptDocumentInfo(group)
-    if (!docInfo) return
 
-    const { invoiceNumber, objectDescription, orderReference, deliveryAddress, sameAsClient } = docInfo
+    // Prompt for invoice number, delivery, optional info
+    const invoiceNumber = await promptDocumentNumber('invoice')
+    if (!invoiceNumber) return
+    const deliveryInfo = await promptDeliveryAddress(group.clientType)
+    if (!deliveryInfo) return
+    const optionalInfo = await promptOptionalInfo(group.clientType)
+    if (!optionalInfo) return
+
+    // Compute totals and payment details
     const { totalHT, totalTVA, totalTTC } = calculateTotals(group.missions)
-    const issueDate = new Date().toISOString()
     const isIndividual = group.clientType === 'individual'
-
-    // Fetch correct payment flow depending on client type
     const paymentData = isIndividual
         ? await promptIndividualPayment(group.missions[0]?.service_name || '', totalTTC)
         : getCompanyPaymentData()
+    if (!paymentData) return
 
-    const { depositAmount, amountPaid, remainingToPay, nbMensualites, monthlyPayment, paymentDueDate } = paymentData
+    // Prepare filename
     const fileName = `${isIndividual ? 'CL' : 'FA'}-${new Date().getFullYear()}-${invoiceNumber.padStart(4, '0')}`
 
-    // Generate PDF with all dynamic fields
+    // Export PDF with all necessary props
     await renderAndExport({
-        fileName,
+        component: DocumentContainer,
         componentProps: {
             type: 'invoice',
             client: {
-                name: group.client,
-                address: group.client_address,
-                postal_code: group.client_postal_code,
-                city: group.client_city,
-                siret: group.client_siret,
-                phone: group.client_phone,
-                email: group.client_email,
-                type: group.clientType
+                name: group.client, address: group.client_address, postal_code: group.client_postal_code,
+                city: group.client_city, siret: group.client_siret, phone: group.client_phone,
+                email: group.client_email, type: group.clientType
             },
-            deliveryAddress,
-            sameAsClientAddress: sameAsClient,
+            deliveryAddress: deliveryInfo.deliveryAddress,
+            sameAsClientAddress: deliveryInfo.sameAsClient,
             items: group.missions.map(m => ({
                 name: m.title?.trim() || (isIndividual ? translateServiceName(m.service_name) : m.service_name) || '-',
-                date: m.date,
-                hours: m.duration,
+                date: m.date, hours: m.duration,
                 mission: !isIndividual ? m.title || m.service_name || '-' : '',
-                quantity: m.quantity || 1,
-                unitPrice: m.unit_price,
-                tvaApplicable: !!m.vat_applicable
+                quantity: m.quantity || 1, unitPrice: m.unit_price, tvaApplicable: !!m.vat_applicable
             })),
-            issueDate,
+            issueDate: new Date().toISOString(),
             documentType: 'invoice',
-            description: isIndividual ? translateServiceName(group.missions[0]?.service_name || '') : objectDescription,
-            orderRef: orderReference,
-            deposit: depositAmount,
+            description: isIndividual ? translateServiceName(group.missions[0]?.service_name || '') : optionalInfo.objectDescription,
+            orderRef: optionalInfo.orderReference,
+            deposit: paymentData.depositAmount,
             monthConcerned: group.month || '',
             customDocumentNumber: fileName,
-            customPaymentDue: paymentDueDate,
-            nbMensualites,
-            monthlyPayment,
-            remainingToPay,
-            amountPaid,
-            totalHT,
-            totalTVA,
-            totalTTC
-        }
+            customPaymentDue: paymentData.paymentDueDate,
+            nbMensualites: paymentData.nbMensualites,
+            monthlyPayment: paymentData.monthlyPayment,
+            remainingToPay: paymentData.remainingToPay,
+            amountPaid: paymentData.amountPaid,
+            totalHT, totalTVA, totalTTC
+        },
+        fileName,
+        containerClass: '.document-container'
     })
 }
 </script>
@@ -127,17 +118,17 @@ const downloadInvoice = async group => {
     min-width: 60vw;
     max-height: 80vh;
     overflow: hidden;
-    color: var(--text-color-dark);
+    color: var(--text-color-dark)
 }
 
 .search-bar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-end
 }
 
 .modal-footer {
     display: flex;
     gap: 1rem;
-    margin-top: auto;
+    margin-top: auto
 }
 </style>

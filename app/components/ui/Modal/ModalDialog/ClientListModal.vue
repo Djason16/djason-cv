@@ -26,8 +26,8 @@
 import { computed, watch } from 'vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import EditableTable from '~/components/ui/Table/EditableTable.vue'
-import ModalDialog from '../ModalDialog.vue'
 import { useClients } from '~/composables/useClients'
+import ModalDialog from '../ModalDialog.vue'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
@@ -53,7 +53,7 @@ const columns = computed(() => [
             { value: 'freelance', label: $lang.getTranslation('freelance') }
         ]
     },
-    { key: 'siret', label: $lang.getTranslation('siret'), disabled: c => c.type === 'individual', formatter: c => c.type === 'individual' ? '-' : displayValue(c.siret) }
+    { key: 'siret', label: $lang.getTranslation('siret'), formatter: c => displayValue(c.siret) }
 ])
 
 // Fetch clients when modal opens

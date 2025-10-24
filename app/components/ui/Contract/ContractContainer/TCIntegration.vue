@@ -7,7 +7,7 @@
         <ul class="bullet-list text-small">
             <li>{{ $lang.getTranslation('termsOfSale') }}</li>
             <li>{{ $lang.getTranslation('privacyPolicy') }}</li>
-            <li>{{ $lang.getTranslation('refundPolicy') }}</li>
+            <li>{{ $lang.getTranslation('contractRefundPolicy') }}</li>
         </ul>
 
         <p class="section-text text-small">
@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#app';
 const { $lang } = useNuxtApp()
 
 const props = defineProps({
