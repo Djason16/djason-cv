@@ -34,7 +34,7 @@ export const usePDFExport = () => {
 
             // Default PDF options with merge capability
             const defaultOpt = {
-                margin: [2, 2, 2, 2],
+                margin: [5, 5, 5, 5],
                 filename: `${fileName}.pdf`,
                 image: { type: 'jpeg', quality: 1.0 },
                 html2canvas: { scale: 2, useCORS: true, scrollY: 0 },

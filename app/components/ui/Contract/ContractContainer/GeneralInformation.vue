@@ -11,9 +11,9 @@
                 {{ providerInfo.invoiceAddress }}<br />
                 SIRET: {{ providerInfo.siret }}<br />
                 {{ hasTVA ? `${$lang.getTranslation('tva')}: ${providerInfo.tvaNumber}` :
-                    $lang.getTranslation('tvaNotApplicable') }}<br />
-                Email: {{ providerInfo.email }}<br />
+                $lang.getTranslation('tvaNotApplicable') }}<br />
                 {{ $lang.getTranslation('phone') }}: {{ providerInfo.phone }}<br />
+                Email: {{ providerInfo.email }}<br />
                 {{ $lang.getTranslation('website') }}: <a :href="websiteUrl">{{ websiteUrl }}</a>
             </div>
         </div>
@@ -23,10 +23,10 @@
             <p class="info-label text-normal">{{ $lang.getTranslation('client') }}:</p>
             <div class="info-content text-small">
                 {{ client.name }}<br />
-                {{ $lang.getTranslation('address') }}: {{ formatFullAddress(client) }}<br />
+                {{ formatFullAddress(client) }}<br />
+                <span v-if="client.siret">SIRET: {{ client.siret }}<br /></span>
                 {{ $lang.getTranslation('phone') }}: {{ client.phone }}<br />
                 Email: {{ client.email }}<br />
-                <span v-if="client.siret">SIRET: {{ client.siret }}<br /></span>
                 {{ $lang.getTranslation('type') }}: {{ getClientTypeLabel(client.type) }}
             </div>
         </div>

@@ -116,7 +116,7 @@ const downloadContract = async group => {
         fileName,
         containerClass: '.contract-container',
         pdfOptions: {
-            margin: [8, 8, 8, 8],
+            margin: [10, 10, 10, 10],
             delay: 500,
             html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, letterRendering: true, logging: false, removeContainer: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
