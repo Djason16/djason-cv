@@ -6,14 +6,16 @@
 
         <!-- Penalties and interest list -->
         <ul class="bullet-list text-small">
-            <li>{{ $lang.getTranslation('latePaymentPenalty') }}</li>
-            <li>{{ $lang.getTranslation('latePaymentInterest') }}</li>
+            <li>{{ $lang.getTranslation('latePaymentPenalty', { penalty }) }}</li>
+            <li>{{ $lang.getTranslation('latePaymentInterest', { rate: ratePercentage }) }}</li>
         </ul>
 
         <!-- Example box with calculation or scenario -->
         <div class="example-box text-small">
             <p class="info-label">{{ $lang.getTranslation('example') }}:</p>
-            <p v-html="$lang.getTranslation('latePaymentExample')"></p>
+            <p
+                v-html="$lang.getTranslation('latePaymentExample', { amount, days, penalty, divisor: divisorFormatted, interest, total })">
+            </p>
         </div>
 
         <p class="section-text text-small">{{ $lang.getTranslation('suspensionRight') }}</p>
@@ -22,7 +24,29 @@
 
 <script setup>
 import { useNuxtApp } from '#app'
+import { computed, onMounted, ref } from 'vue'
+
 const { $lang } = useNuxtApp()
+const rate = ref(null)
+
+const amount = 55
+const days = 15
+const penalty = 40
+
+const divisor = computed(() => rate.value ? rate.value / 365 : 0)
+const divisorFormatted = computed(() => divisor.value.toLocaleString('fr-FR', { minimumFractionDigits: 10, maximumFractionDigits: 10 }))
+const ratePercentage = computed(() => rate.value ? `${(rate.value * 100).toFixed(2)}%` : '—')
+const interest = computed(() => rate.value ? (amount * divisor.value * days).toFixed(2) : 0)
+const total = computed(() => rate.value ? (amount + penalty + parseFloat(interest.value)).toFixed(2) : 0)
+
+onMounted(async () => {
+    try {
+        const response = await $fetch('/api/interest-rates/list')
+        rate.value = response.rates?.rows?.[0]?.rate
+    } catch (err) {
+        console.error('Error fetching interest rate:', err)
+    }
+})
 </script>
 
 <style scoped>

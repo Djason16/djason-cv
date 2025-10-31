@@ -71,6 +71,16 @@ export const createMissionsTable = async db => db.sql`
   )
 `
 
+export const createInterestRatesTable = async db => db.sql`
+  CREATE TABLE IF NOT EXISTS dc_interest_rates (
+    id TEXT PRIMARY KEY,
+    rate REAL NOT NULL,
+    valid_from DATETIME NOT NULL,
+    valid_until DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`
+
 // --- SEED DEFAULT SERVICES ---
 export const seedDefaultServices = async db => {
   const { rows } = await db.sql`SELECT COUNT(*) AS count FROM dc_services`
@@ -85,4 +95,22 @@ export const seedDefaultServices = async db => {
 
   for (const s of services)
     await db.sql`INSERT INTO dc_services (id, name, description) VALUES (${crypto.randomUUID()}, ${s.name}, ${s.description})`
+}
+
+// --- SEED INTEREST RATES ---
+export const seedInterestRates = async db => {
+  const { rows } = await db.sql`SELECT COUNT(*) AS count FROM dc_interest_rates`
+  if (rows[0].count) return
+
+  const rates = [
+    { rate: 0.0665, validFrom: '2025-07-01', validUntil: '2025-12-31' },
+    { rate: 0.0721, validFrom: '2025-01-01', validUntil: '2025-06-30' }
+  ]
+
+  for (const r of rates) {
+    await db.sql`
+      INSERT INTO dc_interest_rates (id, rate, valid_from, valid_until)
+      VALUES (${crypto.randomUUID()}, ${r.rate}, ${r.validFrom}, ${r.validUntil})
+    `
+  }
 }

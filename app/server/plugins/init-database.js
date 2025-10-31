@@ -12,12 +12,17 @@ export default defineNitroPlugin(async () => {
             createClientsTable(db),
             createServicesTable(db),
             createMissionsTable(db),
+            createInterestRatesTable(db),
         ])
         console.log('✅ All tables verified')
 
         // Seed base services if missing
         await seedDefaultServices(db)
         console.log('🌱 Default services checked')
+
+        // Seed interest rates if missing
+        await seedInterestRates(db)
+        console.log('💰 Interest rates checked')
 
         // Check if admin user exists
         const { rows } = await db.sql`

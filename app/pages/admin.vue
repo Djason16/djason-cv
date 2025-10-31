@@ -56,6 +56,7 @@ import MissionListModal from '~/components/ui/Modal/ModalDialog/MissionListModal
 import PasswordModal from '~/components/ui/Modal/ModalDialog/PasswordModal.vue'
 import QuotesModal from '~/components/ui/Modal/ModalDialog/QuotesModal.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
+import InterestRatesListModal from '~/components/ui/Modal/ModalDialog/InterestRatesListModal.vue'
 import { useAuth } from '~/composables/useAuth'
 import { useMessage } from '~/composables/useMessage'
 
@@ -78,6 +79,7 @@ const adminButtons = [
     { icon: 'fas fa-plus-circle', textKey: 'adminCreateMissions', action: 'createMissions' },
     { icon: 'fas fa-tasks', textKey: 'adminMissions', action: 'missions' },
     { icon: 'fas fa-file-contract', textKey: 'adminQuotes', action: 'quotes' },
+    { icon: 'fas fa-percent', textKey: 'adminInterestRates', action: 'interestRates' },
     { icon: 'fas fa-file-signature', textKey: 'adminContracts', action: 'contracts' },
     { icon: 'fas fa-file-invoice-dollar', textKey: 'adminInvoices', action: 'invoices' },
     { icon: 'fas fa-key', textKey: 'adminPassword', action: 'password' }
@@ -88,6 +90,7 @@ const activeModals = [
     { action: 'createMissions', component: CreateMissionModal },
     { action: 'missions', component: MissionListModal },
     { action: 'quotes', component: QuotesModal },
+    { action: 'interestRates', component: InterestRatesListModal },
     { action: 'contracts', component: ContractModal },
     { action: 'invoices', component: InvoicesModal },
     { action: 'password', component: PasswordModal }
@@ -167,16 +170,15 @@ definePageMeta({ middleware: 'auth-server' })
 
 .admin-nav :deep(.slide-in-from-right) {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     justify-items: center;
     gap: calc(2rem + 1vw);
     padding: 0 2.5vw;
     transition: grid-template-columns .3s ease, gap .3s ease;
 }
 
-.admin-nav :deep(.slide-in-from-right > *:nth-child(7)),
-.admin-nav :deep(.slide-in-from-right > *:nth-child(8)) {
-    grid-column: span 3;
+.admin-nav :deep(.slide-in-from-right > *) {
+    grid-column: span 1;
     justify-self: center;
 }
 
@@ -192,33 +194,19 @@ definePageMeta({ middleware: 'auth-server' })
     }
 }
 
-@media (max-width: 1440px) {
-    .admin-nav :deep(.slide-in-from-right) {
-        grid-template-columns: repeat(3, 1fr);
-    }
-
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(4):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(5):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(6):last-child),
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(7):last-child) {
-        grid-column: 1 / -1;
-        justify-self: center;
-    }
-}
-
 @media (max-width: 768px) {
     .admin-nav :deep(.slide-in-from-right) {
         grid-template-columns: repeat(2, 1fr);
         gap: 1rem;
     }
 
-    .admin-nav :deep(.slide-in-from-right > *:nth-child(n+7)) {
+    .admin-nav :deep(.slide-in-from-right > *:nth-child(n+9)) {
         grid-column: span 2;
         justify-self: center;
     }
 }
 
-@media (max-width: 425px) {
+@media (max-width: 375px) {
     .admin-nav :deep(.slide-in-from-right > *) {
         grid-column: 1 / -1;
         justify-self: center;

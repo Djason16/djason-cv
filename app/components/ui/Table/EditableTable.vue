@@ -20,6 +20,7 @@
                             </select>
                             <input v-else-if="!isFieldDisabled(item, col)" v-model="editValue"
                                 :type="col.inputType || 'text'" :autocomplete="col.autocomplete || 'off'"
+                                :step="col.step" :min="col.min" :max="col.max"
                                 :autocapitalize="col.autocapitalize || 'none'" @keyup.enter="saveEdit(item, col)"
                                 @keyup.esc="cancelEdit" :id="`field-${item[itemKey]}-${col.key}`"
                                 :name="`field-${item[itemKey]}-${col.key}`" />
