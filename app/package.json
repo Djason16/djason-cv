@@ -10,7 +10,7 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "copy-wasm": "node public/js/post-build-copy-wasm.js"
+    "copy-wasm": "node scripts/post-build-copy-wasm.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.0.1",

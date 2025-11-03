@@ -1,17 +1,20 @@
 <template>
     <ModalDialog :show="show" :title="$lang.getTranslation('downloadContracts')" @close="close">
         <div class="contracts-modal">
+            <!-- Search bar -->
             <div class="search-bar">
                 <input v-model="search" type="text" :placeholder="$lang.getTranslation('searchContracts')"
                     class="text-small" />
             </div>
 
+            <!-- Editable contracts table -->
             <EditableTable v-if="columns && groupedContracts" :items="groupedContracts" :columns="columns"
                 :actions-label="$lang.getTranslation('actions')" :delete-label="$lang.getTranslation('delete')"
                 :download-label="$lang.getTranslation('downloadContract')"
                 :empty-message="$lang.getTranslation('noContractsFound')" :show-delete="false" :show-download="true"
                 @download="downloadContract" />
 
+            <!-- Modal footer with close button -->
             <div class="modal-footer">
                 <HeroButton type="button" iconClass="fas fa-times" :label="$lang.getTranslation('close')"
                     @click="close" />
@@ -35,10 +38,9 @@ import ModalDialog from '../ModalDialog.vue'
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
-
 const close = () => emit('close')
 
-// Composables
+// Composables for contracts, PDF export, and payment calculations
 const { renderAndExport } = usePDFExport()
 const { groupedContracts, columns, fetchAllData, search } = useContractData(props)
 const { getPaymentConfig, getPaymentOptions, normalizeServiceType } = useContractCalculator()

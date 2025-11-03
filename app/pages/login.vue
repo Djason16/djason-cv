@@ -5,6 +5,7 @@
         <template #custom-content>
             <div class="login-form-wrapper">
                 <SlideInFromRight>
+
                     <!-- Render dynamic form fields -->
                     <div v-for="f in currentFormFields" :key="f.id" class="form-group text-large">
                         <label :for="f.id">{{ $lang.getTranslation(f.labelKey) }}</label>
@@ -28,17 +29,10 @@
 
                     <!-- Action buttons -->
                     <div class="login-buttons">
-                        <HeroButton v-if="!showForgotPassword"
-                            :label="$lang.getTranslation(authLoading ? 'loggingIn' : 'loginButton')"
-                            iconClass="fas fa-sign-in-alt" :disabled="authLoading" @click="handleLogin" />
-                        <HeroButton v-if="!showForgotPassword" :label="$lang.getTranslation('forgotPassword')"
-                            iconClass="fas fa-key" variant="secondary" :disabled="authLoading"
-                            @click="toggleForgotPassword" />
-                        <HeroButton v-if="showForgotPassword" :label="$lang.getTranslation('sendTempPassword')"
-                            iconClass="fas fa-paper-plane" :disabled="authLoading" @click="handleForgotPassword" />
-                        <HeroButton v-if="showForgotPassword" :label="$lang.getTranslation('backToLogin')"
-                            iconClass="fas fa-arrow-left" variant="secondary" :disabled="authLoading"
-                            @click="toggleForgotPassword" />
+                        <template v-for="(btn, i) in loginButtons" :key="i">
+                            <HeroButton v-if="btn.visible()" :label="$lang.getTranslation(btn.labelKey())"
+                                :iconClass="btn.icon" :disabled="btn.disabled()" @click="btn.action" />
+                        </template>
                     </div>
                 </SlideInFromRight>
 
@@ -54,15 +48,15 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
 import { useNuxtApp, useState } from '#app'
+import { seoMetaData } from '@/utils/seo.js'
+import { computed, onMounted, ref, watch } from 'vue'
 import SlideInFromRight from '~/components/animations/SlideInFromRight.vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import MessageBox from '~/components/ui/Message/MessageBox.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
 import { useAuth } from '~/composables/useAuth'
 import { useMessage } from '~/composables/useMessage'
-import { seoMetaData } from '@/utils/seo.js'
 
 const { $lang } = useNuxtApp()
 const { login, loading: authLoading } = useAuth()
@@ -76,7 +70,51 @@ const showPassword = ref(false)
 // Message handling
 const { translatedMessage, showMessage, clearMessage } = useMessage()
 
-// Field configurations
+// ----- Handlers -----
+const handleLogin = async () => {
+    clearMessage()
+    const res = await login(form.value.email, form.value.password)
+    showMessage(res.success ? 'success' : 'error', res.success ? res.message : res.error)
+}
+
+const toggleForgotPassword = () => {
+    showForgotPassword.value = !showForgotPassword.value
+    clearMessage()
+    form.value = { email: form.value.email, password: '', securityAnswer: '' }
+    showPassword.value = false
+}
+
+const handleForgotPassword = async () => {
+    clearMessage()
+    if (!form.value.email) return showMessage('error', 'enterEmailForReset')
+    if (!form.value.securityAnswer) return showMessage('error', 'enterSecurityAnswer')
+    try {
+        const res = await $fetch('/api/auth/send-temp-password', {
+            method: 'POST',
+            body: {
+                email: form.value.email,
+                securityAnswer: form.value.securityAnswer,
+                locale: $lang.current.value === 'french' ? 'fr' : 'en',
+                message: ''
+            }
+        })
+        showMessage(res.success ? 'success' : 'error', res.success ? res.message : res.error)
+        if (res.success) setTimeout(toggleForgotPassword, 5000)
+    } catch (err) {
+        const key = err.data?.message || (err.statusCode === 401 ? 'incorrectSecurityAnswer' : 'errorSendingTempPassword')
+        showMessage('error', key)
+    }
+}
+
+// ----- Buttons configuration -----
+const loginButtons = [
+    { labelKey: () => authLoading.value ? 'loggingIn' : 'loginButton', icon: 'fas fa-sign-in-alt', visible: () => !showForgotPassword.value, disabled: () => authLoading.value, action: handleLogin },
+    { labelKey: () => 'forgotPassword', icon: 'fas fa-key', visible: () => !showForgotPassword.value, disabled: () => authLoading.value, action: toggleForgotPassword },
+    { labelKey: () => 'sendTempPassword', icon: 'fas fa-paper-plane', visible: () => showForgotPassword.value, disabled: () => authLoading.value, action: handleForgotPassword },
+    { labelKey: () => 'backToLogin', icon: 'fas fa-arrow-left', visible: () => showForgotPassword.value, disabled: () => authLoading.value, action: toggleForgotPassword }
+]
+
+// ----- Form fields -----
 const loginFormFields = [
     { id: 'email', type: 'email', model: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', required: true, autocomplete: 'email' },
     { id: 'password', type: 'password', model: 'password', labelKey: 'passwordLabel', placeholderKey: 'passwordPlaceholder', required: true, autocomplete: 'current-password' }
@@ -100,44 +138,10 @@ onMounted(async () => {
     try {
         const res = await $fetch('/api/database/setup')
         if (isDev.value) console.log('[DEV] DB setup:', res)
-    } catch (e) { if (isDev.value) console.error('[DEV] DB setup failed:', e) }
-})
-
-// Login handler
-const handleLogin = async () => {
-    clearMessage()
-    const { email, password } = form.value
-    const res = await login(email, password)
-    showMessage(res.success ? 'success' : 'error', res.success ? res.message : res.error)
-}
-
-// Toggle forgot password mode
-const toggleForgotPassword = () => {
-    showForgotPassword.value = !showForgotPassword.value
-    clearMessage()
-    form.value = { email: form.value.email, password: '', securityAnswer: '' }
-    showPassword.value = false
-}
-
-// Forgot password handler
-const handleForgotPassword = async () => {
-    clearMessage()
-    if (!form.value.email) return showMessage('error', 'enterEmailForReset')
-    if (!form.value.securityAnswer) return showMessage('error', 'enterSecurityAnswer')
-
-    try {
-        const res = await $fetch('/api/auth/send-temp-password', {
-            method: 'POST',
-            body: { email: form.value.email, securityAnswer: form.value.securityAnswer, locale: $lang.current.value === 'french' ? 'fr' : 'en', message: '' }
-        })
-        showMessage(res.success ? 'success' : 'error', res.success ? res.message : res.error)
-        if (res.success) setTimeout(toggleForgotPassword, 5000)
-    } catch (err) {
-        console.error('Error sending temp password:', err)
-        const key = err.data?.message || (err.statusCode === 401 ? 'incorrectSecurityAnswer' : 'errorSendingTempPassword')
-        showMessage('error', key)
+    } catch (e) {
+        if (isDev.value) console.error('[DEV] DB setup failed:', e)
     }
-}
+})
 
 definePageMeta({ middleware: 'guest-server' })
 </script>

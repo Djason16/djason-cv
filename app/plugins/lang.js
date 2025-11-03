@@ -1,66 +1,67 @@
 import { defineNuxtPlugin, useHead } from '#app'
 import { computed, ref } from 'vue'
-
-// Translation modules
-import clients from './translations/admin/clients.js'
-import contracts from './translations/admin/contracts.js'
-import dashboard from './translations/admin/dashboard.js'
-import interestRates from './translations/admin/interestRates.js'
-import invoices from './translations/admin/invoices.js'
-import missions from './translations/admin/missions.js'
-import quotes from './translations/admin/quotes.js'
-import settings from './translations/admin/settings.js'
-import login from './translations/auth/login.js'
-import index from './translations/common/index.js'
-import navigationFooter from './translations/common/navigationFooter.js'
-import seoMetadata from './translations/common/seoMetaData.js'
-import aboutMe from './translations/home/aboutMe.js'
-import hero from './translations/home/hero.js'
-import project from './translations/home/project.js'
-import service from './translations/home/service.js'
-import skill from './translations/home/skill.js'
-import legal from './translations/legal/legal.js'
-import privacy from './translations/legal/privacy.js'
-import refund from './translations/legal/refund.js'
-import terms from './translations/legal/terms.js'
-import payMe from './translations/payMe/index.js'
+import seoMetaData from './translations/common/seoMetaData.js'
 
 export default defineNuxtPlugin(() => {
     const currentLang = ref('french')
+    const translations = ref({
+        french: { ...seoMetaData.french, _loaded: false },
+        english: { ...seoMetaData.english, _loaded: false }
+    })
 
-    // List of all translation modules
-    const modules = [
-        clients, contracts, dashboard, interestRates, invoices, missions,
-        quotes, settings, login, index, navigationFooter, seoMetadata,
-        aboutMe, hero, project, service, skill, legal, privacy, refund,
-        terms, payMe
-    ]
+    // Set HTML lang attribute
+    const locale = computed(() => (currentLang.value === 'french' ? 'fr' : 'en'))
+    useHead({ htmlAttrs: { lang: locale.value } })
 
-    // Merge all translation modules for a given language
-    const buildTranslations = lang => modules.reduce((a, m) => ({ ...a, ...m[lang] }), {})
+    // Translation function with variable replacement
+    const t = (key, vars = {}) =>
+        (translations.value[currentLang.value]?.[key] || key).replace(/{{(.*?)}}/g, (_, k) => vars[k.trim()] || _)
 
-    const translations = {
-        english: buildTranslations('english'),
-        french: buildTranslations('french')
+    // Dynamically load other translation modules
+    const loadAdditionalTranslations = async lang => {
+        if (translations.value[lang]._loaded) return
+
+        const modules = await Promise.all([
+            import('./translations/admin/clients.js'),
+            import('./translations/admin/contracts.js'),
+            import('./translations/admin/dashboard.js'),
+            import('./translations/admin/interestRates.js'),
+            import('./translations/admin/invoices.js'),
+            import('./translations/admin/missions.js'),
+            import('./translations/admin/quotes.js'),
+            import('./translations/admin/settings.js'),
+            import('./translations/auth/login.js'),
+            import('./translations/common/index.js'),
+            import('./translations/common/navigationFooter.js'),
+            import('./translations/home/aboutMe.js'),
+            import('./translations/home/hero.js'),
+            import('./translations/home/project.js'),
+            import('./translations/home/service.js'),
+            import('./translations/home/skill.js'),
+            import('./translations/legal/legal.js'),
+            import('./translations/legal/privacy.js'),
+            import('./translations/legal/refund.js'),
+            import('./translations/legal/terms.js'),
+            import('./translations/payMe/index.js')
+        ])
+
+        translations.value[lang] ||= {}
+        modules.forEach(m => {
+            if (m.default[lang]) translations.value[lang] = { ...translations.value[lang], ...m.default[lang] }
+        })
+        translations.value[lang]._loaded = true
     }
 
-    const locale = computed(() => currentLang.value === 'french' ? 'fr' : 'en')
-    useHead({ htmlAttrs: { lang: locale } })
-
-    // Get translation by key and interpolate variables
-    const t = (key, vars = {}) =>
-        (translations[currentLang.value]?.[key] || key)
-            .replace(/{{(.*?)}}/g, (_, k) => vars[k.trim()] || _)
+    // Switch language and load missing translations
+    const setLang = async lang => {
+        if (!['french', 'english'].includes(lang)) return
+        currentLang.value = lang
+        await loadAdditionalTranslations(lang)
+    }
 
     return {
         provide: {
-            lang: {
-                current: currentLang,
-                locale,
-                availableLanguages: Object.keys(translations),
-                setLang: l => translations[l] && (currentLang.value = l),
-                getTranslation: t
-            }
+            lang: { current: currentLang, locale, availableLanguages: ['french', 'english'], setLang, getTranslation: t }
         }
     }
 })

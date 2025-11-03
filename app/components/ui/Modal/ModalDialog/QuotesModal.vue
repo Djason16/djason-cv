@@ -1,17 +1,20 @@
 <template>
     <ModalDialog :show="show" :title="$lang.getTranslation('downloadQuotes')" @close="close">
         <div class="quotes-modal">
+            <!-- Search input for filtering quotes -->
             <div class="search-bar">
                 <input v-model="search" type="text" :placeholder="$lang.getTranslation('searchQuotes')"
                     class="text-small" autocomplete="off" />
             </div>
 
+            <!-- Table of individual client quotes -->
             <EditableTable :items="individualMissions" :columns="columns"
                 :actions-label="$lang.getTranslation('actions')" :delete-label="$lang.getTranslation('delete')"
                 :download-label="$lang.getTranslation('downloadQuote')"
                 :empty-message="$lang.getTranslation('noMissionsFound')" :show-delete="false" :show-download="true"
                 @download="downloadQuote" />
 
+            <!-- Footer with close button -->
             <div class="modal-footer">
                 <HeroButton type="button" iconClass="fas fa-times" :label="$lang.getTranslation('close')"
                     @click="close" />
@@ -36,22 +39,22 @@ import { useQuoteCalculator } from '~/composables/useQuoteCalculator'
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
+const close = () => emit('close')
 
+// Composables
 const { renderAndExport } = usePDFExport()
 const { groupedData, columns, fetchAllData, search, translateServiceName } = useDocumentsData(props)
 const { calculateTotals } = useFinancialCalculations()
 const { promptDocumentNumber, promptDeliveryAddress, promptOptionalInfo } = useDocumentInfo()
 const { getQuoteValidityDate, getIndividualPaymentOptions } = useQuoteCalculator()
 
-// Only individual clients
+// Filter for individual clients only
 const individualMissions = computed(() => groupedData.value.filter(g => g.clientType === 'individual'))
-
-const close = () => emit('close')
 
 // Fetch data when modal opens
 watch(() => props.show, v => v && fetchAllData())
 
-// Handle quote download
+// Handle PDF download for individual client quote
 const downloadQuote = async group => {
     if (process.server || group.clientType !== 'individual') return
 

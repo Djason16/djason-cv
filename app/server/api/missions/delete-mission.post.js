@@ -3,6 +3,8 @@ import { readBody } from 'h3'
 export default defineEventHandler(async event => {
     const db = event.context.db
     const { id } = await readBody(event)
+
+    // Validate mission ID
     if (!id) return { success: false, error: 'Mission ID is required' }
 
     try {

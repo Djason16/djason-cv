@@ -4,11 +4,14 @@
         <div class="header-top__content">
             <!-- Logo linking to home -->
             <div class="header-top__title">
-                <NuxtLink to="/" class="header-top__logo-link" :title="$lang.getTranslation('home')">
-                    <NuxtImg v-if="!fallback.value" :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo"
+                <NuxtLink to="/" class="header-top__logo-link"
+                    :title="`${personalInfo.name} - ${$lang.getTranslation('home')}`">
+                    <NuxtImg v-if="!fallback.value" :src="logoPath" :alt="personalInfo.name"
+                        :title="`${personalInfo.name} - ${$lang.getTranslation('home')}`" class="header-top__logo"
                         format="webp" preload priority fetchpriority="high" fit="contain" @error="onError" />
-                    <img v-else :src="logoPath" alt="Djason CHERY Logo" class="header-top__logo" preload priority
-                        fetchpriority="high" />
+                    <img v-else :src="logoPath" :alt="personalInfo.name"
+                        :title="`${personalInfo.name} - ${$lang.getTranslation('home')}`" class="header-top__logo"
+                        preload priority fetchpriority="high" />
                 </NuxtLink>
             </div>
 
@@ -35,6 +38,7 @@
 <script setup>
 import { useImageFallback } from '@/composables/useImageFallback.js'
 import { withTrailingSlash } from '@/utils/pathHelpers'
+import { personalInfo } from '@/utils/personalInfo.js'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import NavLink from '~/components/ui/Nav/NavLink.vue'

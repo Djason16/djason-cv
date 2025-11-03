@@ -14,16 +14,12 @@
                     </SlideInFromRight>
                 </div>
 
-                <!-- Logout and DB tools -->
+                <!-- Logout / DB tools -->
                 <SlideInFromRight>
                     <div class="login-buttons">
-                        <HeroButton :label="$lang.getTranslation(loggingOut ? 'loggingOut' : 'logoutButton')"
-                            :ariaLabel="$lang.getTranslation(loggingOut ? 'loggingOut' : 'logoutButton')"
-                            iconClass="fas fa-sign-out-alt" :disabled="loggingOut" @click="handleLogout" />
-                        <HeroButton :label="$lang.getTranslation('downloadDB')" iconClass="fas fa-database"
-                            :ariaLabel="$lang.getTranslation('downloadDB')" @click="downloadDB" />
-                        <HeroButton :label="$lang.getTranslation('exportSQL')" iconClass="fas fa-file-export"
-                            :ariaLabel="$lang.getTranslation('exportSQL')" @click="exportSQL" />
+                        <HeroButton v-for="(btn, i) in loginButtons" :key="i"
+                            :label="$lang.getTranslation(btn.labelKey)" :ariaLabel="$lang.getTranslation(btn.labelKey)"
+                            :iconClass="btn.icon" :disabled="btn.disabled?.()" @click="btn.action" />
                     </div>
                 </SlideInFromRight>
 
@@ -51,12 +47,12 @@ import ClientListModal from '~/components/ui/Modal/ModalDialog/ClientListModal.v
 import ContractModal from '~/components/ui/Modal/ModalDialog/ContractModal.vue'
 import CreateClientModal from '~/components/ui/Modal/ModalDialog/CreateClientModal.vue'
 import CreateMissionModal from '~/components/ui/Modal/ModalDialog/CreateMissionModal.vue'
+import InterestRatesListModal from '~/components/ui/Modal/ModalDialog/InterestRatesListModal.vue'
 import InvoicesModal from '~/components/ui/Modal/ModalDialog/InvoicesModal.vue'
 import MissionListModal from '~/components/ui/Modal/ModalDialog/MissionListModal.vue'
 import PasswordModal from '~/components/ui/Modal/ModalDialog/PasswordModal.vue'
 import QuotesModal from '~/components/ui/Modal/ModalDialog/QuotesModal.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
-import InterestRatesListModal from '~/components/ui/Modal/ModalDialog/InterestRatesListModal.vue'
 import { useAuth } from '~/composables/useAuth'
 import { useMessage } from '~/composables/useMessage'
 
@@ -96,11 +92,38 @@ const activeModals = [
     { action: 'password', component: PasswordModal }
 ]
 
-// Open modal if configured, else log action
-const handleButtonClick = (btn, e) =>
-    activeModals.some(m => m.action === btn.action) ? openModal(btn, e) : console.log('No modal for', btn.action)
+// Login and DB actions (looped)
+const loginButtons = computed(() => [
+    {
+        labelKey: loggingOut.value ? 'loggingOut' : 'logoutButton',
+        icon: 'fas fa-sign-out-alt',
+        disabled: () => loggingOut.value,
+        action: async () => {
+            clearMessage()
+            loggingOut.value = true
+            const ok = await logout()
+            showMessage(ok ? 'success' : 'error', ok ? 'logoutSuccess' : 'logoutError')
+            loggingOut.value = false
+        }
+    },
+    {
+        labelKey: 'downloadDB',
+        icon: 'fas fa-database',
+        action: async () => handleFileAction('/api/database/download-db', 'db.sqlite', 'downloadSuccess', 'downloadError')
+    },
+    {
+        labelKey: 'exportSQL',
+        icon: 'fas fa-file-export',
+        action: async () => handleFileAction('/api/database/export-sql', 'backup.sql', 'exportSuccess', 'exportError')
+    }
+])
 
-// Compute button position for modal
+// Modal management
+const handleButtonClick = (btn, e) =>
+    activeModals.some(m => m.action === btn.action)
+        ? openModal(btn, e)
+        : console.log('No modal for', btn.action)
+
 const openModal = (btn, e) => {
     const r = e.currentTarget.getBoundingClientRect()
     activeButton.value = e.currentTarget
@@ -108,51 +131,42 @@ const openModal = (btn, e) => {
     activeModal.value = btn
 }
 
-// Close currently active modal
-const closeModal = () => (activeModal.value = null)
+const closeModal = () => activeModal.value = null
 
-// Logout with feedback
-const handleLogout = async () => {
-    clearMessage()
-    loggingOut.value = true
-    const ok = await logout()
-    showMessage(ok ? 'success' : 'error', ok ? 'logoutSuccess' : 'logoutError')
-    loggingOut.value = false
-}
-
-// Download database as file
-const downloadDB = async () => {
+// Generic file download/export helper
+const handleFileAction = async (url, filename, successKey, errorKey) => {
     clearMessage()
     try {
-        const res = await fetch('/api/database/download-db')
-        if (!res.ok) throw new Error('Download failed')
+        const res = await fetch(url)
+        if (!res.ok) throw new Error('Request failed')
         const blob = await res.blob()
-        const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'db.sqlite' })
-        document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href)
-        showMessage('success', 'downloadSuccess')
-    } catch (e) { console.error(e); showMessage('error', 'downloadError') }
+        const a = Object.assign(document.createElement('a'), {
+            href: URL.createObjectURL(blob),
+            download: filename
+        })
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        URL.revokeObjectURL(a.href)
+        showMessage('success', successKey)
+    } catch (e) {
+        console.error(e)
+        showMessage('error', errorKey)
+    }
 }
 
-// Export SQL dump
-const exportSQL = async () => {
-    clearMessage()
-    try {
-        const res = await fetch('/api/database/export-sql')
-        if (!res.ok) throw new Error('Export failed')
-        const blob = await res.blob()
-        const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'backup.sql' })
-        document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(a.href)
-        showMessage('success', 'exportSuccess')
-    } catch (e) { console.error(e); showMessage('error', 'exportError') }
-}
-
-// Compute admin sections dynamically and update SEO
-const adminSections = computed(() => Array.from({ length: 5 }, (_, i) => ({ titleKey: `adminSection${i + 1}Title`, contentKey: `adminSection${i + 1}Content` })))
+// SEO and page metadata
 const pageKey = 'admin'
+const adminSections = computed(() =>
+    Array.from({ length: 5 }, (_, i) => ({
+        titleKey: `adminSection${i + 1}Title`,
+        contentKey: `adminSection${i + 1}Content`
+    }))
+)
 useSeoMeta(seoMetaData(pageKey, $lang))
 watch(() => $lang.current.value, () => useSeoMeta(seoMetaData(pageKey, $lang)))
 
-// Secure route
+// Secure access
 definePageMeta({ middleware: 'auth-server' })
 </script>
 

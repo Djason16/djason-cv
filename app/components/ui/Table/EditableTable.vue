@@ -13,17 +13,14 @@
                         :data-label="col.label" @click="startEdit(item, col)" :title="getCellTitle(item, col)">
                         <!-- edit mode -->
                         <template v-if="isEditing(item, col.key)">
-                            <select v-if="col.type === 'select'" v-model="editValue" @change="saveEdit(item, col)"
-                                :id="`field-${item[itemKey]}-${col.key}`" :name="`field-${item[itemKey]}-${col.key}`">
+                            <select v-if="col.type === 'select'" v-model="editValue" @change="saveEdit(item, col)">
                                 <option v-for="opt in col.options" :key="opt.value" :value="opt.value">{{ opt.label }}
                                 </option>
                             </select>
-                            <input v-else-if="!isFieldDisabled(item, col)" v-model="editValue"
-                                :type="col.inputType || 'text'" :autocomplete="col.autocomplete || 'off'"
-                                :step="col.step" :min="col.min" :max="col.max"
+                            <input v-else v-model="editValue" :type="col.inputType || 'text'"
+                                :autocomplete="col.autocomplete || 'off'" :step="col.step" :min="col.min" :max="col.max"
                                 :autocapitalize="col.autocapitalize || 'none'" @keyup.enter="saveEdit(item, col)"
-                                @keyup.esc="cancelEdit" :id="`field-${item[itemKey]}-${col.key}`"
-                                :name="`field-${item[itemKey]}-${col.key}`" />
+                                @keyup.esc="cancelEdit" />
                         </template>
                         <!-- read mode -->
                         <span v-else v-html="getCellValue(item, col)"></span>
@@ -52,7 +49,7 @@
 </template>
 
 <script setup>
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 
 const props = defineProps({
     items: { type: Array, default: () => [] },
@@ -71,13 +68,16 @@ const emit = defineEmits(['update', 'delete', 'download'])
 const editingItem = ref(null), editingField = ref(''), editValue = ref('')
 const tableWrapper = ref(null), hasScroll = ref(false)
 
+// Determine if a field is disabled for editing
 const isFieldDisabled = (item, col) => typeof col.disabled === 'function' ? col.disabled(item) : col.disabled
-const getCellValue = (item, col) => col.formatter ? col.formatter(item) : item[col.key] ?? '-'
-const getCellTitle = (item, col) =>
-    col.tooltip ? (typeof col.tooltip === 'function' ? col.tooltip(item) : col.tooltip) :
-        (col.processHtml ? null : getCellValue(item, col))
 
-// Start / cancel / save edits
+// Get cell display value
+const getCellValue = (item, col) => col.formatter ? col.formatter(item) : item[col.key] ?? '-'
+
+// Tooltip or fallback for cell
+const getCellTitle = (item, col) => col.tooltip ? (typeof col.tooltip === 'function' ? col.tooltip(item) : col.tooltip) : (col.processHtml ? null : getCellValue(item, col))
+
+// Editing control
 const startEdit = (item, col) => {
     if (isFieldDisabled(item, col)) return
     editingItem.value = item
@@ -88,18 +88,18 @@ const isEditing = (item, field) => editingItem.value === item && editingField.va
 const cancelEdit = () => (editingItem.value = null, editingField.value = '', editValue.value = '')
 const saveEdit = (item, col) => {
     if (!editingItem.value) return
-    const val = editValue.value, field = col.key
+    const val = editValue.value
     cancelEdit()
-    emit('update', { item, field, value: val, column: col })
+    emit('update', { item, field: col.key, value: val, column: col })
 }
 
-// Cancel edits when clicking outside
+// Cancel edits when clicking outside table
 const handleClickOutside = e => editingItem.value && tableWrapper.value && !tableWrapper.value.contains(e.target) && cancelEdit()
 
-// Manage scroll padding visibility
+// Update scroll indicator
 const checkScroll = () => tableWrapper.value && (hasScroll.value = tableWrapper.value.scrollHeight > tableWrapper.value.clientHeight)
 
-// Observe DOM changes for scroll recalculation
+// Watch DOM changes to recalc scroll
 let observer = null
 const createObserver = () => {
     if (!tableWrapper.value) return
@@ -110,9 +110,17 @@ const createObserver = () => {
 }
 const destroyObserver = () => { observer?.disconnect(); observer = null }
 
-onMounted(() => { document.addEventListener('click', handleClickOutside); window.addEventListener('resize', checkScroll) })
-onBeforeUnmount(() => { document.removeEventListener('click', handleClickOutside); window.removeEventListener('resize', checkScroll); destroyObserver() })
+onMounted(() => {
+    document.addEventListener('click', handleClickOutside)
+    window.addEventListener('resize', checkScroll)
+})
+onBeforeUnmount(() => {
+    document.removeEventListener('click', handleClickOutside)
+    window.removeEventListener('resize', checkScroll)
+    destroyObserver()
+})
 
+// Watch items for changes to initialize observer
 watch(() => props.items.length, len => {
     len > 0 ? setTimeout(createObserver, 100) : (destroyObserver(), hasScroll.value = false)
 }, { immediate: true })

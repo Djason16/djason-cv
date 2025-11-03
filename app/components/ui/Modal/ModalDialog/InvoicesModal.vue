@@ -1,16 +1,19 @@
 <template>
     <ModalDialog :show="show" :title="$lang.getTranslation('downloadInvoices')" @close="close">
         <div class="invoices-modal">
+            <!-- Search bar for filtering invoices -->
             <div class="search-bar">
                 <input v-model="search" type="text" :placeholder="$lang.getTranslation('searchInvoices')"
                     class="text-small" autocomplete="off" />
             </div>
 
+            <!-- Editable table listing invoices -->
             <EditableTable :items="groupedData" :columns="columns" :actions-label="$lang.getTranslation('actions')"
                 :delete-label="$lang.getTranslation('delete')" :download-label="$lang.getTranslation('downloadInvoice')"
                 :empty-message="$lang.getTranslation('noMissionsFound')" :show-delete="false" :show-download="true"
                 @download="downloadInvoice" />
 
+            <!-- Footer with close button -->
             <div class="modal-footer">
                 <HeroButton type="button" iconClass="fas fa-times" :label="$lang.getTranslation('close')"
                     @click="close" />
@@ -20,29 +23,30 @@
 </template>
 
 <script setup>
-import { watch } from 'vue'
 import { useNuxtApp } from '#app'
+import { watch } from 'vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
-import EditableTable from '~/components/ui/Table/EditableTable.vue'
 import DocumentContainer from '~/components/ui/Document/DocumentContainer.vue'
-import ModalDialog from '../ModalDialog.vue'
-import { usePDFExport } from '~/composables/usePDFExport'
+import EditableTable from '~/components/ui/Table/EditableTable.vue'
+import { useDocumentInfo } from '~/composables/useDocumentInfo'
 import { useDocumentsData } from '~/composables/useDocumentsData'
 import { useFinancialCalculations } from '~/composables/useFinancialCalculations'
-import { useDocumentInfo } from '~/composables/useDocumentInfo'
 import { usePaymentCalculator } from '~/composables/usePaymentCalculator'
+import { usePDFExport } from '~/composables/usePDFExport'
+import ModalDialog from '../ModalDialog.vue'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
+const close = () => emit('close')
 
+// Composables for PDF export, data, calculations, and payment
 const { renderAndExport } = usePDFExport()
 const { groupedData, columns, fetchAllData, search, translateServiceName } = useDocumentsData(props)
 const { calculateTotals } = useFinancialCalculations()
 const { promptDocumentNumber, promptDeliveryAddress, promptOptionalInfo } = useDocumentInfo()
 const { promptIndividualPayment, getCompanyPaymentData } = usePaymentCalculator()
 
-const close = () => emit('close')
 
 // Fetch data when modal opens
 watch(() => props.show, v => v && fetchAllData())
