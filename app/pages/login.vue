@@ -59,6 +59,7 @@ import { useAuth } from '~/composables/useAuth'
 import { useMessage } from '~/composables/useMessage'
 
 const { $lang } = useNuxtApp()
+await $lang.loadGroup('auth')
 const { login, loading: authLoading } = useAuth()
 const isDev = useState('isDev', () => process.env.NODE_ENV === 'development')
 

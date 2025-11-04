@@ -1,67 +1,103 @@
-import { defineNuxtPlugin, useHead } from '#app'
-import { computed, ref } from 'vue'
+import { defineNuxtPlugin, useHead, useRoute } from '#app'
+import { computed, nextTick, ref } from 'vue'
+
+// Critical translations loaded synchronously
+import index from './translations/common/index.js'
+import navigationFooter from './translations/common/navigationFooter.js'
 import seoMetaData from './translations/common/seoMetaData.js'
+import aboutMe from './translations/home/aboutMe.js'
+import hero from './translations/home/hero.js'
+import project from './translations/home/project.js'
+import service from './translations/home/service.js'
+import skill from './translations/home/skill.js'
+import payMe from './translations/payMe/index.js'
 
 export default defineNuxtPlugin(() => {
     const currentLang = ref('french')
+    const route = useRoute()
+
+    // Organize translations by language and module
     const translations = ref({
-        french: { ...seoMetaData.french, _loaded: false },
-        english: { ...seoMetaData.english, _loaded: false }
+        french: {
+            common: { ...seoMetaData.french, ...index.french, ...navigationFooter.french },
+            home: { ...aboutMe.french, ...hero.french, ...project.french, ...service.french, ...skill.french },
+            payMe: { ...payMe.french }
+        },
+        english: {
+            common: { ...seoMetaData.english, ...index.english, ...navigationFooter.english },
+            home: { ...aboutMe.english, ...hero.english, ...project.english, ...service.english, ...skill.english },
+            payMe: { ...payMe.english }
+        }
     })
 
-    // Set HTML lang attribute
+    const loadedModules = new Set(['common-french', 'common-english', 'home-french', 'home-english', 'payMe-french', 'payMe-english'])
     const locale = computed(() => (currentLang.value === 'french' ? 'fr' : 'en'))
-    useHead({ htmlAttrs: { lang: locale.value } })
+    useHead({ htmlAttrs: { lang: locale } })
+
+    // Determine active module based on URL
+    const getActiveModule = () => {
+        const parts = route.path.split('/').filter(Boolean)
+        if (!parts.length) return 'home'
+        const page = parts[0]
+        return ['admin', 'legal', 'auth', 'pay-me'].includes(page) ? page : 'home'
+    }
 
     // Translation function with variable replacement
-    const t = (key, vars = {}) =>
-        (translations.value[currentLang.value]?.[key] || key).replace(/{{(.*?)}}/g, (_, k) => vars[k.trim()] || _)
+    const t = (key, vars = {}) => {
+        const lang = currentLang.value
+        const activeModule = getActiveModule()
+        let text = translations.value[lang]?.[activeModule]?.[key]
 
-    // Dynamically load other translation modules
-    const loadAdditionalTranslations = async lang => {
-        if (translations.value[lang]._loaded) return
+        if (!text) {
+            for (const mod in translations.value[lang]) {
+                if (mod === activeModule) continue
+                text = translations.value[lang][mod]?.[key]
+                if (text) break
+            }
+        }
 
-        const modules = await Promise.all([
-            import('./translations/admin/clients.js'),
-            import('./translations/admin/contracts.js'),
-            import('./translations/admin/dashboard.js'),
-            import('./translations/admin/interestRates.js'),
-            import('./translations/admin/invoices.js'),
-            import('./translations/admin/missions.js'),
-            import('./translations/admin/quotes.js'),
-            import('./translations/admin/settings.js'),
-            import('./translations/auth/login.js'),
-            import('./translations/common/index.js'),
-            import('./translations/common/navigationFooter.js'),
-            import('./translations/home/aboutMe.js'),
-            import('./translations/home/hero.js'),
-            import('./translations/home/project.js'),
-            import('./translations/home/service.js'),
-            import('./translations/home/skill.js'),
-            import('./translations/legal/legal.js'),
-            import('./translations/legal/privacy.js'),
-            import('./translations/legal/refund.js'),
-            import('./translations/legal/terms.js'),
-            import('./translations/payMe/index.js')
-        ])
+        text = text || key
+        return Object.keys(vars).length
+            ? text.replace(/{{(.*?)}}/g, (_, k) => vars[k.trim()] ?? '')
+            : text
+    }
 
-        translations.value[lang] ||= {}
-        modules.forEach(m => {
-            if (m.default[lang]) translations.value[lang] = { ...translations.value[lang], ...m.default[lang] }
+    const translationModules = import.meta.glob('./translations/**/*.js')
+    const translationGroups = {
+        admin: ['clients', 'contracts', 'dashboard', 'interestRates', 'invoices', 'missions', 'quotes', 'settings'],
+        legal: ['legal', 'privacy', 'refund', 'terms'],
+        auth: ['login']
+    }
+
+    const loadTranslationGroup = async (group, lang) => {
+        const key = `${group}-${lang}`
+        if (loadedModules.has(key)) return
+        const folder = group === 'payMe' ? 'payMe' : group
+        const modules = translationGroups[group] || []
+
+        const results = await Promise.all(modules.map(async m => {
+            const path = `./translations/${folder}/${m}.js`
+            return translationModules[path] ? translationModules[path]().catch(() => ({ default: {} })) : { default: {} }
+        }))
+
+        results.forEach(r => {
+            if (r.default?.[lang]) translations.value[lang][group] = { ...translations.value[lang][group], ...r.default[lang] }
         })
-        translations.value[lang]._loaded = true
+        loadedModules.add(key)
     }
 
-    // Switch language and load missing translations
-    const setLang = async lang => {
-        if (!['french', 'english'].includes(lang)) return
+    const loadAllTranslations = lang => Promise.all(Object.keys(translationGroups).map(g => loadTranslationGroup(g, lang)))
+    const setLang = lang => {
+        if (!['french', 'english'].includes(lang)) return Promise.resolve()
         currentLang.value = lang
-        await loadAdditionalTranslations(lang)
+        return loadAllTranslations(lang)
     }
+
+    if (process.client) nextTick(() => loadAllTranslations(currentLang.value))
 
     return {
         provide: {
-            lang: { current: currentLang, locale, availableLanguages: ['french', 'english'], setLang, getTranslation: t }
+            lang: { current: currentLang, locale, availableLanguages: ['french', 'english'], setLang, getTranslation: t, loadGroup: g => loadTranslationGroup(g, currentLang.value) }
         }
     }
 })

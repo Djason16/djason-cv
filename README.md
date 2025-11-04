@@ -359,7 +359,7 @@ package-lock.json      # Lock file
 
 <p>Upload the contents of the <code>.output/public/</code> folder to any static hosting provider.</p>
 
-<p><strong>⚠️ Note:</strong> Static generation will not support dynamic API routes (like Stripe payments).</p>
+<p><strong>⚠️ Note:</strong> Static generation will not support dynamic API routes.</p>
 
 <hr>
 

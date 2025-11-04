@@ -26,6 +26,9 @@
                 <!-- Feedback messages -->
                 <MessageBox :message="translatedMessage" />
 
+                <!-- Hidden file input for DB replacement -->
+                <input type="file" ref="refFileInput" style="display:none" accept=".sqlite" />
+
                 <!-- Dynamic modals -->
                 <component v-for="modal in activeModals" :key="modal.action" :is="modal.component"
                     :show="activeModal?.action === modal.action" :position="modalPosition" :active-button="activeButton"
@@ -57,6 +60,7 @@ import { useAuth } from '~/composables/useAuth'
 import { useMessage } from '~/composables/useMessage'
 
 const { $lang } = useNuxtApp()
+await $lang.loadGroup('admin')
 const { logout } = useAuth()
 
 // Message composable
@@ -67,6 +71,7 @@ const loggingOut = ref(false)
 const activeButton = ref(null)
 const modalPosition = ref({ top: 0, left: 0 })
 const activeModal = ref(null)
+const refFileInput = ref(null)
 
 // Admin button and modal configuration
 const adminButtons = [
@@ -92,7 +97,7 @@ const activeModals = [
     { action: 'password', component: PasswordModal }
 ]
 
-// Login and DB actions (looped)
+// Login & DB buttons with actions
 const loginButtons = computed(() => [
     {
         labelKey: loggingOut.value ? 'loggingOut' : 'logoutButton',
@@ -107,22 +112,25 @@ const loginButtons = computed(() => [
         }
     },
     {
+        labelKey: 'replaceDB',
+        icon: 'fas fa-upload',
+        action: () => handleFileAction('/api/database/replace-db', 'db.sqlite', 'replaceSuccess', 'replaceError', { fileUpload: true })
+    },
+    {
         labelKey: 'downloadDB',
         icon: 'fas fa-database',
-        action: async () => handleFileAction('/api/database/download-db', 'db.sqlite', 'downloadSuccess', 'downloadError')
+        action: () => handleFileAction('/api/database/download-db', 'db.sqlite', 'downloadSuccess', 'downloadError')
     },
     {
         labelKey: 'exportSQL',
         icon: 'fas fa-file-export',
-        action: async () => handleFileAction('/api/database/export-sql', 'backup.sql', 'exportSuccess', 'exportError')
+        action: () => handleFileAction('/api/database/export-sql', 'backup.sql', 'exportSuccess', 'exportError')
     }
 ])
 
 // Modal management
 const handleButtonClick = (btn, e) =>
-    activeModals.some(m => m.action === btn.action)
-        ? openModal(btn, e)
-        : console.log('No modal for', btn.action)
+    activeModals.some(m => m.action === btn.action) ? openModal(btn, e) : console.log('No modal:', btn.action)
 
 const openModal = (btn, e) => {
     const r = e.currentTarget.getBoundingClientRect()
@@ -131,24 +139,40 @@ const openModal = (btn, e) => {
     activeModal.value = btn
 }
 
-const closeModal = () => activeModal.value = null
+const closeModal = () => (activeModal.value = null)
 
-// Generic file download/export helper
-const handleFileAction = async (url, filename, successKey, errorKey) => {
+// File handling helper
+const handleFileAction = async (url, filename, successKey, errorKey, options = {}) => {
     clearMessage()
     try {
-        const res = await fetch(url)
-        if (!res.ok) throw new Error('Request failed')
-        const blob = await res.blob()
-        const a = Object.assign(document.createElement('a'), {
-            href: URL.createObjectURL(blob),
-            download: filename
-        })
-        document.body.appendChild(a)
-        a.click()
-        a.remove()
-        URL.revokeObjectURL(a.href)
+        let res
+        if (options.fileUpload) {
+            const fileInput = refFileInput.value
+            if (!fileInput) throw new Error('File input not found')
+            fileInput.value = ''
+            fileInput.click()
+            const file = await new Promise((resolve, reject) => {
+                const handler = e => {
+                    fileInput.removeEventListener('change', handler)
+                    e.target.files?.length ? resolve(e.target.files[0]) : reject(new Error('No file selected'))
+                }
+                fileInput.addEventListener('change', handler)
+            })
+            const formData = new FormData()
+            formData.append('file', file)
+            res = await fetch(url, { method: 'POST', body: formData })
+        } else {
+            res = await fetch(url, { method: options.method || 'GET' })
+            if (!res.ok) throw new Error('Request failed')
+            const blob = await res.blob()
+            const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename })
+            document.body.appendChild(a)
+            a.click()
+            a.remove()
+            URL.revokeObjectURL(a.href)
+        }
         showMessage('success', successKey)
+        if (options.fileUpload) { setTimeout(() => location.reload(), 5000) }
     } catch (e) {
         console.error(e)
         showMessage('error', errorKey)

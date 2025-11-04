@@ -3,18 +3,18 @@ import { defineNuxtConfig } from 'nuxt/config';
 import { resolve } from 'path';
 import { TRAILING_SLASH_ENABLED } from './utils/pathHelpers.js';
 
-// Import personalInfo
+// Import personal info dynamically
 const { personalInfo } = await import('./utils/personalInfo.js')
 
-// Common prerender and sitemap routes
+// Define prerender and sitemap routes
 const routes: string[] = ['/', '/legal', '/pay-me', '/privacy', '/refund-policy', '/terms', '/login', '/admin']
 
-// Load the .env corresponding to the NODE_ENV
+// Load environment variables if not loaded
 if (!process.env.CONFIG_LOADED) {
   const envPath = `.env.${process.env.NODE_ENV || 'development'}`
   loadEnv({ path: resolve(process.cwd(), envPath) })
   process.env.CONFIG_LOADED = 'true'
-  console.log(`⚡ Loading ${envPath}`)
+  console.log(`⚡ Loaded ${envPath}`)
   console.log('🔍 NUXT_PUBLIC_FRONTEND_DOMAIN:', process.env.NUXT_PUBLIC_FRONTEND_DOMAIN)
 }
 
@@ -30,52 +30,66 @@ export default defineNuxtConfig({
 
   ssr: true,
   devtools: { enabled: true },
+  compatibilityDate: '2025-11-01', // Latest stable date
   css: ['./assets/css/main.css', '@fortawesome/fontawesome-free/css/all.min.css'],
 
   // Modern JS for supported browsers
   build: { transpile: [] },
-  experimental: { payloadExtraction: false },
-
-  devServer: {
-    host: 'localhost',
-    port: 3000
+  experimental: {
+    payloadExtraction: false,
+    // Enable view transitions for smoother page changes
+    viewTransition: true,
+    // Enable component islands for better performance
+    componentIslands: true
   },
 
+  devServer: { host: 'localhost', port: 3000 } as any,
+
   vite: {
-    server: {
-      allowedHosts: [
-        '.ngrok.io',
-        '.ngrok-free.app',
-        'localhost',
-      ],
-    },
+    server: { allowedHosts: ['.ngrok.io', '.ngrok-free.app', 'localhost'] } as any,
     build: {
-      target: 'es2020',
+      target: 'es2022',
       cssCodeSplit: true,
+      reportCompressedSize: true,
+      chunkSizeWarningLimit: 500,
+      minify: 'terser',
+      terserOptions: {
+        compress: {
+          drop_console: !isDev,
+          drop_debugger: !isDev,
+          pure_funcs: !isDev ? ['console.log', 'console.info', 'console.debug'] : []
+        }
+      },
       rollupOptions: {
         output: {
-          manualChunks: (id: string) => {
-            if (id.includes('stripe')) return 'stripe'
-            if (id.includes('node_modules')) return 'vendor'
-          },
+          // Optimize chunk file names
+          chunkFileNames: '_nuxt/[name]-[hash].js',
+          entryFileNames: '_nuxt/[name]-[hash].js',
+          assetFileNames: '_nuxt/[name]-[hash][extname]'
         },
       },
     },
-    esbuild: { target: 'es2020' },
+    optimizeDeps: {
+      include: ['gsap', 'bcryptjs'], // Pre-bundle heavy dependencies
+      exclude: ['sql.js'], // Exclude WASM from pre-bundling
+      esbuildOptions: {
+        target: 'es2022',
+        supported: { 'top-level-await': true, bigint: true }
+      }
+    },
+    esbuild: {
+      target: 'es2022',
+      legalComments: 'none',
+      drop: isDev ? [] : ['console', 'debugger'],
+      treeShaking: true
+    },
   },
 
   nitro: {
-    experimental: {
-      wasm: true,
-      database: true
-    },
+    experimental: { wasm: true, database: true },
+    compressPublicAssets: { gzip: true, brotli: true },
     database: {
-      default: {
-        connector: 'sqlite',
-        options: {
-          filename: resolve('./.data/db.sqlite')
-        }
-      }
+      default: { connector: 'sqlite', options: { filename: resolve('./.data/db.sqlite') } }
     },
     prerender: {
       crawlLinks: true,
@@ -86,68 +100,64 @@ export default defineNuxtConfig({
       concurrency: 4,
       retry: 2,
       retryDelay: 1000,
-      ignoreUnprefixedPublicAssets: true,
+      ignoreUnprefixedPublicAssets: true
     },
     routeRules: {
-      '/images/svg/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-      '/images/**': { headers: { 'Cache-Control': 'public, max-age=3600' } },
-      '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable' } },
-      '/_ipx/**': { headers: { 'Cache-Control': 'public, max-age=3600' } },
-    }
+      // Static assets with long-term caching
+      '/images/svg/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' } },
+      '/images/**': { headers: { 'Cache-Control': 'public, max-age=7200', 'X-Content-Type-Options': 'nosniff' } },
+      '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' } },
+      '/_ipx/**': { headers: { 'Cache-Control': 'public, max-age=7200', 'Vary': 'Accept' } },
+      // Admin routes - no cache, require auth
+      '/admin/**': { ssr: true, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate', 'X-Robots-Tag': 'noindex, nofollow' } },
+      // Public pages with short cache
+      '/': { ssr: true, headers: { 'Cache-Control': 'public, max-age=600, s-maxage=3600' } },
+      '/pay-me': { ssr: true, headers: { 'Cache-Control': 'public, max-age=600, s-maxage=3600' } },
+      // Legal pages - longer cache
+      '/legal/**': { ssr: true, headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=7200' } }
+    },
+    // Minify server output
+    minify: !isDev
   },
 
   modules: [
-    [
-      '@nuxtjs/sitemap',
-      {
-        gzip: true,
-        excludeAppSources: ['nuxt:pages', 'nuxt:prerender'],
-        autoLastmod: true,
-        urls: routes.map((route) => ({
-          loc: route,
-          lastmod: new Date().toISOString(),
-          changefreq: 'daily',
-        })),
-      },
-    ],
-    [
-      '@nuxtjs/robots',
-      {
-        rules: [
-          {
-            UserAgent: '*',
-            Disallow: isDev ? '/' : '',
-            Allow: isDev ? '' : '/',
-          },
-        ],
-        Sitemap: `${process.env.NUXT_PUBLIC_FRONTEND_DOMAIN}/sitemap.xml`,
-      },
-    ],
-    '@nuxt/image'],
+    ['@nuxtjs/sitemap', {
+      gzip: true,
+      excludeAppSources: ['nuxt:pages', 'nuxt:prerender'],
+      autoLastmod: true,
+      urls: routes.map(route => ({ loc: route, lastmod: new Date().toISOString(), changefreq: 'daily' }))
+    }],
+    ['@nuxtjs/robots', {
+      rules: [{ UserAgent: '*', Disallow: isDev ? '/' : '', Allow: isDev ? '' : '/' }],
+      Sitemap: `${process.env.NUXT_PUBLIC_FRONTEND_DOMAIN}/sitemap.xml`
+    }],
+    '@nuxt/image'
+  ],
+
+  // Image optimization settings
+  image: {
+    quality: 80,
+    format: ['webp', 'avif'],
+    screens: { xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536 },
+    provider: 'ipx',
+    ipx: { maxAge: 60 * 60 * 24 * 7 }
+  },
 
   app: {
     head: {
       link: [
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
         { rel: 'dns-prefetch', href: 'https://fonts.gstatic.com' },
-        {
-          rel: 'preload',
-          href: '/fonts/BarlowCondensed/BarlowCondensed-Regular.woff',
-          as: 'font',
-          type: 'font/woff',
-          crossorigin: 'anonymous',
-          fetchpriority: 'high',
-        },
-        {
-          rel: 'preload',
-          href: '/fonts/BarlowCondensed/BarlowCondensed-Bold.woff',
-          as: 'font',
-          type: 'font/woff',
-          crossorigin: 'anonymous',
-          fetchpriority: 'high',
-        },
-        { rel: 'icon', type: 'image/jpeg', href: '/favicon_dc.jpg' },
+        { rel: 'preload', href: '/fonts/BarlowCondensed/BarlowCondensed-Regular.woff', as: 'font', type: 'font/woff', crossorigin: 'anonymous', fetchpriority: 'high' },
+        { rel: 'preload', href: '/fonts/BarlowCondensed/BarlowCondensed-Bold.woff', as: 'font', type: 'font/woff', crossorigin: 'anonymous', fetchpriority: 'high' },
+        { rel: 'icon', type: 'image/jpeg', href: '/favicon_dc.jpg' }
       ],
+      // Add security headers
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'format-detection', content: 'telephone=no' }
+      ]
     },
   },
 
@@ -169,6 +179,4 @@ export default defineNuxtConfig({
       stripePublicKey: process.env.NUXT_PUBLIC_STRIPE_PUBLIC_KEY,
     },
   },
-
-  compatibilityDate: '2025-01-01',
 })
