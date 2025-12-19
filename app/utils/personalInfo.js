@@ -1,41 +1,52 @@
-// Personal information and social links configuration
+/* Public-facing personal, business, and availability metadata */
 export const personalInfo = {
-    name: "Djason CHERY",                  // Full name
-    email: "contact@djason-chery.dev",       // Contact email
-    phone: "+33758204726",                 // Contact phone
-    birthDate: new Date("1998-07-16"),     // Birth date
-    siret: "93970399700014",              // SIRET number (14 digits)
-    tvaNumber: "FR33939703997",            // VAT number
-    address: "Thourotte, France",              // City only for public display (RGPD protection)
-    invoiceAddress: "16 Rue Jean Jaurès, 60150 Thourotte", // Full invoice address
+    name: 'Djason CHERY',
+    email: 'contact@djason-chery.dev',
+    phone: '+33758204726',
+    birthDate: new Date('1998-07-16'),
 
-    // Bank details
+    /* Legal and billing identifiers */
+    siret: '93970399700014',
+    tvaNumber: 'FR33939703997',
+
+    /* Address exposure is intentionally limited for privacy */
+    address: 'Thourotte, France',
+    invoiceAddress: '16 Rue Jean Jaurès, 60150 Thourotte',
+
+    /* Banking details for invoicing */
     bank: {
-        iban: "FR76 2823 3000 0115 6546 6214 086",
-        bic: "REVOFRP2"
+        iban: 'FR76 2823 3000 0115 6546 6214 086',
+        bic: 'REVOFRP2'
     },
 
-    // Availability settings
-    manualOverride: false,              // Set to true to force unavailable (vacations, etc.)
-    manualStatus: "unavailable",        // Status when manual override is true
+    /* Hard unavailability window (e.g. holidays) */
+    unavailableRange: {
+        start: '2025-12-19',
+        end: '2026-01-05'
+    },
 
-    // Weekly schedule
+    /* Manual availability override */
+    manualOverride: false,
+    manualStatus: 'unavailable',
+
+    /* Weekly working schedule, timezone-aware */
     workingHours: {
-        timezone: "Europe/Paris",
+        timezone: 'Europe/Paris',
         schedule: {
-            1: { start: "09:00", end: "18:00" }, // Monday
-            2: { start: "09:00", end: "18:00" }, // Tuesday
-            3: { start: "09:00", end: "18:00" }, // Wednesday
-            4: { start: "09:00", end: "18:00" }, // Thursday
-            5: { start: "09:00", end: "18:00" }, // Friday
+            1: { start: '09:00', end: '18:00' }, // Mon
+            2: { start: '09:00', end: '18:00' }, // Tue
+            3: { start: '09:00', end: '18:00' }, // Wed
+            4: { start: '09:00', end: '18:00' }, // Thu
+            5: { start: '09:00', end: '18:00' }  // Fri
         }
     },
 
-    links: {                               // Professional and social profiles
-        linkedin: "https://www.linkedin.com/in/djason-chery-3b87702b4", // LinkedIn profile
-        github: "https://github.com/Djason16",                            // GitHub repos
-        malt: "https://www.malt.fr/profile/djasonchery",                // Freelance profile
-        instagram: "https://www.instagram.com/djasonchery",              // Instagram updates
-        whatsapp: "https://wa.me/33758204726"                             // WhatsApp direct link
-    },
-};
+    /* Professional and social links */
+    links: {
+        linkedin: 'https://www.linkedin.com/in/djason-chery-3b87702b4',
+        github: 'https://github.com/Djason16',
+        malt: 'https://www.malt.fr/profile/djasonchery',
+        instagram: 'https://www.instagram.com/djasonchery',
+        whatsapp: 'https://wa.me/33758204726'
+    }
+}

@@ -13,6 +13,7 @@ import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout
 
 // Language context
 const { $lang } = useNuxtApp()
+await $lang.loadGroup('legal')
 
 // Privacy sections dynamically generated
 const privacySections = Array.from({ length: 10 }, (_, i) => ({

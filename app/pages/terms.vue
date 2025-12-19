@@ -13,6 +13,7 @@ import { seoMetaData } from '~/utils/seo.js'
 
 // Language context
 const { $lang } = useNuxtApp()
+await $lang.loadGroup('legal')
 
 // Generate sections dynamically
 const termsSections = Array.from({ length: 14 }, (_, i) => ({

@@ -13,6 +13,7 @@ import { personalInfo } from '~/utils/personalInfo.js'
 import { seoMetaData } from '~/utils/seo.js'
 
 const { $lang } = useNuxtApp()
+await $lang.loadGroup('legal')
 
 // Generate legal sections dynamically
 const legalSections = Array.from({ length: 8 }, (_, i) => ({

@@ -13,6 +13,7 @@ import { seoMetaData } from '@/utils/seo.js'
 
 // Language context and SEO key
 const { $lang } = useNuxtApp()
+await $lang.loadGroup('legal')
 
 // Refund policy sections dynamically generated
 const refundPolicySections = Array.from({ length: 7 }, (_, i) => ({

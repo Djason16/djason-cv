@@ -1,26 +1,25 @@
 <template>
-    <div id="hero-banner" class="hero-banner" aria-labelledby="hero-banner__title" role="banner">
+    <div id="hero-banner" class="hero-banner" role="banner" aria-labelledby="hero-banner__title">
         <div class="hero-banner__content">
-            <!-- Availability indicator with conditional message -->
+            <!-- Availability status + optional contextual message -->
             <div class="availability-wrapper">
                 <AvailabilityButton :status="currentAvailability" />
-                <div class="text-normal" v-if="showAvailabilityMessage">
-                    <span class="availability-schedule">{{ availabilityMessage }}</span>
-                </div>
+                <span v-if="showAvailabilityMessage" class="availability-schedule text-normal">
+                    {{ availabilityMessage }}
+                </span>
             </div>
 
-            <!-- Hero title -->
+            <!-- Main hero heading -->
             <h1 id="hero-banner__title" class="hero-banner__title text-uppercase text-bold">
                 {{ $lang.getTranslation('welcomeToMyWebsite') }}
             </h1>
 
-            <!-- Action buttons -->
+            <!-- Primary contact actions -->
             <div class="hero-banner__actions">
                 <HeroButton v-for="(action, i) in heroActions" :key="i" :label="$lang.getTranslation(action.labelKey)"
-                    :href="action.href"
-                    :ariaLabel="$lang.getTranslation(action.ariaKey, { email: personalInfo.email, phone: personalInfo.phone })"
-                    :title="$lang.getTranslation(action.ariaKey, { email: personalInfo.email, phone: personalInfo.phone })"
-                    :iconClass="action.icon" />
+                    :href="action.href" :iconClass="action.icon"
+                    :ariaLabel="$lang.getTranslation(action.ariaKey, contactArgs)"
+                    :title="$lang.getTranslation(action.ariaKey, contactArgs)" />
             </div>
         </div>
     </div>
@@ -31,43 +30,70 @@ import { useNuxtApp } from '#app'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import AvailabilityButton from '~/components/ui/Button/AvailabilityButton.vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
-import { getAvailability, getWorkingHours } from '~/utils/availability.js'
-import { personalInfo } from '~/utils/personalInfo.js'
+import { getAvailability, getWorkingHours } from '~/utils/availability'
+import { personalInfo } from '~/utils/personalInfo'
 
 const { $lang } = useNuxtApp()
 
-// Action buttons for email and phone
+/* Static contact metadata reused across buttons */
+const contactArgs = {
+    email: personalInfo.email,
+    phone: personalInfo.phone
+}
+
+/* Hero call-to-action configuration */
 const heroActions = [
-    { labelKey: 'sendEmailButton', href: `mailto:${personalInfo.email}`, ariaKey: 'sendEmail', icon: 'fas fa-envelope' },
-    { labelKey: 'callPhoneButton', href: `tel:${personalInfo.phone.replace(/\s+/g, '')}`, ariaKey: 'callPhone', icon: 'fas fa-phone' }
+    {
+        labelKey: 'sendEmailButton',
+        ariaKey: 'sendEmail',
+        href: `mailto:${personalInfo.email}`,
+        icon: 'fas fa-envelope'
+    },
+    {
+        labelKey: 'callPhoneButton',
+        ariaKey: 'callPhone',
+        href: `tel:${personalInfo.phone.replace(/\s+/g, '')}`,
+        icon: 'fas fa-phone'
+    }
 ]
 
-// Reactive availability state
+/* Reactive availability state */
 const currentAvailability = ref(getAvailability())
 
-// Compute availability message based on manual override or schedule
+/* Human-readable availability message
+   - Manual override has priority
+   - Otherwise falls back to working hours
+   - Language dependency is explicitly tracked */
 const availabilityMessage = computed(() => {
+    $lang.current.value // ensures recompute on language change
+
     if (personalInfo.manualOverride) {
-        if (personalInfo.manualStatus === 'busy') return $lang.getTranslation('currentlyBusy')
-        if (personalInfo.manualStatus === 'unavailable') return $lang.getTranslation('notAvailable')
-        return '' // manualStatus === 'available' → no message
+        return personalInfo.manualStatus === 'busy'
+            ? $lang.getTranslation('currentlyBusy')
+            : personalInfo.manualStatus === 'unavailable'
+                ? $lang.getTranslation('notAvailable')
+                : ''
     }
-    return getWorkingHours($lang.getTranslation) // normal working hours
+
+    return getWorkingHours($lang.getTranslation)
 })
 
-// Show message only if non-empty
-const showAvailabilityMessage = computed(() => !!availabilityMessage.value)
+/* Message visibility guard */
+const showAvailabilityMessage = computed(() => Boolean(availabilityMessage.value))
 
-// Auto-refresh availability every minute
+/* Refresh availability every minute */
 let intervalId
 onMounted(() => {
-    intervalId && clearInterval(intervalId)
-    intervalId = setInterval(() => currentAvailability.value = getAvailability(), 60000)
+    intervalId = setInterval(() => {
+        currentAvailability.value = getAvailability()
+    }, 60000)
 })
-onUnmounted(() => intervalId && clearInterval(intervalId))
+onUnmounted(() => clearInterval(intervalId))
 
-// Refresh availability on language change
-watch(() => $lang.current.value, () => currentAvailability.value = getAvailability())
+/* Sync availability on language switch */
+watch(() => $lang.current.value, () => {
+    currentAvailability.value = getAvailability()
+})
 </script>
 
 <style scoped>

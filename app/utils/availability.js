@@ -1,45 +1,99 @@
 import { personalInfo } from './personalInfo.js'
 
-// Get current availability considering manual override or schedule
+/* Resolve current availability
+   Priority order: date range → manual override → working schedule */
 export const getAvailability = () => {
+    const now = new Date()
+
+    // Date-based unavailability window
+    if (personalInfo.unavailableRange) {
+        const start = new Date(personalInfo.unavailableRange.start)
+        const end = new Date(personalInfo.unavailableRange.end)
+        end.setHours(23, 59, 59, 999)
+
+        if (now >= start && now <= end) return 'unavailable'
+    }
+
+    // Explicit manual state
     if (personalInfo.manualOverride) return personalInfo.manualStatus
 
+    // Timezone-aware schedule check
     try {
-        const now = new Date()
-        const local = new Date(now.toLocaleString('en-US', { timeZone: personalInfo.workingHours.timezone }))
+        const local = new Date(
+            now.toLocaleString('en-US', { timeZone: personalInfo.workingHours.timezone })
+        )
+
         const day = local.getDay()
         const time = `${String(local.getHours()).padStart(2, '0')}:${String(local.getMinutes()).padStart(2, '0')}`
-        const schedule = personalInfo.workingHours.schedule[day]
-        return schedule && time >= schedule.start && time <= schedule.end ? 'available' : 'unavailable'
+        const slot = personalInfo.workingHours.schedule[day]
+
+        return slot && time >= slot.start && time <= slot.end
+            ? 'available'
+            : 'unavailable'
     } catch (err) {
         console.error('Availability calculation failed:', err)
         return 'unavailable'
     }
 }
 
-// Compute current UTC offset for a timezone in hours
+/* Compute UTC offset (hours) for a given timezone */
 const getUTCOffsetHours = tz => {
     const now = new Date()
-    const utcDate = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }))
-    const tzDate = new Date(now.toLocaleString('en-US', { timeZone: tz }))
-    return (tzDate - utcDate) / (1000 * 60 * 60)
+    const utc = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }))
+    const local = new Date(now.toLocaleString('en-US', { timeZone: tz }))
+    return (local - utc) / 36e5
 }
 
-// Generate readable working hours string, respecting manual override
+/* Build a readable working-hours string
+   Mirrors availability rules while remaining user-facing */
 export const getWorkingHours = translate => {
-    if (personalInfo.manualOverride)
-        return translate(personalInfo.manualStatus === 'busy' ? 'notAvailable' : personalInfo.manualStatus)
+    const now = new Date()
 
+    // Active date-based unavailability message
+    if (personalInfo.unavailableRange) {
+        const start = new Date(personalInfo.unavailableRange.start)
+        const end = new Date(personalInfo.unavailableRange.end)
+        end.setHours(23, 59, 59, 999)
+
+        if (now >= start && now <= end) {
+            const formatted = end.toLocaleDateString(translate('locale'), {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            })
+            return translate('unavailableUntil', { date: formatted })
+        }
+    }
+
+    // Manual override message
+    if (personalInfo.manualOverride) {
+        return translate(
+            personalInfo.manualStatus === 'busy'
+                ? 'notAvailable'
+                : personalInfo.manualStatus
+        )
+    }
+
+    // Schedule formatting
     const schedule = personalInfo.workingHours.schedule
     const days = Object.keys(schedule)
     if (!days.length) return translate('noSchedule')
 
-    const offset = `UTC${getUTCOffsetHours(personalInfo.workingHours.timezone) >= 0 ? '+' : ''}${getUTCOffsetHours(personalInfo.workingHours.timezone)} Paris`
+    const offsetHours = getUTCOffsetHours(personalInfo.workingHours.timezone)
+    const offset = `UTC${offsetHours >= 0 ? '+' : ''}${offsetHours} Paris`
+
     const first = schedule[days[0]]
-    const allSame = days.every(d => schedule[d].start === first.start && schedule[d].end === first.end)
+    const uniform = days.every(d =>
+        schedule[d].start === first.start &&
+        schedule[d].end === first.end
+    )
 
-    if (allSame && days.length === 5) return `${translate('mondayToFriday')} ${first.start}-${first.end} (${offset})`
+    if (uniform && days.length === 5) {
+        return `${translate('mondayToFriday')} ${first.start}-${first.end} (${offset})`
+    }
 
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-    return days.map(d => `${translate(dayNames[d])} ${schedule[d].start}-${schedule[d].end} (${offset})`).join(', ')
+    const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+    return days
+        .map(d => `${translate(dayKeys[d])} ${schedule[d].start}-${schedule[d].end} (${offset})`)
+        .join(', ')
 }
