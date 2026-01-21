@@ -27,11 +27,11 @@ export default defineNuxtConfig({
 
   ssr: true,
   devtools: { enabled: true },
-  compatibilityDate: '2025-11-01', // Latest stable date
+  compatibilityDate: '2024-11-01', // Latest stable date
   css: ['./assets/css/main.css', '@fortawesome/fontawesome-free/css/all.min.css'],
 
   // Modern JS for supported browsers
-  build: { transpile: [] },
+  build: { transpile: ['entities'] },
   experimental: {
     payloadExtraction: false,
     // Enable view transitions for smoother page changes
@@ -67,7 +67,7 @@ export default defineNuxtConfig({
       },
     },
     optimizeDeps: {
-      include: ['gsap', 'bcryptjs'], // Pre-bundle heavy dependencies
+      include: ['gsap', 'bcryptjs', 'entities'], // Pre-bundle heavy dependencies
       exclude: ['sql.js'], // Exclude WASM from pre-bundling
       esbuildOptions: {
         target: 'es2022',
@@ -85,6 +85,12 @@ export default defineNuxtConfig({
   nitro: {
     experimental: { wasm: true, database: true },
     compressPublicAssets: { gzip: true, brotli: true },
+    externals: {
+      inline: ['entities']
+    },
+    alias: {
+      'entities/decode': 'entities/dist/commonjs/decode.js'
+    },
     database: {
       default: { connector: 'sqlite', options: { filename: resolve('./.data/db.sqlite') } }
     },
