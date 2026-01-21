@@ -1,0 +1,90 @@
+@import "../utils/variables.css";
+
+/* Global styles */
+html {
+    visibility: hidden;
+    /* hide page until fonts are loaded */
+}
+
+html[data-fonts-loaded] {
+    visibility: visible;
+    /* show page once fonts are ready */
+}
+
+body {
+    font-family: var(--font-primary);
+    color: var(--text-color-light);
+    background-color: var(--fifth-color);
+    margin: 0 auto;
+    padding: 0;
+    width: 90vw;
+    height: 100dvh;
+    min-height: 100vh;
+    overflow-x: hidden;
+    box-shadow: 0 0 50px rgba(255, 255, 255, 0.05);
+    transition: all 0.5s ease-in-out, overflow 0s;
+    touch-action: manipulation;
+}
+
+body.modal-open::before,
+body.modal-closing::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+}
+
+body.modal-open::before {
+    animation: fade 0.4s ease-in-out forwards;
+}
+
+body.modal-closing::before {
+    animation: fade 0.4s ease-in-out forwards reverse;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Links */
+a {
+    color: var(--text-color-light);
+    text-decoration: none;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--second-color);
+    transition: width 0.3s ease;
+}
+
+a:hover::after {
+    width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    body {
+        width: 100vw;
+        box-shadow: none;
+    }
+
+    a::after {
+        display: none;
+    }
+}

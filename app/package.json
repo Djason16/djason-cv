@@ -1,0 +1,39 @@
+{
+  "name": "djason-chery-nuxt-fullstack",
+  "private": true,
+  "description": "Nuxt 4 fullstack application with Nitro for djason-chery.dev — integrated back and front",
+  "type": "module",
+  "scripts": {
+    "dev": "cross-env NODE_NO_WARNINGS=1 nuxt dev",
+    "build": "cross-env NODE_ENV=production nuxt build && npm run copy-wasm",
+    "start": "node .output/server/index.mjs",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "copy-wasm": "node scripts/post-build-copy-wasm.js"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.1.0",
+    "@nuxt/image": "^2.0.0",
+    "@nuxtjs/robots": "^5.6.7",
+    "@nuxtjs/sitemap": "^7.5.2",
+    "bcryptjs": "^3.0.3",
+    "cookie": "^1.1.1",
+    "dotenv": "^17.2.3",
+    "gsap": "^3.14.2",
+    "html2pdf.js": "^0.14.0",
+    "intersection-observer": "^0.12.2",
+    "nodemailer": "^7.0.12",
+    "nuxt": "^4.2.2",
+    "sql.js": "^1.13.0",
+    "stripe": "^20.2.0",
+    "vue": "latest",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.9",
+    "baseline-browser-mapping": "^2.9.16",
+    "cross-env": "^10.1.0",
+    "pm2": "^6.0.14"
+  }
+}

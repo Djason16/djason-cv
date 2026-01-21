@@ -1,0 +1,35 @@
+@import "../utils/variables.css";
+
+/* Hero <h1> styles */
+.hero-banner__title {
+    font-size: 4rem;
+    line-height: 1.2;
+    margin: 20px 0;
+    transition: font-size 0.3s ease-in-out;
+    text-align: left;
+}
+
+/* Responsive typography */
+@media (max-width: 1440px) {
+    .hero-banner__title {
+        font-size: 3.5rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .hero-banner__title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-banner__title {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-banner__title {
+        font-size: 2rem;
+    }
+}

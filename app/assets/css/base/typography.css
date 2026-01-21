@@ -1,0 +1,110 @@
+@import "../utils/variables.css";
+
+/* Typography styles */
+.text-smaller {
+    font-size: var(--font-smaller) !important;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.text-small {
+    font-size: var(--font-small) !important;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.text-normal {
+    font-size: var(--font-normal) !important;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.text-large {
+    font-size: var(--font-large) !important;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.text-xlarge {
+    font-size: var(--font-xlarge) !important;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.text-xxlarge {
+    font-size: var(--font-xxlarge) !important;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.text-tall {
+    font-size: var(--font-tall) !important;
+    transition: font-size 0.3s ease-in-out;
+}
+
+.text-bold {
+    font-weight: bold !important;
+}
+
+.text-uppercase {
+    text-transform: uppercase !important;
+}
+
+.text-lowercase {
+    text-transform: lowercase !important;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+    .text-smaller {
+        font-size: calc(var(--font-smaller) - 0.1rem) !important;
+    }
+
+    .text-small {
+        font-size: calc(var(--font-small) - 0.1rem) !important;
+    }
+
+    .text-normal {
+        font-size: calc(var(--font-normal) - 0.1rem) !important;
+    }
+
+    .text-large {
+        font-size: calc(var(--font-large) - 0.1rem) !important;
+    }
+
+    .text-xlarge {
+        font-size: calc(var(--font-xlarge) - 0.2rem) !important;
+    }
+
+    .text-xxlarge {
+        font-size: calc(var(--font-xxlarge) - 0.4rem) !important;
+    }
+
+    .text-tall {
+        font-size: calc(var(--font-tall) - 0.5rem) !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .text-smaller {
+        font-size: calc(var(--font-smaller) - 0.2rem) !important;
+    }
+
+    .text-small {
+        font-size: calc(var(--font-small) - 0.2rem) !important;
+    }
+
+    .text-normal {
+        font-size: calc(var(--font-normal) - 0.2rem) !important;
+    }
+
+    .text-large {
+        font-size: calc(var(--font-large) - 0.2rem) !important;
+    }
+
+    .text-xlarge {
+        font-size: calc(var(--font-xlarge) - 0.3rem) !important;
+    }
+
+    .text-xxlarge {
+        font-size: calc(var(--font-xxlarge) - 0.5rem) !important;
+    }
+
+    .text-tall {
+        font-size: calc(var(--font-tall) - 1rem) !important;
+    }
+}

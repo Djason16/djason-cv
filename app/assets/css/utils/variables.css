@@ -1,0 +1,55 @@
+/* Import Barlow Condensed font in WOFF and TTF formats */
+/* WOFF format is prioritized because it is optimized for the web, followed by TTF as a fallback */
+@font-face {
+    font-family: 'Barlow Condensed';
+    src: url('/fonts/BarlowCondensed/BarlowCondensed-Regular.woff') format('woff'),
+        url('/fonts/BarlowCondensed/BarlowCondensed-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0020-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+    font-family: 'Barlow Condensed';
+    src: url('/fonts/BarlowCondensed/BarlowCondensed-Bold.woff') format('woff'),
+        url('/fonts/BarlowCondensed/BarlowCondensed-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
+    unicode-range: U+0020-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Root variables */
+:root {
+    /* Color variables */
+    --zero-color: #ffffff;
+    --first-color: #F0F5F9;
+    --second-color: #C9D6DF;
+    --third-color: #52616B;
+    --fourth-color: #1E2022;
+    --fifth-color: #0D0D0D;
+
+    /* Text color variables */
+    --text-color-light: #ffffff;
+    --text-color-grey: #7a7a7a;
+    --text-color-dark: #1a1d1f;
+
+    /* Additional accent colors */
+    --accent-yellow: #F4D03F;
+    --accent-green: #58D68D;
+    --accent-red: #E74C3C;
+    --accent-blue: #5DADE2;
+
+    /* Font variables */
+    --font-primary: "Barlow Condensed", "Roboto Condensed", roboto, oxygen, "Fira Sans", arial, sans-serif;
+
+    /* Font sizes */
+    --font-smaller: 0.6rem;
+    --font-small: 0.8rem;
+    --font-normal: 1rem;
+    --font-large: 1.2rem;
+    --font-xlarge: 1.5rem;
+    --font-xxlarge: 2rem;
+    --font-tall: 3rem;
+}
