@@ -317,6 +317,12 @@ NUXT_PUBLIC_GITHUB=https://github.com/example
 NUXT_PUBLIC_MALT=https://www.malt.fr/profile/example
 NUXT_PUBLIC_INSTAGRAM=https://www.instagram.com/example
 NUXT_PUBLIC_WHATSAPP=https://wa.me/33123456789
+
+# --------------------------------------------------
+# Database Management
+# Server-side only, DO NOT expose secrets
+# --------------------------------------------------
+DB_REPLACE_TRIGGER=0
 </code></pre>
 
 <p>For production, create <code>.env.production</code>:</p> 
@@ -405,6 +411,12 @@ NUXT_PUBLIC_GITHUB=https://github.com/example
 NUXT_PUBLIC_MALT=https://www.malt.fr/profile/example
 NUXT_PUBLIC_INSTAGRAM=https://www.instagram.com/example
 NUXT_PUBLIC_WHATSAPP=https://wa.me/33123456789
+
+# --------------------------------------------------
+# Database Management
+# Server-side only, DO NOT expose secrets
+# --------------------------------------------------
+DB_REPLACE_TRIGGER=0
 </code></pre>
 
 <p><strong>⚠️ Important:</strong> Never commit <code>.env.development</code> or <code>.env.production</code> files to Git. Add them to <code>.gitignore</code>.</p>
@@ -477,7 +489,7 @@ package-lock.json      # Lock file
 
 <h2 id="api-routes">API Routes</h2>
 
-<p>The following API routes are available:</p>
+<p>The application provides a comprehensive RESTful API with the following main endpoints:</p>
 
 <table>
     <tr>
@@ -587,6 +599,18 @@ package-lock.json      # Lock file
         <td>List all services</td>
     </tr>
 </table>
+
+<p><strong>And many more...</strong> The API includes additional endpoints for:</p>
+<ul>
+  <li>Document generation (quotes, invoices, contracts)</li>
+  <li>Authentication and session management</li>
+  <li>User profile management</li>
+  <li>Email notifications</li>
+  <li>Data analytics and reporting</li>
+  <li>File uploads and media management</li>
+</ul>
+
+<p>For a complete list of available endpoints, explore the <code>server/api/</code> directory in the source code.</p>
 
 <hr>
 

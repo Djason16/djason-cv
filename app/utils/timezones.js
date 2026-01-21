@@ -1,7 +1,5 @@
-/**
- * Complete list of IANA timezones for 195+ countries worldwide
- * One primary timezone per country
- */
+// Complete list of IANA timezones for 195+ countries worldwide
+// One primary timezone per country
 
 export const timezones = [
     'UTC',

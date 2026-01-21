@@ -64,7 +64,7 @@ export default defineNuxtPlugin(() => {
 
     const translationModules = import.meta.glob('./translations/**/*.js')
     const translationGroups = {
-        admin: ['clients', 'contracts', 'dashboard', 'interestRates', 'invoices', 'missions', 'quotes', 'settings', 'calendar', 'unavailability', 'manualOverride'],
+        admin: ['clients', 'contracts', 'dashboard', 'interestRates', 'invoices', 'missions', 'quotes', 'settings', 'calendar', 'unavailability', 'manualOverride', 'projects', 'env'],
         legal: ['legal', 'privacy', 'refund', 'terms'],
         auth: ['login']
     }

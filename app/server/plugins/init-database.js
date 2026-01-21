@@ -15,7 +15,8 @@ export default defineNitroPlugin(async () => {
             createInterestRatesTable(db),
             createCalendarSettingsTable(db),
             createUnavailabilityTable(db),
-            createAvailabilityOverrideTable(db)
+            createAvailabilityOverrideTable(db),
+            createProjectsTable(db)
         ])
         console.log('✅ All tables verified')
 

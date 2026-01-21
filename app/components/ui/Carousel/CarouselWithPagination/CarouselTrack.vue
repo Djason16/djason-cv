@@ -2,37 +2,43 @@
     <!-- Carousel track container with optional transition -->
     <div class="carousel-track" :class="{ 'no-transition': !transitionEnabled }" :style="trackStyle">
         <!-- Loop through each slide -->
-        <div v-for="(item, index) in slides" :key="index" class="carousel-item">
-            <!-- Default slot content for slide -->
-            <slot :item="item">
-                <div class="carousel-content">
-                    <div class="carousel-overlay">
-                        <!-- Slide title -->
-                        <h3 class="project-title text-xlarge">{{ item.name }}</h3>
-                        <!-- Short description -->
-                        <p class="project-description text-normal">{{ $lang.getTranslation(item.shortDescriptionKey) }}
-                        </p>
-                        <!-- Skills list -->
-                        <ul class="project-skills">
-                            <li v-for="(skill, i) in item.skills" :key="i" class="skill text-normal">
-                                {{ $lang.getTranslation(skill) || skill }}
-                            </li>
-                        </ul>
-                        <!-- Optional external link -->
-                        <a v-if="item.link" :href="item.link" target="_blank"
-                            :title="item.name + ' - ' + ($lang.getTranslation('viewMore'))"
-                            class="project-link text-normal text-bold text-uppercase">
-                            {{ $lang.getTranslation('viewMore') || 'View More' }}
-                        </a>
+        <div v-for="(item, index) in slides" :key="item?.id || index" class="carousel-item">
+            <!-- Only render if item exists -->
+            <template v-if="item && item.name">
+                <!-- Default slot content for slide -->
+                <slot :item="item">
+                    <div class="carousel-content">
+                        <div class="carousel-overlay">
+                            <!-- Slide title -->
+                            <h3 class="project-title text-xlarge">{{ item.name }}</h3>
+                            <!-- Short description -->
+                            <p class="project-description text-normal">
+                                {{ item.short }}
+                            </p>
+                            <!-- Skills list -->
+                            <ul v-if="item.skills && item.skills.length > 0" class="project-skills">
+                                <li v-for="(skill, i) in item.skills" :key="i" class="skill text-normal">
+                                    {{ $lang.getTranslation(skill) || skill }}
+                                </li>
+                            </ul>
+                            <!-- Optional external link -->
+                            <a v-if="item.link" :href="item.link" target="_blank" rel="noopener noreferrer"
+                                :title="item.name + ' - ' + ($lang.getTranslation('viewMore') || 'View More')"
+                                class="project-link text-normal text-bold text-uppercase">
+                                {{ $lang.getTranslation('viewMore') || 'View More' }}
+                            </a>
+                        </div>
+                        <!-- Slide image -->
+                        <NuxtImg v-if="!fallbacks[index] && (item.image || item.img)" :src="item.image || item.img"
+                            :alt="item.name" :title="item.name" class="carousel-image" width="640" height="480"
+                            sizes="(max-width: 768px) 90vw, 640px" format="webp" loading="lazy" densities="1x 2x"
+                            @error="onError(index)" placeholder />
+                        <img v-else-if="item.image || item.img" :src="item.image || item.img"
+                            :alt="`Fallback ${item.name}`" :title="`Fallback ${item.name}`" class="carousel-image"
+                            loading="lazy" />
                     </div>
-                    <!-- Slide image -->
-                    <NuxtImg v-if="!fallbacks[index]" :src="item.image" :alt="item.name" :title="item.name"
-                        class="carousel-image" width="640" height="480" sizes="(max-width: 768px) 90vw, 640px"
-                        format="webp" loading="lazy" densities="1x 2x" @error="onError(index)" placeholder />
-                    <img v-else :src="item.image" :alt="`Fallback ${item.name}`" :title="`Fallback ${item.name}`"
-                        class="carousel-image" loading="lazy" />
-                </div>
-            </slot>
+                </slot>
+            </template>
         </div>
     </div>
 </template>
@@ -42,7 +48,10 @@ import { useImageFallback } from '@/composables/useImageFallback.js';
 
 // Props: slides array, dynamic track style, and transition toggle
 defineProps({
-    slides: Array,
+    slides: {
+        type: Array,
+        default: () => []
+    },
     trackStyle: Object,
     transitionEnabled: Boolean
 })

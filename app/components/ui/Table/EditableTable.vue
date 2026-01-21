@@ -13,11 +13,28 @@
                         :data-label="col.label" @click="startEdit(item, col)" :title="getCellTitle(item, col)">
                         <!-- Inline edit input -->
                         <template v-if="isEditing(item, col.key)">
-                            <select v-if="col.type === 'select'" ref="editInput" v-model="editValue"
+                            <!-- Select multiple -->
+                            <div v-if="col.type === 'select' && col.multiple" class="select-multiple-container"
+                                @click.stop @mousedown.stop>
+                                <select ref="editInput" v-model="editValue" multiple size="5">
+                                    <option v-for="opt in col.options" :key="opt.value" :value="opt.value">
+                                        {{ opt.label }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Select simple -->
+                            <select v-else-if="col.type === 'select'" ref="editInput" v-model="editValue"
                                 @change="saveEdit(col)">
                                 <option v-for="opt in col.options" :key="opt.value" :value="opt.value">{{ opt.label }}
                                 </option>
                             </select>
+
+                            <!-- File input -->
+                            <input v-else-if="col.type === 'file'" type="file" ref="editInput"
+                                @change="handleFileChange($event, col)" />
+
+                            <!-- Text / number / date etc -->
                             <input v-else ref="editInput" v-model="editValue" :type="col.inputType || 'text'"
                                 :autocomplete="col.autocomplete || 'off'" :step="col.step" :min="col.min" :max="col.max"
                                 :autocapitalize="col.autocapitalize || 'none'" @keyup.enter="saveEdit(col)"
@@ -68,6 +85,8 @@ const props = defineProps({
 const emit = defineEmits(['update', 'delete', 'download'])
 const editingItem = ref(null), editingField = ref(''), editValue = ref('')
 const tableWrapper = ref(null), hasScroll = ref(false), editInput = ref(null)
+const isEditingMultipleSelect = ref(false)
+const justStartedEditing = ref(false)
 let observer = null
 
 // Helpers
@@ -81,6 +100,11 @@ const startEdit = (item, col) => {
     editingItem.value = item
     editingField.value = col.key
     editValue.value = col.editValue ? col.editValue(item) : item[col.key] ?? ''
+    isEditingMultipleSelect.value = col.type === 'select' && col.multiple
+    justStartedEditing.value = true
+    setTimeout(() => {
+        justStartedEditing.value = false
+    }, 100)
     console.log('Edit started:', { itemId: item?.id, column: col.key, itemType: item?._type, dayIndex: item?._dayIndex, storedInEditingItem: editingItem.value })
     nextTick(() => {
         const input = Array.isArray(editInput.value) ? editInput.value[0] : editInput.value
@@ -97,24 +121,54 @@ const isEditing = (item, field) => {
 }
 
 // Cancel editing
-const cancelEdit = () => { editingItem.value = null; editingField.value = ''; editValue.value = '' }
+const cancelEdit = () => {
+    editingItem.value = null
+    editingField.value = ''
+    editValue.value = ''
+    isEditingMultipleSelect.value = false
+    justStartedEditing.value = false
+}
 
 // Save edit, using full item from editingItem
 const saveEdit = col => {
     if (!editingItem.value) return
     const fullItem = editingItem.value
     const val = editValue.value
-    const oldValue = col.editValue ? col.editValue(fullItem) : fullItem[col.key]
-    if (val === oldValue) { cancelEdit(); return }
+    let finalVal = val
+    if (col.type === 'select' && col.multiple) {
+        finalVal = Array.isArray(val) ? val : [val]
+    }
     cancelEdit()
-    emit('update', { item: fullItem, field: col.key, value: val, column: col })
+    emit('update', { item: fullItem, field: col.key, value: finalVal, column: col })
 }
 
 // Click outside to save
 const handleClickOutside = e => {
-    if (editingItem.value && tableWrapper.value && !tableWrapper.value.contains(e.target)) {
+    if (!editingItem.value || !tableWrapper.value) return
+    if (justStartedEditing.value) return
+    if (isEditingMultipleSelect.value) {
+        const isInsideSelect = e.target.closest('.select-multiple-container')
+        if (isInsideSelect) return
         const col = props.columns.find(c => c.key === editingField.value)
-        if (col) saveEdit(col)
+        if (col) {
+            console.log('Saving from click outside (multiple select)')
+            saveEdit(col)
+        }
+    } else {
+        if (!tableWrapper.value.contains(e.target)) {
+            const col = props.columns.find(c => c.key === editingField.value)
+            if (col) saveEdit(col)
+        }
+    }
+}
+
+const handleFileChange = (event, col) => {
+    const file = event.target.files[0]
+    if (!file) return
+    editValue.value = file
+    if (editingItem.value) {
+        emit('update', { item: editingItem.value, field: col.key, value: file.name, file, column: col })
+        cancelEdit()
     }
 }
 
@@ -234,6 +288,14 @@ defineExpose({ cancelEdit })
     color: var(--text-color-grey)
 }
 
+.select-multiple-container {
+    width: 100%;
+}
+
+.select-multiple-container select {
+    min-height: 25px;
+}
+
 @media(max-width:1440px) {
     .editable-table {
         min-width: 100%;
@@ -328,7 +390,9 @@ defineExpose({ cancelEdit })
     }
 
     .editable-table td input,
-    .editable-table td select {
+    .editable-table td select,
+    .select-multiple-container select {
+        max-width: 100%;
         width: 100%
     }
 

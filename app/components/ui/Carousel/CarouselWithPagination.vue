@@ -1,37 +1,48 @@
 <template>
     <!-- Carousel container with track, pagination, and controls -->
-    <div class="carousel">
+    <div v-if="validItems.length" class="carousel">
         <CarouselTrack :slides="slides" :trackStyle="trackStyle" :transitionEnabled="transitionEnabled" />
-        <CarouselPagination :itemsLength="props.items.length" :activeIndex="activePaginationIndex"
+        <CarouselPagination :itemsLength="validItems.length" :activeIndex="activePaginationIndex"
             @goToSlide="goToSlide" />
         <CarouselControls :prevSlide="prevSlide" :nextSlide="nextSlide" />
     </div>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import CarouselControls from './CarouselWithPagination/CarouselControls.vue'
-import CarouselPagination from './CarouselWithPagination/CarouselPagination.vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import CarouselTrack from './CarouselWithPagination/CarouselTrack.vue'
+import CarouselPagination from './CarouselWithPagination/CarouselPagination.vue'
+import CarouselControls from './CarouselWithPagination/CarouselControls.vue'
 
-// Props: items to display
-const props = defineProps({ items: { type: Array, required: true } })
+// Props: array of items to display
+const props = defineProps({ items: { type: Array, required: true, default: () => [] } })
+
+// Filter out invalid items without a name
+const validItems = computed(() => props.items.filter(item => item?.name))
 
 // Reactive state
-const currentSlide = ref(Math.floor(props.items.length / 2) + 1) // starting slide
-const transitionEnabled = ref(true)
-const screenWidth = ref(1024) // default SSR width
+const currentSlide = ref(1)               // Start at first real slide
+const transitionEnabled = ref(true)       // Track CSS transition toggle
+const screenWidth = ref(1024)             // Default width (SSR)
 
 // Slide constants
-const SLIDE_WIDTH_DESKTOP = 40, SLIDE_WIDTH_MOBILE = 35, SLIDE_GAP = 1
+const SLIDE_WIDTH_DESKTOP = 40
+const SLIDE_WIDTH_MOBILE = 35
+const SLIDE_GAP = 1
 
-// Update width on resize (client-side)
+// Update screen width on client resize
 const updateScreenWidth = () => process.client && (screenWidth.value = window.innerWidth)
-onMounted(() => { updateScreenWidth(); window.addEventListener('resize', updateScreenWidth) })
+onMounted(() => {
+    updateScreenWidth()
+    window.addEventListener('resize', updateScreenWidth)
+})
 onUnmounted(() => process.client && window.removeEventListener('resize', updateScreenWidth))
 
-// Slides array with cloned first and last for seamless looping
-const slides = computed(() => [props.items[props.items.length - 1], ...props.items, props.items[0]])
+// Slides with cloned first and last for seamless looping
+const slides = computed(() => validItems.value.length
+    ? [validItems.value[validItems.value.length - 1], ...validItems.value, validItems.value[0]]
+    : []
+)
 
 // Compute transform style for track movement
 const trackStyle = computed(() => {
@@ -49,12 +60,34 @@ const prevSlide = () => goToSlide(currentSlide.value - 1)
 const nextSlide = () => goToSlide(currentSlide.value + 1)
 
 // Active dot index for pagination
-const activePaginationIndex = computed(() => (currentSlide.value - 1 + props.items.length) % props.items.length)
+const activePaginationIndex = computed(() => validItems.value.length
+    ? (currentSlide.value - 1 + validItems.value.length) % validItems.value.length
+    : 0
+)
 
-// Seamless looping: reset index without transition when hitting clone slides
+// Seamless looping: reset index without transition on clone slides
 watch(currentSlide, newVal => {
-    if (newVal === 0) { transitionEnabled.value = false; requestAnimationFrame(() => { currentSlide.value = props.items.length; transitionEnabled.value = true }) }
-    else if (newVal === props.items.length + 1) { transitionEnabled.value = false; requestAnimationFrame(() => { currentSlide.value = 1; transitionEnabled.value = true }) }
+    if (!validItems.value.length) return
+
+    if (newVal === 0) {
+        transitionEnabled.value = false
+        requestAnimationFrame(() => {
+            currentSlide.value = validItems.value.length
+            transitionEnabled.value = true
+        })
+    }
+    else if (newVal === validItems.value.length + 1) {
+        transitionEnabled.value = false
+        requestAnimationFrame(() => {
+            currentSlide.value = 1
+            transitionEnabled.value = true
+        })
+    }
+})
+
+// Reset to first slide if items change and current index is out of bounds
+watch(() => validItems.value.length, (newLength) => {
+    if (newLength && currentSlide.value > newLength) currentSlide.value = 1
 })
 </script>
 

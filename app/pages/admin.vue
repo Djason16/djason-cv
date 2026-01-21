@@ -51,20 +51,25 @@ import ClientListModal from '~/components/ui/Modal/ModalDialog/ClientListModal.v
 import ContractModal from '~/components/ui/Modal/ModalDialog/ContractModal.vue'
 import CreateClientModal from '~/components/ui/Modal/ModalDialog/CreateClientModal.vue'
 import CreateMissionModal from '~/components/ui/Modal/ModalDialog/CreateMissionModal.vue'
+import CreateProjectModal from '~/components/ui/Modal/ModalDialog/CreateProjectModal.vue'
+import EnvModal from '~/components/ui/Modal/ModalDialog/EnvModal.vue'
 import InterestRatesListModal from '~/components/ui/Modal/ModalDialog/InterestRatesListModal.vue'
 import InvoicesModal from '~/components/ui/Modal/ModalDialog/InvoicesModal.vue'
 import ManualOverrideModal from '~/components/ui/Modal/ModalDialog/ManualOverrideModal.vue'
 import MissionListModal from '~/components/ui/Modal/ModalDialog/MissionListModal.vue'
 import PasswordModal from '~/components/ui/Modal/ModalDialog/PasswordModal.vue'
+import ProjectListModal from '~/components/ui/Modal/ModalDialog/ProjectListModal.vue'
 import QuotesModal from '~/components/ui/Modal/ModalDialog/QuotesModal.vue'
 import UnavailabilityModal from '~/components/ui/Modal/ModalDialog/UnavailabilityModal.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
 import { useAuth } from '~/composables/useAuth'
+import { useDatabase } from '~/composables/useDatabase'
 import { useMessage } from '~/composables/useMessage'
 
 const { $lang } = useNuxtApp()
 await $lang.loadGroup('admin')
 const { logout } = useAuth()
+const { replaceDatabase } = useDatabase()
 
 // Message composable
 const { translatedMessage, showMessage, clearMessage } = useMessage()
@@ -89,7 +94,10 @@ const adminButtons = [
     { icon: 'fas fa-key', textKey: 'adminPassword', action: 'password' },
     { icon: 'fas fa-calendar-alt', textKey: 'adminCalendar', action: 'calendar' },
     { icon: 'fas fa-calendar-times', textKey: 'adminUnavailability', action: 'unavailability' },
-    { icon: 'fas fa-toggle-on', textKey: 'adminManualOverride', action: 'manualOverride' }
+    { icon: 'fas fa-toggle-on', textKey: 'adminManualOverride', action: 'manualOverride' },
+    { icon: 'fas fa-folder-plus', textKey: 'adminCreateProjects', action: 'createProjects' },
+    { icon: 'fas fa-folder-open', textKey: 'adminProjects', action: 'projects' },
+    { icon: 'fas fa-cog', textKey: 'adminEnvironment', action: 'environment' }
 ]
 const activeModals = [
     { action: 'createClients', component: CreateClientModal },
@@ -103,7 +111,10 @@ const activeModals = [
     { action: 'password', component: PasswordModal },
     { action: 'calendar', component: CalendarModal },
     { action: 'unavailability', component: UnavailabilityModal },
-    { action: 'manualOverride', component: ManualOverrideModal }
+    { action: 'manualOverride', component: ManualOverrideModal },
+    { action: 'createProjects', component: CreateProjectModal },
+    { action: 'projects', component: ProjectListModal },
+    { action: 'environment', component: EnvModal }
 ]
 
 // Login & DB buttons with actions
@@ -123,7 +134,7 @@ const loginButtons = computed(() => [
     {
         labelKey: 'replaceDB',
         icon: 'fas fa-upload',
-        action: () => handleFileAction('/api/database/replace-db', 'db.sqlite', 'replaceSuccess', 'replaceError', { fileUpload: true })
+        action: () => handleDatabaseReplace()
     },
     {
         labelKey: 'downloadDB',
@@ -150,38 +161,48 @@ const openModal = (btn, e) => {
 
 const closeModal = () => (activeModal.value = null)
 
-// File handling helper
-const handleFileAction = async (url, filename, successKey, errorKey, options = {}) => {
+// Database replacement with restart handling
+const handleDatabaseReplace = async () => {
     clearMessage()
     try {
-        let res
-        if (options.fileUpload) {
-            const fileInput = refFileInput.value
-            if (!fileInput) throw new Error('File input not found')
-            fileInput.value = ''
-            fileInput.click()
-            const file = await new Promise((resolve, reject) => {
-                const handler = e => {
-                    fileInput.removeEventListener('change', handler)
-                    e.target.files?.length ? resolve(e.target.files[0]) : reject(new Error('No file selected'))
-                }
-                fileInput.addEventListener('change', handler)
-            })
-            const formData = new FormData()
-            formData.append('file', file)
-            res = await fetch(url, { method: 'POST', body: formData })
-        } else {
-            res = await fetch(url, { method: options.method || 'GET' })
-            if (!res.ok) throw new Error('Request failed')
-            const blob = await res.blob()
-            const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename })
-            document.body.appendChild(a)
-            a.click()
-            a.remove()
-            URL.revokeObjectURL(a.href)
+        const fileInput = refFileInput.value
+        if (!fileInput) throw new Error('File input not found')
+
+        fileInput.value = ''
+        fileInput.click()
+
+        const file = await new Promise((resolve, reject) => {
+            const handler = e => {
+                fileInput.removeEventListener('change', handler)
+                e.target.files?.length ? resolve(e.target.files[0]) : reject(new Error('No file selected'))
+            }
+            fileInput.addEventListener('change', handler)
+        })
+
+        showMessage('success', 'replaceSuccess')
+        await replaceDatabase(file)
+        // Page will reload automatically after restart
+    } catch (e) {
+        console.error(e)
+        if (e.message !== 'No file selected') {
+            showMessage('error', 'replaceError')
         }
+    }
+}
+
+// File download helper
+const handleFileAction = async (url, filename, successKey, errorKey) => {
+    clearMessage()
+    try {
+        const res = await fetch(url, { method: 'GET' })
+        if (!res.ok) throw new Error('Request failed')
+        const blob = await res.blob()
+        const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: filename })
+        document.body.appendChild(a)
+        a.click()
+        a.remove()
+        URL.revokeObjectURL(a.href)
         showMessage('success', successKey)
-        if (options.fileUpload) { setTimeout(() => location.reload(), 5000) }
     } catch (e) {
         console.error(e)
         showMessage('error', errorKey)

@@ -172,6 +172,7 @@ export default defineNuxtConfig({
     smtpPass: process.env.SMTP_PASS,
     bankIban: process.env.BANK_IBAN,
     bankBic: process.env.BANK_BIC,
+    dbReplaceTrigger: process.env.DB_REPLACE_TRIGGER,
     // Public variables (client + server)
     public: {
       frontendDomain: process.env.NUXT_PUBLIC_FRONTEND_DOMAIN,

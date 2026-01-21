@@ -5,8 +5,8 @@ export default defineEventHandler(async event => {
     const url = event.node.req.url || ''
     const method = (event.node.req.method || 'GET').toUpperCase()
     const publicRoutes = ['/api/database/setup']
-    const readOnlyRoutes = ['/api/unavailability/', '/api/availability/', '/api/calendar/']
-    const protectedRoutes = ['/api/bank/', '/api/clients/', '/api/services/', '/api/missions/', '/api/interest-rates/', '/api/database/']
+    const readOnlyRoutes = ['/api/unavailability/', '/api/availability/', '/api/calendar/', '/api/projects/']
+    const protectedRoutes = ['/api/env/', '/api/bank/', '/api/clients/', '/api/services/', '/api/missions/', '/api/interest-rates/', '/api/database/']
 
     // Skip public routes
     if (publicRoutes.some(route => url.startsWith(route))) return

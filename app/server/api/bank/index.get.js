@@ -1,9 +1,7 @@
 import { defineEventHandler, useRuntimeConfig } from '#imports'
 
+// Return bank info from runtime config
 export default defineEventHandler(() => {
-    const config = useRuntimeConfig()
-    return {
-        iban: config.bankIban,
-        bic: config.bankBic
-    }
+    const { bankIban: iban, bankBic: bic } = useRuntimeConfig()
+    return { iban, bic }
 })

@@ -113,6 +113,20 @@ export const createAvailabilityOverrideTable = async db => db.sql`
   )
 `
 
+export const createProjectsTable = async db => db.sql`
+  CREATE TABLE IF NOT EXISTS dc_projects (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    short_fr TEXT,
+    short_en TEXT,
+    img TEXT,
+    link TEXT,
+    skills TEXT,
+    date DATE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`
+
 // --- SEED DEFAULT SERVICES ---
 export const seedDefaultServices = async db => {
   const { rows } = await db.sql`SELECT COUNT(*) AS count FROM dc_services`
