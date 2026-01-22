@@ -17,8 +17,8 @@ export const useProjects = () => {
         return {
             id: p.id ?? crypto.randomUUID(),
             name: p.name || '',
-            img: p.img || '',
-            image: p.img || '',
+            img: isApi && p.img ? `api${p.img}` : p.img || '',
+            image: isApi && p.img ? `api${p.img}` : p.img || '',
             link: p.link || null,
             skills: Array.isArray(p.skills) ? p.skills : [],
             date: p.date || new Date().toISOString().split('T')[0],
@@ -50,30 +50,36 @@ export const useProjects = () => {
         try {
             const combined = rawProjects.map(normalizeProject).filter(Boolean)
 
+            console.log('📦 Raw projects:', combined.map(p => ({ name: p.name, link: p.link, hasId: !!p.id })))
+
             try {
                 const res = await $fetch('/api/projects')
+                console.log('🌐 API response:', res)
+
                 if (res?.projects?.length) {
-                    combined.push(
-                        ...res.projects
-                            .map(p => {
-                                const proj = normalizeProject(p)
-                                if (!proj) return null
-                                if (typeof p.skills === 'string') {
-                                    try {
-                                        proj.skills = JSON.parse(p.skills)
-                                    } catch {
-                                        proj.skills = []
-                                    }
+                    const apiProjects = res.projects
+                        .map(p => {
+                            const proj = normalizeProject(p)
+
+                            if (!proj) return null
+                            if (typeof p.skills === 'string') {
+                                try {
+                                    proj.skills = JSON.parse(p.skills)
+                                } catch {
+                                    proj.skills = []
                                 }
-                                return proj
-                            })
-                            .filter(Boolean)
-                    )
+                            }
+                            return proj
+                        })
+                        .filter(Boolean)
+
+                    combined.push(...apiProjects)
                 }
             } catch (e) {
                 console.warn('API unreachable, using local data only', e)
             }
 
+            console.log('🎯 Final combined projects:', combined.map(p => ({ name: p.name, link: p.link, id: p.id })))
             projects.value = combined.sort((a, b) => new Date(b.date) - new Date(a.date))
         } catch (e) {
             console.error('Project loading failed', e)

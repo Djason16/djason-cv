@@ -93,7 +93,13 @@ const columns = computed(() => [
         key: 'img',
         label: $lang.getTranslation('projectImage'),
         type: 'file',
-        formatter: p => p.img ? `<img src="${p.img}" alt="${p.name}" style="max-height:25px"/>` : '-'
+        formatter: p => {
+            if (!p.img) return '-'
+            const imgSrc = p.img.startsWith('api/')
+                ? `${window.location.origin}/${p.img}`
+                : p.img
+            return `<img src="${imgSrc}" alt="${p.name}" style="max-height:25px"/>`
+        }
     },
     {
         key: 'skills',

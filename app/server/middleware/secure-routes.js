@@ -4,7 +4,7 @@ import { createError, defineEventHandler, sendError } from 'h3'
 export default defineEventHandler(async event => {
     const url = event.node.req.url || ''
     const method = (event.node.req.method || 'GET').toUpperCase()
-    const publicRoutes = ['/api/database/setup']
+    const publicRoutes = ['/api/database/setup', '/api/upload/']
     const readOnlyRoutes = ['/api/unavailability/', '/api/availability/', '/api/calendar/', '/api/projects/']
     const protectedRoutes = ['/api/env/', '/api/bank/', '/api/clients/', '/api/services/', '/api/missions/', '/api/interest-rates/', '/api/database/']
 

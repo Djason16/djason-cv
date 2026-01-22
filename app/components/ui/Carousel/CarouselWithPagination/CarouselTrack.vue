@@ -29,10 +29,13 @@
                             </a>
                         </div>
                         <!-- Slide image -->
-                        <NuxtImg v-if="!fallbacks[index] && (item.image || item.img)" :src="item.image || item.img"
+                        <img v-if="(item.image || item.img)?.startsWith('api/')" :src="item.image || item.img"
+                            :alt="item.name" :title="item.name" class="carousel-image" loading="lazy" />
+                        <NuxtImg v-else-if="!fallbacks[index] && (item.image || item.img)" :src="item.image || item.img"
                             :alt="item.name" :title="item.name" class="carousel-image" width="640" height="480"
                             sizes="(max-width: 768px) 90vw, 640px" format="webp" loading="lazy" densities="1x 2x"
                             @error="onError(index)" placeholder />
+                        <!-- Fallback -->
                         <img v-else-if="item.image || item.img" :src="item.image || item.img"
                             :alt="`Fallback ${item.name}`" :title="`Fallback ${item.name}`" class="carousel-image"
                             loading="lazy" />

@@ -6,12 +6,13 @@
             <div class="header-top__title">
                 <NuxtLink to="/" class="header-top__logo-link"
                     :title="`${config.public.name} - ${$lang.getTranslation('home')}`">
-                    <NuxtImg v-if="!fallback.value" :src="logoPath" :alt="config.public.name"
+                    <NuxtImg v-if="!fallback" :src="logoPath" :alt="config.public.name"
                         :title="`${config.public.name} - ${$lang.getTranslation('home')}`" class="header-top__logo"
-                        format="webp" preload priority fetchpriority="high" @error="onError" />
+                        width="200" height="80" sizes="200px" format="webp" loading="eager" densities="1x 2x"
+                        @error="onError" />
                     <img v-else :src="logoPath" :alt="config.public.name"
                         :title="`${config.public.name} - ${$lang.getTranslation('home')}`" class="header-top__logo"
-                        preload priority fetchpriority="high" />
+                        preload priority fetchpriority="high" loading="eager" />
                 </NuxtLink>
             </div>
 

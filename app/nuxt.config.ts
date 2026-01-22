@@ -86,7 +86,7 @@ export default defineNuxtConfig({
     experimental: { wasm: true, database: true },
     compressPublicAssets: { gzip: true, brotli: true },
     externals: {
-      inline: ['entities']
+      inline: ['entities', 'sharp']
     },
     alias: {
       'entities/decode': 'entities/dist/commonjs/decode.js'
@@ -98,7 +98,7 @@ export default defineNuxtConfig({
       crawlLinks: true,
       routes,
       failOnError: true,
-      ignore: [],
+      ignore: [''],
       autoSubfolderIndex: true,
       concurrency: 4,
       retry: 2,
@@ -142,7 +142,8 @@ export default defineNuxtConfig({
     quality: 80,
     format: ['webp', 'avif'],
     screens: { xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536 },
-    provider: 'ipx',
+    // Utiliser 'none' en dev si sharp pose problème
+    provider: isDev ? 'none' : 'ipx',
     ipx: { maxAge: 60 * 60 * 24 * 7 }
   },
 
