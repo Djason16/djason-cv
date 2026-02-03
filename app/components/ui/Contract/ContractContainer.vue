@@ -30,7 +30,7 @@
             <TerminationAndSuspension :serviceType="serviceType" :getTerminationText="getTerminationText" />
             <RightOfWithdrawal :serviceType="serviceType" :getRefundPolicyText="getRefundPolicyText"
                 :providerInfo="providerInfo" />
-            <Confidentiality />
+            <Confidentiality :providerInfo="providerInfo" />
             <WarrantiesAndMaintenance :serviceType="serviceType" :getWarrantyText="getWarrantyText" />
             <Liability />
             <Disputes />

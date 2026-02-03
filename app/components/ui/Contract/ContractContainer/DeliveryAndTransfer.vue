@@ -14,7 +14,7 @@ const props = defineProps({
 })
 
 // Access $lang globally
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#app';
 const { $lang } = useNuxtApp()
 </script>
 

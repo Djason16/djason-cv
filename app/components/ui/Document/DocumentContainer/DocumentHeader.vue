@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#app';
 
 // Props for header info and company details
 const props = defineProps({

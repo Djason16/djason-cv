@@ -13,7 +13,7 @@ const props = defineProps({
     getIntellectualPropertyText: Function
 })
 
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#app';
 const { $lang } = useNuxtApp()
 </script>
 

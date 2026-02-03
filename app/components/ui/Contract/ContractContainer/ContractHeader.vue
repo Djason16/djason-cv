@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#app';
 const { $lang } = useNuxtApp()
 
 const props = defineProps({

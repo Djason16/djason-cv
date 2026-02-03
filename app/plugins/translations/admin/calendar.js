@@ -190,8 +190,6 @@ export default {
         "Europe/Kiev": "Kiev",
         "Europe/London": "Londres",
         "Europe/Vatican": "Vatican",
-
-        // Oceania
         "Australia/Sydney": "Sydney",
         "Pacific/Fiji": "Fidji",
         "Pacific/Tarawa": "Tarawa",

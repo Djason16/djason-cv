@@ -28,8 +28,37 @@ export const validateCheckoutData = ({ amount, currency, email }) => {
     return { amount, currency, email }
 }
 
+// Validate subscription form data
+export const validateSubscriptionData = ({ email, name, amount }) => {
+    validateRequired({ email, name, amount }, ['email', 'name', 'amount'])
+    validateEmail(email)
+    validatePositiveNumber(amount, 'Amount')
+    return { email, name, amount: parseFloat(amount) }
+}
+
 // Ensure session ID exists
 export const validateSessionId = sessionId => {
     if (!sessionId) throw createError({ statusCode: 400, message: 'Session ID is required' })
     return sessionId
+}
+
+// Validate Stripe customer ID
+export const validateCustomerId = customerId => {
+    if (!customerId || !customerId.startsWith('cus_'))
+        throw createError({ statusCode: 400, message: 'Invalid Stripe customer ID' })
+    return customerId
+}
+
+// Validate Stripe subscription ID
+export const validateSubscriptionId = subscriptionId => {
+    if (!subscriptionId || !subscriptionId.startsWith('sub_'))
+        throw createError({ statusCode: 400, message: 'Invalid Stripe subscription ID' })
+    return subscriptionId
+}
+
+// Validate Stripe price ID
+export const validatePriceId = priceId => {
+    if (!priceId || !priceId.startsWith('price_'))
+        throw createError({ statusCode: 400, message: 'Invalid Stripe price ID' })
+    return priceId
 }

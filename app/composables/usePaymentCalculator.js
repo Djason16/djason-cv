@@ -1,7 +1,7 @@
 import { useNuxtApp } from '#app'
-import { useValidation } from './useValidation'
 import { useFinancialCalculations } from './useFinancialCalculations'
 import { usePaymentConfig } from './usePaymentConfig'
+import { useValidation } from './useValidation'
 
 export const usePaymentCalculator = () => {
     const { $lang } = useNuxtApp()

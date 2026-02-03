@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#app';
 const props = defineProps({
     description: String,
     translatedDocumentType: String,

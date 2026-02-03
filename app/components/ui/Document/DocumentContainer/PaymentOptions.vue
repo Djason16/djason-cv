@@ -27,7 +27,7 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#app';
 
 const props = defineProps({ paymentOptions: Object })
 const { $lang } = useNuxtApp()

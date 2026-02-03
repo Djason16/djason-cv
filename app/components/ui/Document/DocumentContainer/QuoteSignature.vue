@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useNuxtApp } from '#app';
 const { $lang } = useNuxtApp() // Translation utility
 </script>
 

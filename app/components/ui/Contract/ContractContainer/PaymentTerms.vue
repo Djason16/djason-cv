@@ -18,8 +18,35 @@
                         {{ $lang.getTranslation('monthlyPaymentOption') }}<br />
                         {{ $lang.getTranslation('numberOfInstallments') }}: <span class="amount-value">{{ nbMensualites
                         }}</span><br />
-                        {{ $lang.getTranslation('monthlyPayment') }}: <span class="amount-value">{{
-                            formatPrice(monthlyPayment) }}</span>
+
+                        <!-- Stripe fees breakdown -->
+                        <div class="stripe-fees-detail">
+                            <strong>{{ $lang.getTranslation('stripeFeesInfo') }}:</strong>
+                            <ul class="bullet-list">
+                                <li>{{ $lang.getTranslation('monthlyNetAmount') }}: <span class="amount-value">{{
+                                    formatPrice(monthlyPayment) }}</span></li>
+                                <li>{{ $lang.getTranslation('processingFees') }}: <span class="amount-value">{{
+                                    formatPrice(calculateStripeFees(monthlyPayment).fees) }}</span> (1,5% + 0,25€)
+                                </li>
+                                <li>{{ $lang.getTranslation('monthlyTotalAmount') }}: <span class="amount-value">{{
+                                    formatPrice(calculateStripeFees(monthlyPayment).total) }}</span></li>
+                                <li>{{ $lang.getTranslation('totalOver12Months') }}: <span class="amount-value">{{
+                                    formatPrice(calculateStripeFees(monthlyPayment).total * nbMensualites) }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <!-- Bank transfer alternative -->
+                        <div class="bank-transfer-option">
+                            <strong>{{ $lang.getTranslation('bankTransferOption') }}:</strong>
+                            <ul class="bullet-list">
+                                <li>{{ $lang.getTranslation('monthlyPayment') }}: <span class="amount-value">{{
+                                    formatPrice(monthlyPayment) }}</span></li>
+                                <li>{{ $lang.getTranslation('noAdditionalFees') }}</li>
+                                <li>{{ $lang.getTranslation('totalOver12Months') }}: <span class="amount-value">{{
+                                    formatPrice(monthlyPayment * nbMensualites) }}</span></li>
+                            </ul>
+                        </div>
                     </span>
                     <span v-else-if="deposit">
                         {{ $lang.getTranslation('upfrontPaymentOption') }}<br />
@@ -47,11 +74,59 @@
                     <span v-else-if="deposit">
                         {{ $lang.getTranslation('monthlyPaymentOption') }}<br />
                         {{ $lang.getTranslation('numberOfInstallments') }}: <span class="amount-value">12</span><br />
-                        {{ $lang.getTranslation('monthlyPayment') }}: <span class="amount-value">{{
-                            formatPrice(totalAmount / 12) }}</span>
+
+                        <!-- Stripe fees breakdown for alternative -->
+                        <div class="stripe-fees-detail">
+                            <strong>{{ $lang.getTranslation('stripeFeesInfo') }}:</strong>
+                            <ul class="bullet-list">
+                                <li>{{ $lang.getTranslation('monthlyNetAmount') }}: <span class="amount-value">{{
+                                    formatPrice(totalAmount / 12) }}</span></li>
+                                <li>{{ $lang.getTranslation('processingFees') }}: <span class="amount-value">{{
+                                    formatPrice(calculateStripeFees(totalAmount / 12).fees) }}</span> (1,5% + 0,25€)
+                                </li>
+                                <li>{{ $lang.getTranslation('monthlyTotalAmount') }}: <span class="amount-value">{{
+                                    formatPrice(calculateStripeFees(totalAmount / 12).total) }}</span></li>
+                                <li>{{ $lang.getTranslation('totalOver12Months') }}: <span class="amount-value">{{
+                                    formatPrice(calculateStripeFees(totalAmount / 12).total * 12) }}</span></li>
+                            </ul>
+                        </div>
+
+                        <!-- Bank transfer alternative -->
+                        <div class="bank-transfer-option">
+                            <strong>{{ $lang.getTranslation('bankTransferOption') }}:</strong>
+                            <ul class="bullet-list">
+                                <li>{{ $lang.getTranslation('monthlyPayment') }}: <span class="amount-value">{{
+                                    formatPrice(totalAmount / 12) }}</span></li>
+                                <li>{{ $lang.getTranslation('noAdditionalFees') }}</li>
+                                <li>{{ $lang.getTranslation('totalOver12Months') }}: <span class="amount-value">{{
+                                    formatPrice(totalAmount) }}</span></li>
+                            </ul>
+                        </div>
                     </span>
                 </div>
             </div>
+        </div>
+
+        <!-- Direct Debit Authorization Clause -->
+        <div v-if="nbMensualites && monthlyPayment && serviceType === 'web'" class="automatic-debit-section text-small">
+            <p class="section-subtitle"><strong>{{ $lang.getTranslation('automaticDebitAuth') }}</strong></p>
+            <p class="section-text">
+                {{ $lang.getTranslation('automaticDebitInfo', {
+                    amount:
+                        formatPrice(calculateStripeFees(monthlyPayment).total)
+                }) }}
+            </p>
+            <p class="section-text">
+                {{ $lang.getTranslation('debitDate') }}<br />
+                {{ $lang.getTranslation('automaticEnd') }}
+            </p>
+            <p class="section-subtitle"><strong>{{ $lang.getTranslation('paymentFailureProcess') }}:</strong></p>
+            <ul class="bullet-list">
+                <li>{{ $lang.getTranslation('retryAttempts') }}</li>
+                <li>{{ $lang.getTranslation('automaticReminder') }}</li>
+                <li>{{ $lang.getTranslation('after4Failures') }}</li>
+                <li>{{ $lang.getTranslation('after30Days') }}</li>
+            </ul>
         </div>
 
         <!-- Available payment methods -->
@@ -145,6 +220,33 @@ const props = defineProps({
     color: var(--third-color)
 }
 
+.stripe-fees-detail {
+    background: #e3f2fd;
+    border-left: 4px solid var(--accent-blue);
+    padding: 10px;
+    margin: 10px 0
+}
+
+.bank-transfer-option {
+    background: #f4edf7;
+    border-left: 4px solid var(--accent-purple);
+    padding: 10px;
+    margin: 10px 0
+}
+
+.automatic-debit-section {
+    background: #fff3e0;
+    border: 2px solid var(--accent-yellow);
+    padding: 16px;
+    margin: 16px 0
+}
+
+.section-subtitle {
+    font-weight: 700;
+    color: var(--third-color);
+    margin: 12px 0 8px 0
+}
+
 .bullet-list {
     list-style: none;
     padding-left: 20px;
@@ -156,14 +258,25 @@ const props = defineProps({
     margin-bottom: 8px;
     text-align: justify;
     position: relative;
-    padding-left: 20px;
+    padding-left: 20px
 }
 
 .bullet-list li::before {
     content: "• ";
     position: absolute;
     left: 0;
-    font-weight: bold;
+    font-weight: bold
+}
+
+.stripe-fees-detail .bullet-list,
+.bank-transfer-option .bullet-list {
+    margin: 8px 0 0 0;
+    padding-left: 20px
+}
+
+.stripe-fees-detail .bullet-list li,
+.bank-transfer-option .bullet-list li {
+    margin-bottom: 4px
 }
 
 a {

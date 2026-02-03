@@ -1,5 +1,5 @@
 import { useNuxtApp } from '#app'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 
 export const useInterestRates = () => {
     const { $lang } = useNuxtApp()

@@ -1,5 +1,5 @@
 import { useNuxtApp } from '#app'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { getDurationOptions } from '~/utils/durationOptions'
 import { getServiceTranslationKey, serviceTranslations } from '~/utils/serviceTranslations'
 

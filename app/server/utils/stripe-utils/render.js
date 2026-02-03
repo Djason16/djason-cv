@@ -1,29 +1,45 @@
-// Payment page templates for success and cancellation
-const PAYMENT_CONFIGS = {
+// Configuration templates for payment and subscription results
+const RESULT_CONFIGS = {
+  payment: {
     success: {
-        highlight: '#58D68D',
-        title: 'Paiement réussi !',
-        message: 'Le paiement a été effectué avec succès.',
-        english: 'Payment Successful! This window will close automatically.'
+      highlight: '#58D68D',
+      title: 'Paiement réussi !',
+      message: 'Le paiement a été effectué avec succès.',
+      english: 'Payment Successful! This window will close automatically.'
     },
     cancel: {
-        highlight: '#E74C3C',
-        title: 'Paiement annulé !',
-        message: 'Le paiement a été annulé.',
-        english: 'Payment Canceled. This window will close automatically.'
+      highlight: '#E74C3C',
+      title: 'Paiement annulé !',
+      message: 'Le paiement a été annulé.',
+      english: 'Payment Canceled. This window will close automatically.'
     }
+  },
+  subscription: {
+    success: {
+      highlight: '#58D68D',
+      title: 'Abonnement activé !',
+      message: 'Votre abonnement de 12 mois a été activé avec succès.',
+      english: 'Subscription Activated! Your 12-month web development subscription is now active. This window will close automatically.'
+    },
+    cancel: {
+      highlight: '#E74C3C',
+      title: 'Abonnement annulé !',
+      message: 'L\'activation de l\'abonnement a été annulée.',
+      english: 'Subscription Canceled. This window will close automatically.'
+    }
+  }
 }
 
-// Render HTML page for payment result
-export function renderPaymentPage(type = 'success') {
-    const config = PAYMENT_CONFIGS[type] || PAYMENT_CONFIGS.success
-    const colors = {
-        bg: '#C9D6DF',
-        text: '#1a1d1f',
-        highlight: config.highlight
-    }
+// Generic render function for payment/subscription result pages
+function renderResultPage(configType, resultType = 'success') {
+  const config = RESULT_CONFIGS[configType]?.[resultType] || RESULT_CONFIGS[configType]?.success
+  const colors = {
+    bg: '#C9D6DF',
+    text: '#1a1d1f',
+    highlight: config.highlight
+  }
 
-    return `<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html lang="fr">
   <head>
     <meta charset="utf-8">
@@ -76,3 +92,7 @@ export function renderPaymentPage(type = 'success') {
   </body>
 </html>`
 }
+
+// Export convenience functions
+export const renderPaymentPage = (type) => renderResultPage('payment', type)
+export const renderSubscriptionPage = (type) => renderResultPage('subscription', type)

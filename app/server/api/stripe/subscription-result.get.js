@@ -1,4 +1,4 @@
-import { renderPaymentPage } from '~/server/utils/stripe-utils/render'
+import { renderSubscriptionPage } from '~/server/utils/stripe-utils/render'
 
 export default defineEventHandler(event => {
     // Determine result type from query, default to 'success'
@@ -7,6 +7,6 @@ export default defineEventHandler(event => {
     // Set HTML response header
     setResponseHeader(event, 'Content-Type', 'text/html; charset=utf-8')
 
-    // Render appropriate payment result page
-    return renderPaymentPage(resultType)
+    // Render appropriate subscription result page
+    return renderSubscriptionPage(resultType)
 })
