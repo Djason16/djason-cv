@@ -9,11 +9,11 @@
 
 <script setup>
 import SectionLayout from '~/components/ui/SectionLayout/SectionLayout.vue'
+import AboutMe from '~/components/views/Index/AboutMe.vue'
 import Hero from '~/components/views/Index/Hero.vue'
 import LastProject from '~/components/views/Index/LastProject.vue'
-import AboutMe from '~/components/views/Index/AboutMe.vue'
-import Skills from '~/components/views/Index/Skills.vue'
 import Services from '~/components/views/Index/Services.vue'
+import Skills from '~/components/views/Index/Skills.vue'
 import { seoMetaData } from '~/utils/seo.js'
 
 // Language context and SEO key

@@ -66,8 +66,10 @@ import { useAuth } from '~/composables/useAuth'
 import { useDatabase } from '~/composables/useDatabase'
 import { useMessage } from '~/composables/useMessage'
 
+// Language context
 const { $lang } = useNuxtApp()
 await $lang.loadGroup('admin')
+
 const { logout } = useAuth()
 const { replaceDatabase } = useDatabase()
 

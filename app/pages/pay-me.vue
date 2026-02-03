@@ -54,6 +54,7 @@ import MessageBox from '~/components/ui/Message/MessageBox.vue'
 import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout.vue'
 import { useMessage } from '~/composables/useMessage'
 
+// Language context
 const { $lang } = useNuxtApp()
 const config = useRuntimeConfig()
 

@@ -1,7 +1,7 @@
 import { defineNuxtPlugin, useHead, useRoute } from '#app'
+import { withTrailingSlash } from '@/utils/pathHelpers.js'
 import { computed, nextTick, ref } from 'vue'
 
-// Critical translations loaded synchronously
 import index from './translations/common/index.js'
 import navigationFooter from './translations/common/navigationFooter.js'
 import seoMetaData from './translations/common/seoMetaData.js'
@@ -12,92 +12,86 @@ import service from './translations/home/service.js'
 import skill from './translations/home/skill.js'
 import payMe from './translations/payMe/index.js'
 
+// Supported languages
+const LANGUAGES = ['french', 'english']
+
+// Map route to translation module
+const ROUTE_TO_MODULE = Object.fromEntries(
+    Object.entries({
+        'pay-me': 'payMe', legal: 'legal', terms: 'legal',
+        'privacy': 'legal', 'refund-policy': 'legal', login: 'auth', admin: 'admin'
+    }).map(([r, m]) => [withTrailingSlash(r), m])
+)
+
+// Preloaded translations
+const STATIC_MODULES = { common: [seoMetaData, index, navigationFooter], home: [aboutMe, hero, project, service, skill], payMe: [payMe] }
+
+// Lazy-loaded translation groups
+const LAZY_MODULES = {
+    admin: ['clients', 'contracts', 'dashboard', 'interestRates', 'invoices', 'missions', 'quotes', 'settings', 'calendar', 'unavailability', 'manualOverride', 'projects', 'env'],
+    legal: ['legal', 'privacy', 'refund', 'terms'],
+    auth: ['login']
+}
+
+// Merge modules into a structured translations object
+const buildTranslations = modules =>
+    Object.fromEntries(LANGUAGES.map(lang => [
+        lang,
+        Object.fromEntries(Object.entries(modules).map(([group, imports]) => [
+            group, Object.assign({}, ...imports.map(m => m[lang]))
+        ]))
+    ]))
+
 export default defineNuxtPlugin(() => {
     const currentLang = ref('french')
     const route = useRoute()
+    const translations = ref(buildTranslations(STATIC_MODULES))
+    const loadedModules = new Set(Object.keys(STATIC_MODULES).flatMap(g => LANGUAGES.map(l => `${g}-${l}`)))
 
-    // Organize translations by language and module
-    const translations = ref({
-        french: {
-            common: { ...seoMetaData.french, ...index.french, ...navigationFooter.french },
-            home: { ...aboutMe.french, ...hero.french, ...project.french, ...service.french, ...skill.french },
-            payMe: { ...payMe.french }
-        },
-        english: {
-            common: { ...seoMetaData.english, ...index.english, ...navigationFooter.english },
-            home: { ...aboutMe.english, ...hero.english, ...project.english, ...service.english, ...skill.english },
-            payMe: { ...payMe.english }
-        }
-    })
-
-    const loadedModules = new Set(['common-french', 'common-english', 'home-french', 'home-english', 'payMe-french', 'payMe-english'])
-    const locale = computed(() => (currentLang.value === 'french' ? 'fr' : 'en'))
+    const locale = computed(() => currentLang.value === 'french' ? 'fr' : 'en')
     useHead({ htmlAttrs: { lang: locale } })
 
-    // Determine active module based on URL
     const getActiveModule = () => {
-        const parts = route.path.split('/').filter(Boolean)
-        if (!parts.length) return 'home'
-        const page = parts[0]
-        return ['admin', 'legal', 'auth', 'pay-me'].includes(page) ? page : 'home'
+        const page = route.path.split('/').filter(Boolean)[0]
+        return page ? (ROUTE_TO_MODULE[withTrailingSlash(page)] || 'home') : 'home'
     }
 
-    // Translation function with variable replacement
     const t = (key, vars = {}) => {
         const lang = currentLang.value
-        const activeModule = getActiveModule()
-        let text = translations.value[lang]?.[activeModule]?.[key]
-
-        if (!text) {
-            for (const mod in translations.value[lang]) {
-                if (mod === activeModule) continue
-                text = translations.value[lang][mod]?.[key]
-                if (text) break
-            }
-        }
-
-        text = text || key
-        return Object.keys(vars).length
-            ? text.replace(/{{(.*?)}}/g, (_, k) => vars[k.trim()] ?? '')
-            : text
+        const active = getActiveModule()
+        let text = translations.value[lang]?.[active]?.[key] || Object.values(translations.value[lang]).find(m => m[key])?.[key] || key
+        return Object.keys(vars).length ? text.replace(/{{(.*?)}}/g, (_, k) => vars[k.trim()] ?? '') : text
     }
 
     const translationModules = import.meta.glob('./translations/**/*.js')
-    const translationGroups = {
-        admin: ['clients', 'contracts', 'dashboard', 'interestRates', 'invoices', 'missions', 'quotes', 'settings', 'calendar', 'unavailability', 'manualOverride', 'projects', 'env'],
-        legal: ['legal', 'privacy', 'refund', 'terms'],
-        auth: ['login']
-    }
 
     const loadTranslationGroup = async (group, lang) => {
         const key = `${group}-${lang}`
         if (loadedModules.has(key)) return
-        const folder = group === 'payMe' ? 'payMe' : group
-        const modules = translationGroups[group] || []
-
-        const results = await Promise.all(modules.map(async m => {
-            const path = `./translations/${folder}/${m}.js`
-            return translationModules[path] ? translationModules[path]().catch(() => ({ default: {} })) : { default: {} }
+        const results = await Promise.all((LAZY_MODULES[group] || []).map(m => {
+            const path = `./translations/${group}/${m}.js`
+            return translationModules[path]?.().catch(() => ({ default: {} })) ?? { default: {} }
         }))
-
-        results.forEach(r => {
-            if (r.default?.[lang]) translations.value[lang][group] = { ...translations.value[lang][group], ...r.default[lang] }
-        })
+        results.forEach(r => r.default?.[lang] && (translations.value[lang][group] = { ...translations.value[lang][group], ...r.default[lang] }))
         loadedModules.add(key)
     }
 
-    const loadAllTranslations = lang => Promise.all(Object.keys(translationGroups).map(g => loadTranslationGroup(g, lang)))
-    const setLang = lang => {
-        if (!['french', 'english'].includes(lang)) return Promise.resolve()
-        currentLang.value = lang
-        return loadAllTranslations(lang)
-    }
+    const loadAllTranslations = lang => Promise.all(Object.keys(LAZY_MODULES).map(g => loadTranslationGroup(g, lang)))
+
+    const setLang = lang => LANGUAGES.includes(lang) ? (currentLang.value = lang, loadAllTranslations(lang)) : Promise.resolve()
 
     if (process.client) nextTick(() => loadAllTranslations(currentLang.value))
 
     return {
         provide: {
-            lang: { current: currentLang, locale, availableLanguages: ['french', 'english'], setLang, getTranslation: t, loadGroup: g => loadTranslationGroup(g, currentLang.value) }
+            lang: {
+                current: currentLang,
+                locale,
+                availableLanguages: LANGUAGES,
+                setLang,
+                getTranslation: t,
+                loadGroup: g => loadTranslationGroup(g, currentLang.value)
+            }
         }
     }
 })

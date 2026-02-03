@@ -17,7 +17,7 @@ import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout
 // Runtime config
 const config = useRuntimeConfig()
 
-// Language context and SEO key
+// Language context
 const { $lang } = useNuxtApp()
 await $lang.loadGroup('legal')
 

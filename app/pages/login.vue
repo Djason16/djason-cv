@@ -58,8 +58,10 @@ import OtherSectionLayout from '~/components/ui/SectionLayout/OtherSectionLayout
 import { useAuth } from '~/composables/useAuth'
 import { useMessage } from '~/composables/useMessage'
 
+// Language context
 const { $lang } = useNuxtApp()
 await $lang.loadGroup('auth')
+
 const { login, loading: authLoading } = useAuth()
 const isDev = useState('isDev', () => process.env.NODE_ENV === 'development')
 
@@ -71,7 +73,7 @@ const showPassword = ref(false)
 // Message handling
 const { translatedMessage, showMessage, clearMessage } = useMessage()
 
-// ----- Handlers -----
+// Handlers
 const handleLogin = async () => {
     clearMessage()
     const res = await login(form.value.email, form.value.password)
@@ -107,7 +109,7 @@ const handleForgotPassword = async () => {
     }
 }
 
-// ----- Buttons configuration -----
+// Buttons configuration
 const loginButtons = [
     { labelKey: () => authLoading.value ? 'loggingIn' : 'loginButton', icon: 'fas fa-sign-in-alt', visible: () => !showForgotPassword.value, disabled: () => authLoading.value, action: handleLogin },
     { labelKey: () => 'forgotPassword', icon: 'fas fa-key', visible: () => !showForgotPassword.value, disabled: () => authLoading.value, action: toggleForgotPassword },
@@ -115,7 +117,7 @@ const loginButtons = [
     { labelKey: () => 'backToLogin', icon: 'fas fa-arrow-left', visible: () => showForgotPassword.value, disabled: () => authLoading.value, action: toggleForgotPassword }
 ]
 
-// ----- Form fields -----
+// Form fields
 const loginFormFields = [
     { id: 'email', type: 'email', model: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', required: true, autocomplete: 'email' },
     { id: 'password', type: 'password', model: 'password', labelKey: 'passwordLabel', placeholderKey: 'passwordPlaceholder', required: true, autocomplete: 'current-password' }
