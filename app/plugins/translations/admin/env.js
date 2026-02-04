@@ -1,7 +1,7 @@
 export default {
     french: {
         viewEnvironmentVariables: "Voir les variables d'environnement",
-        noEnvVars: "Aucune variable d'environnement",
+        noEnvVars: "Aucune variable d'environnement.",
         environment: "Environnement",
         frontend: "Frontend",
         stripe: "Stripe",
@@ -16,7 +16,7 @@ export default {
 
     english: {
         viewEnvironmentVariables: "View Environment Variables",
-        noEnvVars: "No environment variables",
+        noEnvVars: "No environment variables.",
         environment: "Environment",
         frontend: "Frontend",
         stripe: "Stripe",

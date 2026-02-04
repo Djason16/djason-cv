@@ -1,8 +1,8 @@
 export default {
     french: {
         addProjects: "Ajouter un projet",
-        projectAdded: "Projet ajouté avec succès.",
-        errorSavingProject: "Erreur lors de l’enregistrement du projet.",
+        projectAdded: "Projet ajouté avec succès !",
+        errorSavingProject: "Erreur lors de l'enregistrement du projet.",
         projectName: "Nom du projet",
         enterProjectName: "Entrez le nom du projet",
         projectShortFr: "Description courte (FR)",
@@ -19,13 +19,13 @@ export default {
         enterDate: "Sélectionnez une date",
         viewProjects: "Voir les projets",
         searchProjects: "Rechercher des projets",
-        noProjectsFound: "Aucun projet trouvé",
+        noProjectsFound: "Aucun projet trouvé.",
         deleteProjectConfirm: "Êtes-vous sûr de vouloir supprimer le projet {{name}} ?",
     },
 
     english: {
         addProjects: "Add project",
-        projectAdded: "Project added successfully.",
+        projectAdded: "Project added successfully!",
         errorSavingProject: "Error while saving the project.",
         projectName: "Project name",
         enterProjectName: "Enter project name",
@@ -43,7 +43,7 @@ export default {
         enterDate: "Select a date",
         viewProjects: "View projects",
         searchProjects: "Search projects",
-        noProjectsFound: "No projects found",
+        noProjectsFound: "No projects found.",
         deleteProjectConfirm: "Are you sure you want to delete the project {{name}}?",
     }
 }

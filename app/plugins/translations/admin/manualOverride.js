@@ -1,13 +1,13 @@
 export default {
     french: {
         viewManualOverride: "Voir l'override manuel",
-        noOverride: "Aucun override",
+        noOverride: "Aucun override.",
         enabled: "Activé",
     },
 
     english: {
         viewManualOverride: "View Manual Override",
-        noOverride: "No override",
+        noOverride: "No override.",
         enabled: "Enabled",
     }
 }

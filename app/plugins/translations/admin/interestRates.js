@@ -2,7 +2,7 @@ export default {
     french: {
         viewInterestRates: "Voir les taux d'intérêt",
         searchInterestRates: "Rechercher des taux d'intérêt",
-        noInterestRatesFound: "Aucun taux d'intérêt trouvé",
+        noInterestRatesFound: "Aucun taux d'intérêt trouvé.",
         rate: "Taux",
         validFrom: "Valide du",
         status: "Statut",
@@ -12,13 +12,13 @@ export default {
         enterValidFrom: "Saisir la date de début",
         enterValidUntil: "Saisir la date de fin",
         deleteInterestRateConfirm: "Êtes-vous sûr de vouloir supprimer le taux d'intérêt {{rate}} ?",
-        deleteInterestRateFailed: "Échec de la suppression du taux d'intérêt",
+        deleteInterestRateFailed: "Échec de la suppression du taux d'intérêt.",
     },
 
     english: {
         viewInterestRates: "View Interest Rates",
         searchInterestRates: "Search interest rates",
-        noInterestRatesFound: "No interest rates found",
+        noInterestRatesFound: "No interest rates found.",
         rate: "Rate",
         validFrom: "Valid From",
         status: "Status",
@@ -28,6 +28,6 @@ export default {
         enterValidFrom: "Enter valid from date",
         enterValidUntil: "Enter valid until date",
         deleteInterestRateConfirm: "Are you sure you want to delete the interest rate {{rate}}?",
-        deleteInterestRateFailed: "Failed to delete interest rate",
+        deleteInterestRateFailed: "Failed to delete interest rate.",
     }
 }
