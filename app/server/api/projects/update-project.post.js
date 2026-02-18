@@ -32,14 +32,14 @@ export default defineEventHandler(async event => {
             throw createError({ statusCode: 404, statusMessage: 'Project not found' })
         }
 
-        // Ensure upload directory exists before writing
+        // Ensure upload directory exists before anything else
         const uploadDir = await ensureUploadDir()
 
         // Remove previous image if it was an uploaded asset
         const oldImg = rows[0].img
         if (oldImg?.startsWith('/upload/images/')) {
-            const oldPath = getAbsolutePath(oldImg)
             try {
+                const oldPath = getAbsolutePath(oldImg)
                 if (existsSync(oldPath)) await unlink(oldPath)
             } catch { }
         }

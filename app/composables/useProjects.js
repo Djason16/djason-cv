@@ -154,12 +154,13 @@ export const useProjects = () => {
                     body: createFormData({ id }, imageFile),
                 })
                 if (res.success) {
+                    const newImg = `api${res.imagePath}`
                     const i = projects.value.findIndex(p => p.id === id)
                     if (i !== -1) {
                         projects.value[i] = {
                             ...projects.value[i],
-                            img: res.imagePath || projects.value[i].img,
-                            image: res.imagePath || projects.value[i].image,
+                            img: newImg,
+                            image: newImg,
                         }
                     }
                 }
