@@ -20,7 +20,7 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ /200.html [L]
 
 #####################################
-# Long cache for images, fonts and favicon
+# Cache rules
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresByType image/jpeg "access plus 1 year"
@@ -34,5 +34,22 @@ RewriteRule ^ /200.html [L]
 </IfModule>
 
 <IfModule mod_headers.c>
-    Header set Cache-Control "public, max-age=31536000, immutable"
+    # Long cache for static assets that never change (images, fonts)
+    <FilesMatch "\.(png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|otf)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+    </FilesMatch>
+
+    # No cache for JS and CSS — content can change without filename change
+    <FilesMatch "\.(js|css)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    # No cache for HTML
+    <FilesMatch "\.(html)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
 </IfModule>
