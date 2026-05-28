@@ -6,13 +6,9 @@
             <div class="header-top__title">
                 <NuxtLink to="/" class="header-top__logo-link"
                     :title="`${config.public.name} - ${$lang.getTranslation('home')}`">
-                    <NuxtImg v-if="!fallback" :src="logoPath" :alt="config.public.name"
+                    <NuxtImg :src="logoPath" :alt="config.public.name"
                         :title="`${config.public.name} - ${$lang.getTranslation('home')}`" class="header-top__logo"
-                        width="200" height="80" sizes="200px" format="webp" loading="eager" densities="1x 2x"
-                        @error="onError" />
-                    <img v-else :src="logoPath" :alt="config.public.name"
-                        :title="`${config.public.name} - ${$lang.getTranslation('home')}`" class="header-top__logo"
-                        preload priority fetchpriority="high" loading="eager" />
+                        width="200" height="80" loading="eager" fetchpriority="high" />
                 </NuxtLink>
             </div>
 
@@ -20,7 +16,6 @@
             <nav class="header-top__nav" role="navigation" aria-label="Main Navigation">
                 <NavLink v-if="isHomePage" v-for="(item, i) in homeNavItems" :key="i" :id="item.id"
                     :title="$lang.getTranslation(item.translationKey)">
-                    <!-- Move aria-label to the interactive NavLink component -->
                     <span class="nav-text">{{ $lang.getTranslation(item.translationKey) }}</span>
                     <i :class="item.icon" class="nav-icon text-normal" aria-hidden="true"></i>
                 </NavLink>
@@ -38,7 +33,6 @@
 
 <script setup>
 import { useRuntimeConfig } from '#imports'
-import { useImageFallback } from '@/composables/useImageFallback.js'
 import { withTrailingSlash } from '@/utils/pathHelpers'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
@@ -52,9 +46,6 @@ const logoPath = '/images/main_logo_light.png'
 
 // Only show homepage links on the root route
 const isHomePage = computed(() => router.currentRoute.value.path === '/')
-
-// Fallback for a single logo
-const { fallback, onError } = useImageFallback(false)
 
 // Navigation items for homepage links
 const homeNavItems = [

@@ -36,7 +36,7 @@
 
 <script setup>
 import { services } from "@/src/data/servicesData.js"
-import { computed, ref } from "vue"
+import { ref } from "vue"
 import CustomList from "~/components/ui/List/CustomList.vue"
 
 // Active service index, defaulting to the middle tab
@@ -44,9 +44,6 @@ const activeService = ref(Math.floor(services.length / 2))
 
 // Update the active service when a tab is clicked
 const setActiveService = i => (activeService.value = i)
-
-// Reactive data for the currently active service
-const activeServiceData = computed(() => services[activeService.value])
 </script>
 
 <style scoped>

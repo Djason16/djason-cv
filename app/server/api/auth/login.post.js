@@ -46,7 +46,7 @@ export default defineEventHandler(async event => {
     try {
         await transporter.sendMail({
             from: `"${adminName}" <${config.smtpUser}>`,
-            to: email,
+            to: config.smtpUser,
             subject: `${adminName} - Code de connexion`,
             text: `Votre code de connexion est : ${code}\nIl expire dans 10 minutes.`,
             html: renderOtpEmail({ code, adminName, locale: 'fr', config })

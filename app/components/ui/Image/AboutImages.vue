@@ -2,28 +2,18 @@
     <div class="about-section__images">
         <div v-for="(row, r) in imageRows" :key="r" class="about-section__row">
             <div v-for="(img, i) in row" :key="i" class="about-section__image-wrapper">
-                <!-- Primary image with NuxtImg, fallback to <img> if it fails -->
-                <NuxtImg v-if="!fallbacks[r * 3 + i]" :src="img"
-                    :alt="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })"
+                <NuxtImg :src="img" :alt="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })"
                     :title="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })" class="about-section__image"
-                    width="250" height="250" sizes="(max-width: 768px) 100vw, 250px" format="webp" loading="lazy"
-                    densities="1x 2x" @error="onError(r * 3 + i)" />
-                <img v-else :src="img" :alt="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })"
-                    :title="$lang.getTranslation('aboutImage', { index: r * 3 + i + 1 })" class="about-section__image"
-                    loading="lazy" />
+                    width="250" height="250" loading="lazy" />
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-import { useImageFallback } from '@/composables/useImageFallback.js'
 import { computed } from 'vue'
 
 const props = defineProps({ images: { type: Array, default: () => [] } })
-
-// Multiple-image fallback composable
-const { fallbacks, onError } = useImageFallback(true)
 
 // Compute up to 6 images split into 2 rows
 const imageRows = computed(() => {

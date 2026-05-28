@@ -12,9 +12,7 @@
                             <!-- Slide title -->
                             <h3 class="project-title text-xlarge">{{ item.name }}</h3>
                             <!-- Short description -->
-                            <p class="project-description text-normal">
-                                {{ item.short }}
-                            </p>
+                            <p class="project-description text-normal">{{ item.short }}</p>
                             <!-- Skills list -->
                             <ul v-if="item.skills && item.skills.length > 0" class="project-skills">
                                 <li v-for="(skill, i) in item.skills" :key="i" class="skill text-normal">
@@ -28,17 +26,12 @@
                                 {{ $lang.getTranslation('viewMore') || 'View More' }}
                             </a>
                         </div>
-                        <!-- Slide image -->
+                        <!-- API image served directly (dynamic, no NuxtImg) -->
                         <img v-if="(item.image || item.img)?.startsWith('api/')" :src="item.image || item.img"
                             :alt="item.name" :title="item.name" class="carousel-image" loading="lazy" />
-                        <NuxtImg v-else-if="!fallbacks[index] && (item.image || item.img)" :src="item.image || item.img"
-                            :alt="item.name" :title="item.name" class="carousel-image" width="640" height="480"
-                            sizes="(max-width: 768px) 90vw, 640px" format="webp" loading="lazy" densities="1x 2x"
-                            @error="onError(index)" placeholder />
-                        <!-- Fallback -->
-                        <img v-else-if="item.image || item.img" :src="item.image || item.img"
-                            :alt="`Fallback ${item.name}`" :title="`Fallback ${item.name}`" class="carousel-image"
-                            loading="lazy" />
+                        <!-- Static image via NuxtImg -->
+                        <NuxtImg v-else-if="item.image || item.img" :src="item.image || item.img" :alt="item.name"
+                            :title="item.name" class="carousel-image" width="640" height="480" loading="lazy" />
                     </div>
                 </slot>
             </template>
@@ -47,20 +40,12 @@
 </template>
 
 <script setup>
-import { useImageFallback } from '@/composables/useImageFallback.js';
-
 // Props: slides array, dynamic track style, and transition toggle
 defineProps({
-    slides: {
-        type: Array,
-        default: () => []
-    },
+    slides: { type: Array, default: () => [] },
     trackStyle: Object,
     transitionEnabled: Boolean
 })
-
-// Composable to handle multiple fallbacks
-const { fallbacks, onError } = useImageFallback(true)
 </script>
 
 <style scoped>

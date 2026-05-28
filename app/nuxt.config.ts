@@ -71,6 +71,7 @@ export default defineNuxtConfig({
         'gsap',
         'bcryptjs',
         'entities',
+        'html2pdf.js',
         '@vue/devtools-core',
         '@vue/devtools-kit',
       ],
@@ -92,7 +93,7 @@ export default defineNuxtConfig({
     experimental: { wasm: true, database: true },
     compressPublicAssets: { gzip: true, brotli: true },
     externals: {
-      inline: ['entities', 'sharp'],
+      inline: ['entities'],
       external: ['@vue/devtools-api']
     },
     alias: {
@@ -116,7 +117,6 @@ export default defineNuxtConfig({
       '/images/svg/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' } },
       '/images/**': { headers: { 'Cache-Control': 'public, max-age=7200', 'X-Content-Type-Options': 'nosniff' } },
       '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' } },
-      '/_ipx/**': { headers: { 'Cache-Control': 'public, max-age=7200', 'Vary': 'Accept' } },
       '/admin/**': { ssr: true, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate', 'X-Robots-Tag': 'noindex, nofollow' } },
       '/': { ssr: true, headers: { 'Cache-Control': 'public, max-age=600, s-maxage=3600' } },
       '/pay-me': { ssr: true, headers: { 'Cache-Control': 'public, max-age=600, s-maxage=3600' } },
@@ -144,8 +144,7 @@ export default defineNuxtConfig({
     quality: 80,
     format: ['webp', 'avif'],
     screens: { xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536 },
-    provider: isDev ? 'none' : 'ipx',
-    ipx: { maxAge: 60 * 60 * 24 * 7 }
+    provider: 'none',
   },
 
   app: {

@@ -9,7 +9,7 @@
                     <div class="error-actions">
                         <HeroButton :label="$lang.getTranslation('backHome')" iconClass="fas fa-home"
                             :ariaLabel="$lang.getTranslation('backHome')" :title="$lang.getTranslation('backHome')"
-                            @click="clearError({ redirect: '/' })" />
+                            @click="goHome" />
                     </div>
                 </SlideInFromRight>
             </template>
@@ -19,7 +19,9 @@
 
 <script setup>
 import { clearError, useNuxtApp, useRuntimeConfig } from '#app'
+import { withTrailingSlash } from '@/utils/pathHelpers'
 import { watch } from 'vue'
+import { useRouter } from 'vue-router'
 import SlideInFromRight from '~/components/animations/SlideInFromRight.vue'
 import AppShell from '~/components/layout/AppShell/AppShell.vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
@@ -33,6 +35,14 @@ const config = useRuntimeConfig()
 
 // Language context
 const { $lang } = useNuxtApp()
+
+const router = useRouter()
+
+// Clear error state then navigate via router (avoids full page reload)
+const goHome = async () => {
+    await clearError()
+    await router.push(withTrailingSlash('/'))
+}
 
 // Build provider info dynamically
 const providerInfo = {
