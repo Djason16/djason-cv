@@ -10,6 +10,17 @@ export const createUsersTable = async db => db.sql`
   )
 `
 
+export const createOtpTable = async db => db.sql`
+  CREATE TABLE IF NOT EXISTS dc_otp (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    code TEXT NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES dc_users(id) ON DELETE CASCADE
+  )
+`
+
 export const createSessionsTable = async db => db.sql`
   CREATE TABLE IF NOT EXISTS dc_sessions (
     id TEXT PRIMARY KEY,

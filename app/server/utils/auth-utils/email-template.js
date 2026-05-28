@@ -1,72 +1,104 @@
-export const renderTempPasswordEmail = ({ userEmail, tempPassword, message = '', adminName = 'Admin', locale = 'fr', config }) => {
-  // Theme colors, fonts, and spacing
-  const theme = {
-    colorTextPrimary: '#1a1d1f',
-    colorTextSecondary: '#1a1d1f',
-    colorHighlight: '#58D68D',
-    bgBody: '#C9D6DF',
-    bgContainer: '#fff',
-    bgTempPassword: '#fff',
-    borderContainer: '#dbe6ea',
-    colorTextFooter: '#7f8c8d',
-    colorTextSiteNote: '#95a5a6',
-    fontFamily: "'Barlow Condensed', Arial, sans-serif",
-    fontSizeBase: '1rem',
-    fontSizeHeader: '2rem',
-    fontSizeTempPassword: '1.1rem',
-    fontSizeFooter: '0.9rem',
-    fontSizeSiteNote: '0.85rem',
-    spacing: '1rem',
-    padding: '2rem'
-  };
+// Shared theme tokens used across all email templates
+const theme = {
+  colorTextPrimary: '#1a1d1f',
+  colorTextSecondary: '#1a1d1f',
+  colorHighlight: '#2e9e5e',
+  colorHighlightDeco: '#58D68D',
+  bgBody: '#C9D6DF',
+  bgContainer: '#fff',
+  borderContainer: '#dbe6ea',
+  colorTextFooter: '#4a5568',
+  colorTextSiteNote: '#6b7280',
+  fontFamily: "'Barlow Condensed', Arial, sans-serif",
+  spacing: '1rem',
+  padding: '2rem'
+}
 
-  // Localized text
-  const TEXT = {
-    fr: {
-      title: 'Voici ton mot de passe temporaire',
-      instruction: 'N’oublie pas de le changer après ta connexion.',
-      userLabel: 'Ton compte : ',
-      tempPasswordLabel: 'Mot de passe temporaire : ',
-      regards: 'À bientôt',
-      siteNote: `Envoyé depuis mon site ${config.public.frontendDomain}`
-    },
-    en: {
-      title: 'Here is your temporary password',
-      instruction: 'Remember to change it after logging in.',
-      userLabel: 'Your account: ',
-      tempPasswordLabel: 'Temporary password: ',
-      regards: 'Cheers',
-      siteNote: `Sent from my site ${config.public.frontendDomain}`
-    }
-  };
+// Shared base styles injected into every email
+const baseStyles = (t) => `
+  body, table, td, a, p, h1, strong, span {
+    margin:0; padding:0; font-family:${t.fontFamily}; line-height:1.5; color:${t.colorTextPrimary};
+  }
+  body { width:100% !important; background:${t.bgBody}; }
+  table { border-spacing:0; width:100%; }
+  a { color:${t.colorHighlight}; text-decoration:none; }
+  .email-wrapper {
+    background:${t.bgContainer};
+    max-width:580px;
+    margin:${t.spacing} auto;
+    border:1px solid ${t.borderContainer};
+    padding:${t.padding};
+    box-shadow:0 2px 8px rgba(0,0,0,0.05);
+  }
+  .email-header {
+    text-align:center;
+    padding-bottom:${t.spacing};
+    margin-bottom:${t.spacing};
+    border-bottom:2px solid ${t.borderContainer};
+  }
+  h1 {
+    font-weight:700;
+    font-size:1.75rem;
+    color:${t.colorHighlight};
+    margin:0;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+  }
+  .divider {
+    width:40px;
+    height:3px;
+    background:${t.colorHighlight};
+    margin:0.5rem auto 0;
+  }
+  p, strong, .instruction, .site-note { font-weight:400; font-size:1rem; color:${t.colorTextSecondary}; }
+  strong { font-weight:600; color:${t.colorHighlight}; display:inline; }
+  .label {
+    font-size:0.75rem;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:${t.colorTextFooter};
+    margin-bottom:0.5rem;
+  }
+  .code-wrapper {
+    background:#f7fbf9;
+    border:1px solid ${t.borderContainer};
+    padding:1.5rem;
+    text-align:center;
+    margin:0 0 ${t.spacing} 0;
+    box-shadow:0 1px 4px rgba(0,0,0,0.05);
+  }
+  .instruction {
+    background:#f7fbf9;
+    border-left:3px solid ${t.colorHighlight};
+    padding:0.75rem 1rem;
+    font-size:0.9rem;
+    font-weight:500;
+    color:${t.colorTextPrimary};
+    box-shadow:0 1px 4px rgba(0,0,0,0.05);
+    margin-bottom:${t.spacing};
+  }
+  .footer {
+    font-size:0.9rem;
+    color:${t.colorTextFooter};
+    text-align:center;
+    padding-top:${t.spacing};
+    margin-top:${t.spacing};
+    border-top:1px solid ${t.borderContainer};
+  }
+  .site-note { font-style:italic; color:${t.colorTextSiteNote}; font-size:0.8rem; text-align:center; }
+`
 
-  const t = TEXT[locale] || TEXT.fr;
-
-  // Return full HTML email as a string
-  return `
+// Shared email HTML shell — wraps any inner content block
+const emailShell = ({ title, locale, body }) => `
 <!DOCTYPE html>
 <html lang="${locale}">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>${t.title}</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed&display=swap" rel="stylesheet"/>
-<style>
-  body, table, td, a, p, h1, strong, span {
-    margin:0; padding:0; font-family:${theme.fontFamily}; line-height:1.5; color:${theme.colorTextPrimary};
-  }
-  body { width:100% !important; background:${theme.bgBody}; }
-  table { border-spacing:0; width:100%; }
-  a { color:${theme.colorHighlight}; text-decoration:none; }
-  .email-wrapper { background:${theme.bgContainer}; max-width:580px; margin:${theme.spacing} auto; border:1px solid ${theme.borderContainer}; padding:${theme.padding}; box-shadow:0 4px 20px rgba(0,0,0,0.15); }
-  h1 { font-weight:700; font-size:${theme.fontSizeHeader}; color:${theme.colorHighlight}; margin-bottom:${theme.spacing}; text-align:center; }
-  p, strong, .instruction, .site-note { font-weight:400; font-size:${theme.fontSizeBase}; margin-bottom:${theme.spacing}; color:${theme.colorTextSecondary}; }
-  strong { font-weight:600; color:${theme.colorHighlight}; display:block; }
-  .temp-password { font-family: "Courier New", monospace; font-weight:600; font-size:${theme.fontSizeTempPassword}; color:${theme.colorHighlight}; background:${theme.bgTempPassword}; border:2px solid ${theme.colorHighlight}; padding:0.5rem 1rem; display:inline-block; user-select:all; letter-spacing:0.12em; }
-  .instruction { background:#f0f9f6; border-left:5px solid ${theme.colorHighlight}; padding:0.8rem 1rem; font-weight:600; font-size:${theme.fontSizeBase}; color:${theme.colorTextPrimary}; }
-  .footer { font-size:${theme.fontSizeFooter}; color:${theme.colorTextFooter}; text-align:center; }
-  .site-note { font-style:italic; color:${theme.colorTextSiteNote}; font-size:${theme.fontSizeSiteNote}; margin-bottom:0; }
-</style>
+<title>${title}</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>${baseStyles(theme)}</style>
 </head>
 <body>
 <center>
@@ -74,17 +106,7 @@ export const renderTempPasswordEmail = ({ userEmail, tempPassword, message = '',
   <tr>
     <td align="center" valign="top">
       <table role="presentation" class="email-wrapper" cellspacing="0" cellpadding="0" border="0">
-        <tr>
-          <td>
-            <h1>${t.title}</h1>
-            ${message ? `<p style="text-align:center;font-style:italic;">${message}</p>` : ''}
-            <p><strong>${t.userLabel}</strong>${userEmail}</p>
-            <p><strong>${t.tempPasswordLabel}</strong><span class="temp-password">${tempPassword}</span></p>
-            <p class="instruction">${t.instruction}</p>
-            <p class="footer">${t.regards},<br/>${adminName}</p>
-            <p class="site-note">${t.siteNote}</p>
-          </td>
-        </tr>
+        <tr><td>${body}</td></tr>
       </table>
     </td>
   </tr>
@@ -92,5 +114,100 @@ export const renderTempPasswordEmail = ({ userEmail, tempPassword, message = '',
 </center>
 </body>
 </html>
-    `;
-};
+`
+
+// Shared code block style — prominent and centered
+const codeBlock = (value) =>
+  `<div class="code-wrapper">
+    <div style="font-family:'Courier New',monospace;font-weight:700;font-size:2.25rem;color:${theme.colorHighlight};letter-spacing:0.35em;user-select:all;">${value}</div>
+  </div>`
+
+// Shared email body builder — used by both OTP and temp password emails
+const renderEmailBody = ({ title, subtitle = '', label, value, instruction, regards, adminName, siteNote, locale }) =>
+  emailShell({
+    title,
+    locale,
+    body: `
+      <div class="email-header">
+        <h1>${title}</h1>
+        <div class="divider"></div>
+      </div>
+      ${subtitle ? `<p style="text-align:center;font-style:italic;font-size:1rem;margin-bottom:${theme.spacing};">${subtitle}</p>` : ''}
+      ${label ? `<p class="label">${label}</p>` : ''}
+      ${codeBlock(value)}
+      <p class="instruction">${instruction}</p>
+      <div class="footer">
+        <p style="font-size:0.9rem;margin-bottom:0.25rem;">${regards},<br/><strong style="font-size:0.9rem;color:${theme.colorTextFooter};">${adminName}</strong></p>
+        <p style="margin-top:0.75rem;" class="site-note">${siteNote}</p>
+      </div>
+    `
+  })
+
+// Temporary password email — sent to admin after security answer verification
+export const renderTempPasswordEmail = ({ userEmail, tempPassword, message = '', adminName = 'Admin', locale = 'fr', config }) => {
+  const TEXT = {
+    fr: {
+      title: 'Mot de passe temporaire',
+      instruction: "N'oublie pas de le changer après ta connexion.",
+      userLabel: 'Ton compte :',
+      tempPasswordLabel: 'Mot de passe temporaire',
+      regards: 'À bientôt',
+      siteNote: `Envoyé depuis mon site ${config.public.frontendDomain}`
+    },
+    en: {
+      title: 'Temporary password',
+      instruction: 'Remember to change it after logging in.',
+      userLabel: 'Your account:',
+      tempPasswordLabel: 'Temporary password',
+      regards: 'Cheers',
+      siteNote: `Sent from my site ${config.public.frontendDomain}`
+    }
+  }
+
+  const t = TEXT[locale] || TEXT.fr
+
+  return renderEmailBody({
+    title: t.title,
+    subtitle: message || `<strong style="font-size:1rem;display:inline;">${t.userLabel}</strong> ${userEmail}`,
+    label: t.tempPasswordLabel,
+    value: tempPassword,
+    instruction: t.instruction,
+    regards: t.regards,
+    adminName,
+    siteNote: t.siteNote,
+    locale
+  })
+}
+
+// OTP email — sent to user after successful credential verification
+export const renderOtpEmail = ({ code, adminName = 'Admin', locale = 'fr', config }) => {
+  const TEXT = {
+    fr: {
+      title: 'Code de connexion',
+      instruction: 'Ce code expire dans 10 minutes. Ne le partagez pas.',
+      codeLabel: 'Code OTP',
+      regards: 'À bientôt',
+      siteNote: `Envoyé depuis mon site ${config.public.frontendDomain}`
+    },
+    en: {
+      title: 'Login code',
+      instruction: 'This code expires in 10 minutes. Do not share it.',
+      codeLabel: 'OTP Code',
+      regards: 'Cheers',
+      siteNote: `Sent from my site ${config.public.frontendDomain}`
+    }
+  }
+
+  const t = TEXT[locale] || TEXT.fr
+
+  return renderEmailBody({
+    title: t.title,
+    label: t.codeLabel,
+    value: code,
+    instruction: t.instruction,
+    regards: t.regards,
+    adminName,
+    siteNote: t.siteNote,
+    locale
+  })
+}

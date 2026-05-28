@@ -1,24 +1,26 @@
 <template>
     <!-- Render an anchor if 'href' exists, else a button -->
-    <component :is="href ? 'a' : 'button'" class="custom-button" :href="href" :target="href ? '_blank' : undefined"
-        :rel="href ? 'noopener noreferrer' : undefined" :aria-label="ariaLabel || label" :title="title || label">
+    <component :is="href ? 'a' : 'button'" class="custom-button" :class="`text-${size}`" :href="href"
+        :target="href ? '_blank' : undefined" :rel="href ? 'noopener noreferrer' : undefined"
+        :aria-label="ariaLabel || label" :title="title || label">
         <!-- Icon display -->
-        <span class="custom-button__icon text-normal">
+        <span class="custom-button__icon">
             <i :class="iconClass"></i>
         </span>
         <!-- Button/link text -->
-        <span class="custom-button__text text-normal text-uppercase text-bold">{{ label }}</span>
+        <span class="custom-button__text text-uppercase text-bold">{{ label }}</span>
     </component>
 </template>
 
 <script setup>
-// Props: label, optional link, accessibility label, and icon class
+// Props: label, optional link, accessibility label, icon class, and size variant
 defineProps({
-    label: { type: String, default: 'Button' },          // Display text
-    href: { type: String, default: null },               // Makes it a link if provided
-    ariaLabel: { type: String, default: null },          // Accessibility label
-    title: { type: String, default: null },              // Tooltip/title
-    iconClass: { type: String, default: 'fas fa-circle' } // Icon for the button/link
+    label: { type: String, default: 'Button' },           // Display text
+    href: { type: String, default: null },                // Makes it a link if provided
+    ariaLabel: { type: String, default: null },           // Accessibility label
+    title: { type: String, default: null },               // Tooltip/title
+    iconClass: { type: String, default: 'fas fa-circle' }, // Icon for the button/link
+    size: { type: String, default: 'normal' }             // Text size: 'normal' or 'small'
 })
 </script>
 

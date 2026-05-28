@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 // Props: total slides and currently active slide
 const { itemsLength, activeIndex } = defineProps({ itemsLength: Number, activeIndex: Number })
@@ -57,8 +57,20 @@ const getSlideIndex = i => {
 }
 
 @media (max-width: 1024px) {
+    .carousel-pagination button {
+        width: 0.75rem;
+        height: 0.75rem;
+    }
+
     .carousel-pagination button.active {
         transform: none;
+    }
+}
+
+@media (max-width: 540px) {
+    .carousel-pagination button {
+        width: 0.5rem;
+        height: 0.5rem;
     }
 }
 </style>

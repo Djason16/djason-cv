@@ -63,51 +63,38 @@ import { useMessage } from '~/composables/useMessage'
 // Language context
 const { $lang } = useNuxtApp()
 const config = useRuntimeConfig()
+const { translatedMessage, showMessage, clearMessage } = useMessage()
 
 // Payment mode toggle
 const isSubscription = ref(false)
 
-// Define layout sections
+// Reactive form state
+const formData = reactive({
+    email: '',
+    name: '',
+    amount: 0,
+    currency: computed(() => $lang.current.value === 'french' ? 'eur' : 'usd')
+})
+
+// Layout sections
 const payMeSections = Array.from({ length: 9 }, (_, i) => ({
     titleKey: `payMeSection${i + 1}Title`,
     contentKey: `payMeSection${i + 1}Content`
 }))
 
-// SEO metadata, reactive to language changes
+// SEO metadata reactive to language
 const pageKey = 'payMe'
-useSeoMeta(seoMetaData(pageKey, $lang, {
-    name: config.public.name,
-    email: config.public.contactEmail,
-    phone: config.public.contactPhone
-}))
-watch(() => $lang.current.value, () =>
-    useSeoMeta(seoMetaData(pageKey, $lang, {
-        name: config.public.name,
-        email: config.public.contactEmail,
-        phone: config.public.contactPhone
-    }))
-)
-
-// Reactive form state
-const formData = reactive({ email: '', name: '', amount: 0, currency: computed(() => $lang.current.value === 'french' ? 'eur' : 'usd') })
-
-// Message composable
-const { translatedMessage, showMessage, clearMessage } = useMessage()
+const seoExtra = { name: config.public.name, email: config.public.contactEmail, phone: config.public.contactPhone }
+useSeoMeta(seoMetaData(pageKey, $lang, seoExtra))
+watch(() => $lang.current.value, () => useSeoMeta(seoMetaData(pageKey, $lang, seoExtra)))
 
 // Form fields for one-time payment
 const oneTimeFormFields = [
     { id: 'email', type: 'email', model: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', required: true, autocomplete: 'email' },
     { id: 'amount', type: 'number', model: 'amount', labelKey: 'amountToPay', placeholderKey: 'enterAmount', min: 1, required: true, autocomplete: 'off' },
     {
-        id: 'currency',
-        type: 'select',
-        model: 'currency',
-        labelKey: 'currency',
-        options: [
-            { value: 'usd', labelKey: 'usdCurrency' },
-            { value: 'eur', labelKey: 'eurCurrency' }
-        ],
-        autocomplete: 'off'
+        id: 'currency', type: 'select', model: 'currency', labelKey: 'currency', autocomplete: 'off',
+        options: [{ value: 'usd', labelKey: 'usdCurrency' }, { value: 'eur', labelKey: 'eurCurrency' }]
     }
 ]
 
@@ -118,11 +105,43 @@ const subscriptionFormFields = [
     { id: 'total-amount', type: 'number', model: 'amount', labelKey: 'totalProjectAmount', placeholderKey: 'enterTotalAmount', min: 1, required: true, autocomplete: 'off' }
 ]
 
-// Computed: current form fields based on mode
+// Computed: active fields based on mode
 const currentFormFields = computed(() => isSubscription.value ? subscriptionFormFields : oneTimeFormFields)
 
-// Toggle between payment modes
-const togglePaymentMode = () => { isSubscription.value = !isSubscription.value; clearMessage(); formData.email = ''; formData.name = ''; formData.amount = 0 }
+// Toggle payment mode and reset form
+const togglePaymentMode = () => {
+    isSubscription.value = !isSubscription.value
+    clearMessage()
+    Object.assign(formData, { email: '', name: '', amount: 0 })
+}
+
+// Poll Stripe for one-time payment status
+const checkPaymentStatus = async sessionId => {
+    try {
+        const data = await $fetch(`/api/stripe/check-payment?sessionId=${sessionId}`)
+        showMessage(data.success ? 'success' : 'error', data.success ? 'successPayment' : 'cancelPayment', data.success ? 5000 : 0)
+    } catch {
+        showMessage('error', 'unknownError', 0)
+    }
+}
+
+// Poll Stripe for subscription status
+const checkSubscriptionStatus = async sessionId => {
+    try {
+        const data = await $fetch(`/api/stripe/check-subscription?sessionId=${sessionId}`)
+        showMessage(data.success ? 'success' : 'error', data.success ? 'successSubscription' : 'cancelSubscription', data.success ? 5000 : 0)
+    } catch {
+        showMessage('error', 'unknownError', 0)
+    }
+}
+
+// Open Stripe popup and poll status on close
+const openStripePopup = (url, sessionId, checkFn) => {
+    const popup = window.open(url, 'Stripe Checkout', 'width=500,height=700,resizable,scrollbars=yes,status=1')
+    const interval = setInterval(() => {
+        if (popup.closed) { clearInterval(interval); checkFn(sessionId) }
+    }, 1000)
+}
 
 // Trigger Stripe checkout with validation
 const startCheckout = async () => {
@@ -132,76 +151,30 @@ const startCheckout = async () => {
 
     if (formData.amount <= 0) return showMessage('error', 'invalidAmount', 0)
     if (!formData.email || !emailRegex.test(formData.email)) return showMessage('error', 'invalidEmail', 0)
-
-    if (isSubscription.value && (!formData.name || !nameRegex.test(formData.name.trim()))) {
+    if (isSubscription.value && (!formData.name || !nameRegex.test(formData.name.trim())))
         return showMessage('error', 'invalidName', 0)
-    }
 
     try {
         if (isSubscription.value) {
             // Subscription checkout (12 months)
             const data = await $fetch('/api/stripe/create-subscription', {
                 method: 'POST',
-                body: {
-                    amount: formData.amount,
-                    email: formData.email,
-                    name: formData.name.trim()
-                }
+                body: { amount: formData.amount, email: formData.email, name: formData.name.trim() }
             })
             if (!data.url || !data.sessionId) throw new Error('Missing URL/sessionId')
-
-            const popup = window.open(data.url, 'Stripe Checkout', 'width=500,height=700,resizable,scrollbars=yes,status=1')
-            const interval = setInterval(() => {
-                if (popup.closed) {
-                    clearInterval(interval)
-                    checkSubscriptionStatus(data.sessionId)
-                }
-            }, 1000)
+            openStripePopup(data.url, data.sessionId, checkSubscriptionStatus)
         } else {
             // One-time payment checkout
             const data = await $fetch('/api/stripe/create-checkout', {
                 method: 'POST',
-                body: {
-                    amount: formData.amount * 100,
-                    currency: formData.currency,
-                    email: formData.email
-                }
+                body: { amount: formData.amount * 100, currency: formData.currency, email: formData.email }
             })
             if (!data.url || !data.sessionId) throw new Error('Missing URL/sessionId')
-
-            const popup = window.open(data.url, 'Stripe Checkout', 'width=500,height=700,resizable,scrollbars=yes,status=1')
-            const interval = setInterval(() => {
-                if (popup.closed) {
-                    clearInterval(interval)
-                    checkPaymentStatus(data.sessionId)
-                }
-            }, 1000)
+            openStripePopup(data.url, data.sessionId, checkPaymentStatus)
         }
     } catch (err) {
         console.error('Checkout error:', err)
         showMessage('error', 'checkoutError', 0)
-    }
-}
-
-// Poll Stripe API for one-time payment status
-const checkPaymentStatus = async sessionId => {
-    try {
-        const data = await $fetch(`/api/stripe/check-payment?sessionId=${sessionId}`)
-        showMessage(data.success ? 'success' : 'error', data.success ? 'successPayment' : 'cancelPayment', data.success ? 5000 : 0)
-    } catch (err) {
-        console.error('Status check error:', err)
-        showMessage('error', 'unknownError', 0)
-    }
-}
-
-// Poll Stripe API for subscription status
-const checkSubscriptionStatus = async sessionId => {
-    try {
-        const data = await $fetch(`/api/stripe/check-subscription?sessionId=${sessionId}`)
-        showMessage(data.success ? 'success' : 'error', data.success ? 'successSubscription' : 'cancelSubscription', data.success ? 5000 : 0)
-    } catch (err) {
-        console.error('Status check error:', err)
-        showMessage('error', 'unknownError', 0)
     }
 }
 
@@ -214,7 +187,10 @@ const paymentButtons = [
 ]
 
 // Load Stripe script if missing
-onMounted(() => { if (!window.Stripe) useHead({ script: [{ src: 'https://js.stripe.com/v3/', defer: true, crossorigin: 'anonymous' }] }) })
+onMounted(() => {
+    if (!window.Stripe)
+        useHead({ script: [{ src: 'https://js.stripe.com/v3/', defer: true, crossorigin: 'anonymous' }] })
+})
 </script>
 
 <style scoped>

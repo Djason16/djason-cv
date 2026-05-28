@@ -13,9 +13,16 @@
 
             <!-- Diagonal separator, skip for last section -->
             <div v-if="i < sectionCount" class="diagonal-separator">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" preserveAspectRatio="none"
+                <!-- Shadow layer for depth -->
+                <svg class="separator-shadow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 150"
+                    preserveAspectRatio="none"
                     :class="i % 2 === 0 ? 'diagonal-separator-normal' : 'diagonal-separator-inverted'">
-                    <polygon points="0,0 1440,0 0,100" :fill="getColor(i)" />
+                    <polygon points="0,0 1440,0 0,150" fill="rgba(0,0,0,0.05)" />
+                </svg>
+                <!-- Main layer -->
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 150" preserveAspectRatio="none"
+                    :class="i % 2 === 0 ? 'diagonal-separator-normal' : 'diagonal-separator-inverted'">
+                    <polygon points="0,0 1440,0 0,150" :fill="getColor(i)" />
                 </svg>
             </div>
         </section>
@@ -69,7 +76,11 @@ const lastColor = computed(() => getColor(sectionCount.value - 1))
     align-items: center;
     min-height: 50vh;
     height: auto;
-    margin-bottom: calc(6vh + 65px);
+    margin-bottom: calc(6vh + 80px);
+}
+
+.content:hover {
+    transform: translateY(-4px);
 }
 
 .content-last {
@@ -84,11 +95,22 @@ const lastColor = computed(() => getColor(sectionCount.value - 1))
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 100px;
+    height: 150px;
     z-index: 1;
 }
 
+.diagonal-separator .separator-shadow {
+    position: absolute;
+    top: 6px;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
 .diagonal-separator svg {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     display: block;
@@ -102,9 +124,17 @@ const lastColor = computed(() => getColor(sectionCount.value - 1))
     transform: rotateX(180deg) rotateY(0deg);
 }
 
-@media (max-width:1024px) {
+@media (max-width: 1024px) {
     .section-wrapper {
-        padding: 5vh 0;
+        padding: 5vh 1.5rem;
+    }
+
+    .content {
+        margin-bottom: calc(5vh + 100px);
+    }
+
+    .content-last {
+        margin-bottom: 0;
     }
 }
 </style>

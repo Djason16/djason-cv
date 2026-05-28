@@ -29,7 +29,7 @@ const screenWidth = ref(1024)
 
 // Slide constants
 const SLIDE_WIDTH_DESKTOP = 40
-const SLIDE_WIDTH_MOBILE = 35
+const SLIDE_WIDTH_MOBILE = 30
 const SLIDE_GAP = 1
 
 // Update screen width on client resize

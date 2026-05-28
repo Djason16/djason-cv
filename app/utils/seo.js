@@ -1,17 +1,24 @@
-import { useHead, useRuntimeConfig, useSeoMeta } from "#imports";
+import { useHead, useRuntimeConfig } from "#imports";
 import { withTrailingSlash } from "./pathHelpers";
+
+const YEAR = new Date().getFullYear()
 
 // SEO configuration per page - BILINGUAL (FR/EN)
 const seoConfig = {
+    notFound: {
+        url: "",
+        image: "/images/error.jpg",
+        noIndex: true
+    },
     index: {
         url: "",
         image: "/images/profile.jpg",
-        keywords: "développeur web full stack Paris, développeur web Lyon, développeur web Marseille, développeur web Toulouse, développeur web Bordeaux, full stack developer France, création site web sur mesure Paris Île-de-France, custom website development, développeur full-stack freelance Grenoble Nice Montpellier, freelance full stack developer Nantes Strasbourg Lille, développement web professionnel Rennes Reims Toulon, professional web development, monteur truquiste VFX Paris, VFX editor compositing, video editing services France, post-production audiovisuelle Cannes Nîmes Perpignan, audiovisual post-production, montage vidéo professionnel Saint-Étienne Villeurbanne Limoges, professional video editing Poitiers Angoulême, VFX compositing France, services IT Boulogne-Billancourt Saint-Denis Versailles, IT consulting, réparation informatique Paris Lyon Marseille, computer repair France, Djason Chery, expert technique développement web, technical expert, solutions créatives numériques, creative digital solutions, développeur web Paris Île-de-France Auvergne-Rhône-Alpes, web developer France PACA Occitanie, freelance developer Nouvelle-Aquitaine, agence création site web toutes régions France, web agency, développement application web React Vue Angular, web application development Node.js, site web responsive mobile-first, responsive website design, e-commerce development Shopify WooCommerce, développement e-commerce PrestaShop, portfolio professionnel développeur, professional developer portfolio, services numériques transformation digitale, digital services, développeur JavaScript TypeScript, développeur Python PHP, solutions web innovantes 2026"
+        keywords: `développeur web full stack Paris, développeur web Lyon, développeur web Marseille, développeur web Toulouse, développeur web Bordeaux, full stack developer France, création site web sur mesure Paris Île-de-France, custom website development, développeur full-stack freelance Grenoble Nice Montpellier, freelance full stack developer Nantes Strasbourg Lille, développement web professionnel Rennes Reims Toulon, professional web development, monteur truquiste VFX Paris, VFX editor compositing, video editing services France, post-production audiovisuelle Cannes Nîmes Perpignan, audiovisual post-production, montage vidéo professionnel Saint-Étienne Villeurbanne Limoges, professional video editing Poitiers Angoulême, VFX compositing France, services IT Boulogne-Billancourt Saint-Denis Versailles, IT consulting, réparation informatique Paris Lyon Marseille, computer repair France, Djason Chery, expert technique développement web, technical expert, solutions créatives numériques, creative digital solutions, développeur web Paris Île-de-France Auvergne-Rhône-Alpes, web developer France PACA Occitanie, freelance developer Nouvelle-Aquitaine, agence création site web toutes régions France, web agency, développement application web React Vue Angular, web application development Node.js, site web responsive mobile-first, responsive website design, e-commerce development Shopify WooCommerce, développement e-commerce PrestaShop, portfolio professionnel développeur, professional developer portfolio, services numériques transformation digitale, digital services, développeur JavaScript TypeScript, développeur Python PHP, solutions web innovantes ${YEAR}`
     },
     privacy: {
         url: "/privacy",
         image: "/images/privacy.jpg",
-        keywords: "politique de confidentialité développeur web France, privacy policy web developer, protection des données RGPD 2026, data protection GDPR compliance, RGPD conformité site web, GDPR compliance France, confidentialité site web sécurisé, website privacy security, données personnelles clients, personal data protection, sécurité données chiffrement, data security encryption, politique confidentialité développeur web freelance Paris, web developer privacy policy France, protection informations clients projets web, client information protection, conformité RGPD développement web, GDPR compliance web development, données sensibles sécurisées, sensitive data security, confidentialité services audiovisuels montage vidéo, audiovisual services privacy, protection données clients montage vidéo VFX, video editing client data protection, sécurité données IT réparation informatique, IT data security, certificat SSL sécurité web, SSL certificate, protection vie privée utilisateurs, user privacy protection"
+        keywords: `politique de confidentialité développeur web France, privacy policy web developer, protection des données RGPD ${YEAR}, data protection GDPR compliance, RGPD conformité site web, GDPR compliance France, confidentialité site web sécurisé, website privacy security, données personnelles clients, personal data protection, sécurité données chiffrement, data security encryption, politique confidentialité développeur web freelance Paris, web developer privacy policy France, protection informations clients projets web, client information protection, conformité RGPD développement web, GDPR compliance web development, données sensibles sécurisées, sensitive data security, confidentialité services audiovisuels montage vidéo, audiovisual services privacy, protection données clients montage vidéo VFX, video editing client data protection, sécurité données IT réparation informatique, IT data security, certificat SSL sécurité web, SSL certificate, protection vie privée utilisateurs, user privacy protection`
     },
     terms: {
         url: "/terms",
@@ -44,41 +51,27 @@ const seoConfig = {
         image: "/images/admin.jpg",
         keywords: "administration site gestion, site administration management, tableau de bord admin développeur, admin dashboard developer, gestion projets web clients, web projects client management, gestion clients CRM, client management CRM, facturation automatique devis, automated invoicing quotes, devis contrats projets web, quotes contracts web projects, contrats services numériques, digital services contracts, statistiques analytics site, website statistics analytics, espace administration backend, administration backend area, gestion projets audiovisuels production, audiovisual projects production management, gestion montage vidéo pipeline, video editing pipeline management, gestion services IT tickets, IT services ticket management, rapports performance projets, project performance reports, analytics données clients, client data analytics, dashboard métriques KPI, metrics KPI dashboard",
         noIndex: true
-    }
-};
+    },
+}
 
 // Generate SEO metadata for a page
 export const seoMetaData = (pageKey, $lang) => {
-    const config = useRuntimeConfig();
-    const name = config.public.name;
-    const email = config.public.contactEmail;
-    const phone = config.public.contactPhone;
-    const tvaNumber = config.public.legalTva;
-    const baseUrl = config.public.frontendDomain;
-    const linkedin = config.public.linkedin;
-    const github = config.public.github;
-    const malt = config.public.malt;
-    const instagram = config.public.instagram;
+    const { name, contactEmail: email, contactPhone: phone, legalTva: tvaNumber, frontendDomain: baseUrl, linkedin, github, malt, instagram } = useRuntimeConfig().public
+
     const {
         url = "",
         image = "/favicon_dc.jpg",
         keywords = $lang.locale.value === 'en'
-            ? "full stack developer France, web development Paris Lyon Marseille, video editing VFX compositing, IT services computer repair, freelance developer, custom website development, professional web services, digital solutions 2026"
-            : "développeur full-stack France, développement web Paris Lyon Marseille Toulouse Bordeaux, montage vidéo VFX compositing, services IT réparation informatique, développeur freelance, création site web sur mesure, services web professionnels, solutions numériques 2026",
+            ? `full stack developer France, web development Paris Lyon Marseille, video editing VFX compositing, IT services computer repair, freelance developer, custom website development, professional web services, digital solutions ${YEAR}`
+            : `développeur full-stack France, développement web Paris Lyon Marseille Toulouse Bordeaux, montage vidéo VFX compositing, services IT réparation informatique, développeur freelance, création site web sur mesure, services web professionnels, solutions numériques ${YEAR}`,
         noIndex = false
-    } = seoConfig[pageKey] || {};
+    } = seoConfig[pageKey] || {}
 
-    const fullUrl = withTrailingSlash(`${baseUrl}${url}`);
-    const robotsContent = noIndex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
-    const keyCap = pageKey.charAt(0).toUpperCase() + pageKey.slice(1);
-    const title = $lang.getTranslation(
-        pageKey === "index" ? "seoIndexTitle" : `seo${keyCap}Title`,
-        { name }
-    );
-    const description = $lang.getTranslation(
-        pageKey === "index" ? "seoIndexDescription" : `seo${keyCap}Description`,
-        { name }
-    );
+    const fullUrl = withTrailingSlash(`${baseUrl}${url}`)
+    const robotsContent = noIndex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    const keyCap = pageKey.charAt(0).toUpperCase() + pageKey.slice(1)
+    const title = $lang.getTranslation(pageKey === "index" ? "seoIndexTitle" : `seo${keyCap}Title`, { name })
+    const description = $lang.getTranslation(pageKey === "index" ? "seoIndexDescription" : `seo${keyCap}Description`, { name })
 
     const meta = {
         title,
@@ -108,10 +101,8 @@ export const seoMetaData = (pageKey, $lang) => {
         viewport: "width=device-width, initial-scale=1",
         "format-detection": "telephone=no",
         icon: "/favicon_dc.jpg",
-        "apple-touch-icon": "/favicon_dc.jpg",
-    };
-
-    useSeoMeta(meta);
+        "apple-touch-icon": "/favicon_dc.jpg"
+    }
 
     useHead({
         link: [
@@ -120,77 +111,50 @@ export const seoMetaData = (pageKey, $lang) => {
             { rel: "alternate", hreflang: "en", href: fullUrl.replace(/\/fr\//g, '/en/').replace(/\/fr$/g, '/en') },
             { rel: "alternate", hreflang: "x-default", href: fullUrl.replace(/\/(fr|en)\//g, '/fr/').replace(/\/(fr|en)$/g, '/fr') }
         ],
-        script: [
-            {
-                type: "application/ld+json",
-                children: JSON.stringify({
-                    "@context": "https://schema.org",
-                    "@type": "ProfessionalService",
-                    "name": name,
-                    "image": `${baseUrl}${image}`,
-                    "description": description,
-                    "url": fullUrl,
+        script: [{
+            type: "application/ld+json",
+            children: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "ProfessionalService",
+                "name": name,
+                "image": `${baseUrl}${image}`,
+                "description": description,
+                "url": fullUrl,
+                "telephone": phone,
+                "email": email,
+                "address": {
+                    "@type": "PostalAddress",
+                    "streetAddress": "Thourotte",
+                    "addressCountry": "FR",
+                    "addressRegion": "Hauts-de-France"
+                },
+                "taxID": tvaNumber,
+                "vatID": tvaNumber,
+                "areaServed": [
+                    "Paris", "Lyon", "Marseille", "Toulouse", "Bordeaux", "Nice", "Nantes",
+                    "Strasbourg", "Montpellier", "Lille", "Rennes", "Reims", "Grenoble",
+                    "Saint-Étienne", "Toulon", "Cannes", "Nîmes", "Perpignan", "Limoges",
+                    "Poitiers", "Angoulême", "Villeurbanne", "Boulogne-Billancourt",
+                    "Saint-Denis", "Versailles", "France"
+                ].map(name => ({ "@type": name === "France" ? "Country" : "City", "name": name })),
+                "serviceType": [
+                    "Web Development", "Full Stack Development", "Video Editing",
+                    "VFX Compositing", "IT Services", "Computer Repair",
+                    "E-commerce Development", "Mobile Development"
+                ],
+                "priceRange": "€€",
+                "sameAs": [linkedin, github, malt, instagram],
+                "contactPoint": {
+                    "@type": "ContactPoint",
                     "telephone": phone,
                     "email": email,
-                    "address": {
-                        "@type": "PostalAddress",
-                        "streetAddress": "Thourotte",
-                        "addressCountry": "FR",
-                        "addressRegion": "Hauts-de-France"
-                    },
-                    "taxID": tvaNumber,
-                    "vatID": tvaNumber,
-                    "areaServed": [
-                        { "@type": "City", "name": "Paris" },
-                        { "@type": "City", "name": "Lyon" },
-                        { "@type": "City", "name": "Marseille" },
-                        { "@type": "City", "name": "Toulouse" },
-                        { "@type": "City", "name": "Bordeaux" },
-                        { "@type": "City", "name": "Nice" },
-                        { "@type": "City", "name": "Nantes" },
-                        { "@type": "City", "name": "Strasbourg" },
-                        { "@type": "City", "name": "Montpellier" },
-                        { "@type": "City", "name": "Lille" },
-                        { "@type": "City", "name": "Rennes" },
-                        { "@type": "City", "name": "Reims" },
-                        { "@type": "City", "name": "Grenoble" },
-                        { "@type": "City", "name": "Saint-Étienne" },
-                        { "@type": "City", "name": "Toulon" },
-                        { "@type": "City", "name": "Cannes" },
-                        { "@type": "City", "name": "Nîmes" },
-                        { "@type": "City", "name": "Perpignan" },
-                        { "@type": "City", "name": "Limoges" },
-                        { "@type": "City", "name": "Poitiers" },
-                        { "@type": "City", "name": "Angoulême" },
-                        { "@type": "City", "name": "Villeurbanne" },
-                        { "@type": "City", "name": "Boulogne-Billancourt" },
-                        { "@type": "City", "name": "Saint-Denis" },
-                        { "@type": "City", "name": "Versailles" },
-                        { "@type": "Country", "name": "France" }
-                    ],
-                    "serviceType": [
-                        "Web Development",
-                        "Full Stack Development",
-                        "Video Editing",
-                        "VFX Compositing",
-                        "IT Services",
-                        "Computer Repair",
-                        "E-commerce Development",
-                        "Mobile Development"
-                    ],
-                    "priceRange": "€€",
-                    "sameAs": [linkedin, github, malt, instagram],
-                    "contactPoint": {
-                        "@type": "ContactPoint",
-                        "telephone": phone,
-                        "email": email,
-                        "contactType": "customer service",
-                        "availableLanguage": ["French", "English"]
-                    }
-                })
-            }
-        ]
-    });
+                    "contactType": "customer service",
+                    "availableLanguage": ["French", "English"]
+                }
+            })
+        }]
+    })
 
-    return meta;
-};
+    // Return meta only — useSeoMeta is called from the page
+    return meta
+}

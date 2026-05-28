@@ -43,21 +43,21 @@ defineProps({
 .custom-list {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 3rem;
 }
 
 .custom-list__item {
     border-left: 4px solid var(--fourth-color);
-    padding-left: 1rem;
+    padding-left: 1.5rem;
 }
 
 .custom-list__title {
-    margin: 0;
+    margin: 0 0 0.6rem;
     font-weight: bold;
 }
 
 .custom-list__content {
-    margin: 0.5rem 0;
-    line-height: 1.6;
+    margin: 0;
+    line-height: 1.7;
 }
 </style>

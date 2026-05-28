@@ -24,7 +24,7 @@
                             <!-- Optional external link -->
                             <a v-if="item.link" :href="item.link" target="_blank" rel="noopener noreferrer"
                                 :title="item.name + ' - ' + ($lang.getTranslation('viewMore') || 'View More')"
-                                class="project-link text-normal text-bold text-uppercase">
+                                class="project-link text-normal text-bold">
                                 {{ $lang.getTranslation('viewMore') || 'View More' }}
                             </a>
                         </div>
@@ -111,7 +111,7 @@ const { fallbacks, onError } = useImageFallback(true)
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 10rem;
+    padding: 7rem;
     transition: opacity 0.3s ease-in-out;
     z-index: 2;
 }
@@ -125,7 +125,7 @@ const { fallbacks, onError } = useImageFallback(true)
 }
 
 .project-title {
-    margin-bottom: 0.5rem;
+    margin: 0.5rem 0;
 }
 
 .project-description {
@@ -168,8 +168,8 @@ const { fallbacks, onError } = useImageFallback(true)
 
 @media (max-width: 1024px) {
     .carousel-item {
-        width: 35rem;
-        height: 25rem;
+        width: 30rem;
+        height: 20rem;
     }
 
     .carousel-overlay {
@@ -191,13 +191,18 @@ const { fallbacks, onError } = useImageFallback(true)
         align-items: center;
     }
 
+    .project-title {
+        margin: 0;
+    }
+
     .project-description {
-        padding-inline: 10rem;
+        padding-inline: 7rem;
     }
 
     .project-skills {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
+        margin: 0 0 0.5rem;
     }
 
     .project-skills li:nth-child(7),

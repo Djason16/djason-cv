@@ -6,16 +6,14 @@
             <div class="login-form-wrapper">
                 <SlideInFromRight>
 
-                    <!-- Render dynamic form fields -->
+                    <!-- Render dynamic form fields based on current step -->
                     <div v-for="f in currentFormFields" :key="f.id" class="form-group text-large">
                         <label :for="f.id">{{ $lang.getTranslation(f.labelKey) }}</label>
                         <div class="input-with-toggle text-normal">
                             <input :id="f.id" v-model="form[f.model]"
                                 :type="f.id === 'password' ? (showPassword ? 'text' : 'password') : f.type"
                                 :placeholder="$lang.getTranslation(f.placeholderKey)" :required="f.required"
-                                :autocomplete="f.autocomplete"
-                                :form="showForgotPassword ? 'forgot-password-form' : 'login-dummy-form'"
-                                @keyup.enter="showForgotPassword ? handleForgotPassword() : handleLogin()"
+                                :autocomplete="f.autocomplete" @keyup.enter="handleEnter()"
                                 :aria-label="$lang.getTranslation(f.labelKey)"
                                 :title="$lang.getTranslation(f.labelKey)" />
                             <!-- Toggle password visibility -->
@@ -27,7 +25,7 @@
                         </div>
                     </div>
 
-                    <!-- Action buttons -->
+                    <!-- Action buttons — visible set changes per step -->
                     <div class="login-buttons">
                         <template v-for="(btn, i) in loginButtons" :key="i">
                             <HeroButton v-if="btn.visible()" :label="$lang.getTranslation(btn.labelKey())"
@@ -47,6 +45,7 @@
     </OtherSectionLayout>
 </template>
 
+
 <script setup>
 import { useNuxtApp, useState } from '#app'
 import { seoMetaData } from '@/utils/seo.js'
@@ -62,62 +61,78 @@ import { useMessage } from '~/composables/useMessage'
 const { $lang } = useNuxtApp()
 await $lang.loadGroup('auth')
 
-const { login, loading: authLoading } = useAuth()
+const { login, verifyOtp, cancelOtp, forgotPassword, loading: authLoading } = useAuth()
 const isDev = useState('isDev', () => process.env.NODE_ENV === 'development')
+const { translatedMessage, showMessage, clearMessage } = useMessage()
 
 // Reactive form state
-const form = ref({ email: '', password: '', securityAnswer: '' })
+const form = ref({ email: '', password: '', securityAnswer: '', otp: '' })
 const showForgotPassword = ref(false)
 const showPassword = ref(false)
 
-// Message handling
-const { translatedMessage, showMessage, clearMessage } = useMessage()
+// Granular loading states per step
+const sendingOtp = ref(false)
+const sendingPassword = ref(false)
 
-// Handlers
+// Local source of truth for OTP step — avoids flash caused by composable's internal otpPending transitions
+const otpActive = ref(false)
+
+// Handle login — checking credentials then triggering OTP flow
 const handleLogin = async () => {
     clearMessage()
+    sendingOtp.value = true
     const res = await login(form.value.email, form.value.password)
+    sendingOtp.value = false
+    if (res.otpRequired) {
+        otpActive.value = true
+        return showMessage('success', 'otpSent')
+    }
     showMessage(res.success ? 'success' : 'error', res.success ? res.message : res.error)
 }
 
+// Handle OTP verification — success redirects so no need to update otpActive
+const handleVerifyOtp = async () => {
+    clearMessage()
+    const res = await verifyOtp(form.value.otp)
+    if (!res.success) showMessage('error', res.error)
+}
+
+// Toggle between login and forgot password form
 const toggleForgotPassword = () => {
     showForgotPassword.value = !showForgotPassword.value
     clearMessage()
-    form.value = { email: form.value.email, password: '', securityAnswer: '' }
+    form.value = { ...form.value, password: '', securityAnswer: '', otp: '' }
     showPassword.value = false
 }
 
+// Handle forgot password submission
 const handleForgotPassword = async () => {
     clearMessage()
-    if (!form.value.email) return showMessage('error', 'enterEmailForReset')
-    if (!form.value.securityAnswer) return showMessage('error', 'enterSecurityAnswer')
-    try {
-        const res = await $fetch('/api/auth/send-temp-password', {
-            method: 'POST',
-            body: {
-                email: form.value.email,
-                securityAnswer: form.value.securityAnswer,
-                locale: $lang.current.value === 'french' ? 'fr' : 'en',
-                message: ''
-            }
-        })
-        showMessage(res.success ? 'success' : 'error', res.success ? res.message : res.error)
-        if (res.success) setTimeout(toggleForgotPassword, 5000)
-    } catch (err) {
-        const key = err.data?.message || (err.statusCode === 401 ? 'incorrectSecurityAnswer' : 'errorSendingTempPassword')
-        showMessage('error', key)
-    }
+    sendingPassword.value = true
+    const res = await forgotPassword(form.value.email, form.value.securityAnswer, $lang.current.value === 'french' ? 'fr' : 'en')
+    sendingPassword.value = false
+    showMessage(res.success ? 'success' : 'error', res.success ? res.message : res.error)
+    if (res.success) setTimeout(toggleForgotPassword, 5000)
 }
 
-// Buttons configuration
+// Cancel OTP step and return to login
+const backFromOtp = () => {
+    otpActive.value = false
+    cancelOtp()
+    clearMessage()
+}
+
+// Buttons configuration — each step has its own visible set
 const loginButtons = [
-    { labelKey: () => authLoading.value ? 'loggingIn' : 'loginButton', icon: 'fas fa-sign-in-alt', visible: () => !showForgotPassword.value, disabled: () => authLoading.value, action: handleLogin },
-    { labelKey: () => 'forgotPassword', icon: 'fas fa-key', visible: () => !showForgotPassword.value, disabled: () => authLoading.value, action: toggleForgotPassword },
-    { labelKey: () => 'sendTempPassword', icon: 'fas fa-paper-plane', visible: () => showForgotPassword.value, disabled: () => authLoading.value, action: handleForgotPassword },
-    { labelKey: () => 'backToLogin', icon: 'fas fa-arrow-left', visible: () => showForgotPassword.value, disabled: () => authLoading.value, action: toggleForgotPassword }
+    { labelKey: () => sendingOtp.value ? 'checkingCredentials' : 'loginButton', icon: 'fas fa-sign-in-alt', visible: () => !showForgotPassword.value && !otpActive.value, disabled: () => authLoading.value, action: handleLogin },
+    { labelKey: () => 'forgotPassword', icon: 'fas fa-key', visible: () => !showForgotPassword.value && !otpActive.value, disabled: () => authLoading.value, action: toggleForgotPassword },
+    { labelKey: () => sendingPassword.value ? 'sendingPasswordLoading' : 'sendTempPassword', icon: 'fas fa-paper-plane', visible: () => showForgotPassword.value, disabled: () => authLoading.value, action: handleForgotPassword },
+    { labelKey: () => 'backToLogin', icon: 'fas fa-arrow-left', visible: () => showForgotPassword.value, disabled: () => authLoading.value, action: toggleForgotPassword },
+    { labelKey: () => authLoading.value ? 'verifying' : 'verifyOtp', icon: 'fas fa-shield-alt', visible: () => otpActive.value, disabled: () => authLoading.value, action: handleVerifyOtp },
+    { labelKey: () => 'backToLogin', icon: 'fas fa-arrow-left', visible: () => otpActive.value, disabled: () => authLoading.value, action: backFromOtp }
 ]
 
-// Form fields
+// Form fields per step
 const loginFormFields = [
     { id: 'email', type: 'email', model: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', required: true, autocomplete: 'email' },
     { id: 'password', type: 'password', model: 'password', labelKey: 'passwordLabel', placeholderKey: 'passwordPlaceholder', required: true, autocomplete: 'current-password' }
@@ -126,10 +141,26 @@ const forgotPasswordFormFields = [
     { id: 'email-forgot', type: 'email', model: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', required: true, autocomplete: 'email' },
     { id: 'security-answer', type: 'text', model: 'securityAnswer', labelKey: 'securityQuestion', placeholderKey: 'securityAnswerPlaceholder', required: true, autocomplete: 'off' }
 ]
+const otpFormFields = [
+    { id: 'otp', type: 'text', model: 'otp', labelKey: 'otpLabel', placeholderKey: 'otpPlaceholder', required: true, autocomplete: 'one-time-code' }
+]
 
-// Computed fields and sections
-const currentFormFields = computed(() => showForgotPassword.value ? forgotPasswordFormFields : loginFormFields)
-const loginSections = computed(() => Array.from({ length: 3 }, (_, i) => ({ titleKey: `loginSection${i + 1}Title`, contentKey: `loginSection${i + 1}Content` })))
+// Switch displayed fields based on current step
+const currentFormFields = computed(() => {
+    if (otpActive.value) return otpFormFields
+    return showForgotPassword.value ? forgotPasswordFormFields : loginFormFields
+})
+
+// Switch enter key handler based on current step
+const handleEnter = () => {
+    if (otpActive.value) return handleVerifyOtp()
+    if (showForgotPassword.value) return handleForgotPassword()
+    return handleLogin()
+}
+
+const loginSections = computed(() =>
+    Array.from({ length: 3 }, (_, i) => ({ titleKey: `loginSection${i + 1}Title`, contentKey: `loginSection${i + 1}Content` }))
+)
 
 // SEO metadata reactive to language
 const pageKey = 'login'
@@ -148,6 +179,7 @@ onMounted(async () => {
 
 definePageMeta({ middleware: 'guest-server' })
 </script>
+
 
 <style scoped>
 .login-form-wrapper {

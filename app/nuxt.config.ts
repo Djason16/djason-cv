@@ -134,7 +134,8 @@ export default defineNuxtConfig({
       rules: [{ UserAgent: '*', Disallow: isDev ? '/' : '', Allow: isDev ? '' : '/' }],
       Sitemap: `${process.env.NUXT_PUBLIC_FRONTEND_DOMAIN}/sitemap.xml`
     }],
-    '@nuxt/image'
+    '@nuxt/image',
+    '@pinia/nuxt'
   ],
 
   // Image optimization settings

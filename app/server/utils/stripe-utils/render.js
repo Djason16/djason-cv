@@ -2,13 +2,15 @@
 const RESULT_CONFIGS = {
   payment: {
     success: {
-      highlight: '#58D68D',
+      highlight: '#2e9e5e',
+      highlightDeco: '#58D68D',
       title: 'Paiement réussi !',
       message: 'Le paiement a été effectué avec succès.',
       english: 'Payment Successful! This window will close automatically.'
     },
     cancel: {
-      highlight: '#E74C3C',
+      highlight: '#c0392b',
+      highlightDeco: '#E74C3C',
       title: 'Paiement annulé !',
       message: 'Le paiement a été annulé.',
       english: 'Payment Canceled. This window will close automatically.'
@@ -16,13 +18,15 @@ const RESULT_CONFIGS = {
   },
   subscription: {
     success: {
-      highlight: '#58D68D',
+      highlight: '#2e9e5e',
+      highlightDeco: '#58D68D',
       title: 'Abonnement activé !',
       message: 'Votre abonnement de 12 mois a été activé avec succès.',
       english: 'Subscription Activated! Your 12-month web development subscription is now active. This window will close automatically.'
     },
     cancel: {
-      highlight: '#E74C3C',
+      highlight: '#c0392b',
+      highlightDeco: '#E74C3C',
       title: 'Abonnement annulé !',
       message: 'L\'activation de l\'abonnement a été annulée.',
       english: 'Subscription Canceled. This window will close automatically.'
@@ -33,11 +37,6 @@ const RESULT_CONFIGS = {
 // Generic render function for payment/subscription result pages
 function renderResultPage(configType, resultType = 'success') {
   const config = RESULT_CONFIGS[configType]?.[resultType] || RESULT_CONFIGS[configType]?.success
-  const colors = {
-    bg: '#C9D6DF',
-    text: '#1a1d1f',
-    highlight: config.highlight
-  }
 
   return `<!DOCTYPE html>
 <html lang="fr">
@@ -47,14 +46,14 @@ function renderResultPage(configType, resultType = 'success') {
     <title>${config.title}</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { 
+      body {
         min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: 'Barlow Condensed', 'Roboto Condensed', sans-serif;
-        background: ${colors.bg};
-        color: ${colors.text};
+        background: #C9D6DF;
+        color: #1a1d1f;
         padding: 2rem;
       }
       .container {
@@ -62,22 +61,32 @@ function renderResultPage(configType, resultType = 'success') {
         max-width: 600px;
         padding: 3rem 2rem;
         background: #fff;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        border-top: 3px solid ${config.highlightDeco};
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         text-align: center;
       }
+      .divider {
+        width: 40px;
+        height: 3px;
+        background: ${config.highlightDeco};
+        margin: 0 auto 1.5rem;
+      }
       h1 {
-        color: ${colors.highlight};
+        color: ${config.highlight};
         font-size: 2.5rem;
-        margin-bottom: 1.5rem;
-        font-weight: bold;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
       }
       p {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
         line-height: 1.6;
-        margin-bottom: 1rem;
+        color: #1a1d1f;
+        margin-bottom: 0.75rem;
       }
       strong {
-        color: ${colors.highlight};
+        color: ${config.highlight};
         font-weight: 600;
       }
     </style>
@@ -85,6 +94,7 @@ function renderResultPage(configType, resultType = 'success') {
   <body>
     <div class="container">
       <h1>${config.title}</h1>
+      <div class="divider"></div>
       <p>${config.message}</p>
       <p><strong>${config.english}</strong></p>
     </div>

@@ -72,8 +72,6 @@ await $lang.loadGroup('admin')
 
 const { logout } = useAuth()
 const { replaceDatabase } = useDatabase()
-
-// Message composable
 const { translatedMessage, showMessage, clearMessage } = useMessage()
 
 // UI reactive state
@@ -83,43 +81,29 @@ const modalPosition = ref({ top: 0, left: 0 })
 const activeModal = ref(null)
 const refFileInput = ref(null)
 
-// Admin button and modal configuration
+// Admin buttons and their associated modals
 const adminButtons = [
-    { icon: 'fas fa-user-plus', textKey: 'adminCreateClients', action: 'createClients' },
-    { icon: 'fas fa-users', textKey: 'adminClients', action: 'clients' },
-    { icon: 'fas fa-plus-circle', textKey: 'adminCreateMissions', action: 'createMissions' },
-    { icon: 'fas fa-tasks', textKey: 'adminMissions', action: 'missions' },
-    { icon: 'fas fa-file-contract', textKey: 'adminQuotes', action: 'quotes' },
-    { icon: 'fas fa-percent', textKey: 'adminInterestRates', action: 'interestRates' },
-    { icon: 'fas fa-file-signature', textKey: 'adminContracts', action: 'contracts' },
-    { icon: 'fas fa-file-invoice-dollar', textKey: 'adminInvoices', action: 'invoices' },
-    { icon: 'fas fa-key', textKey: 'adminPassword', action: 'password' },
-    { icon: 'fas fa-calendar-alt', textKey: 'adminCalendar', action: 'calendar' },
-    { icon: 'fas fa-calendar-times', textKey: 'adminUnavailability', action: 'unavailability' },
-    { icon: 'fas fa-toggle-on', textKey: 'adminManualOverride', action: 'manualOverride' },
-    { icon: 'fas fa-folder-plus', textKey: 'adminCreateProjects', action: 'createProjects' },
-    { icon: 'fas fa-folder-open', textKey: 'adminProjects', action: 'projects' },
-    { icon: 'fas fa-cog', textKey: 'adminEnvironment', action: 'environment' }
-]
-const activeModals = [
-    { action: 'createClients', component: CreateClientModal },
-    { action: 'clients', component: ClientListModal },
-    { action: 'createMissions', component: CreateMissionModal },
-    { action: 'missions', component: MissionListModal },
-    { action: 'quotes', component: QuotesModal },
-    { action: 'interestRates', component: InterestRatesListModal },
-    { action: 'contracts', component: ContractModal },
-    { action: 'invoices', component: InvoicesModal },
-    { action: 'password', component: PasswordModal },
-    { action: 'calendar', component: CalendarModal },
-    { action: 'unavailability', component: UnavailabilityModal },
-    { action: 'manualOverride', component: ManualOverrideModal },
-    { action: 'createProjects', component: CreateProjectModal },
-    { action: 'projects', component: ProjectListModal },
-    { action: 'environment', component: EnvModal }
+    { icon: 'fas fa-user-plus', textKey: 'adminCreateClients', action: 'createClients', component: CreateClientModal },
+    { icon: 'fas fa-users', textKey: 'adminClients', action: 'clients', component: ClientListModal },
+    { icon: 'fas fa-plus-circle', textKey: 'adminCreateMissions', action: 'createMissions', component: CreateMissionModal },
+    { icon: 'fas fa-tasks', textKey: 'adminMissions', action: 'missions', component: MissionListModal },
+    { icon: 'fas fa-file-contract', textKey: 'adminQuotes', action: 'quotes', component: QuotesModal },
+    { icon: 'fas fa-percent', textKey: 'adminInterestRates', action: 'interestRates', component: InterestRatesListModal },
+    { icon: 'fas fa-file-signature', textKey: 'adminContracts', action: 'contracts', component: ContractModal },
+    { icon: 'fas fa-file-invoice-dollar', textKey: 'adminInvoices', action: 'invoices', component: InvoicesModal },
+    { icon: 'fas fa-key', textKey: 'adminPassword', action: 'password', component: PasswordModal },
+    { icon: 'fas fa-calendar-alt', textKey: 'adminCalendar', action: 'calendar', component: CalendarModal },
+    { icon: 'fas fa-calendar-times', textKey: 'adminUnavailability', action: 'unavailability', component: UnavailabilityModal },
+    { icon: 'fas fa-toggle-on', textKey: 'adminManualOverride', action: 'manualOverride', component: ManualOverrideModal },
+    { icon: 'fas fa-folder-plus', textKey: 'adminCreateProjects', action: 'createProjects', component: CreateProjectModal },
+    { icon: 'fas fa-folder-open', textKey: 'adminProjects', action: 'projects', component: ProjectListModal },
+    { icon: 'fas fa-cog', textKey: 'adminEnvironment', action: 'environment', component: EnvModal }
 ]
 
-// Login & DB buttons with actions
+// Derived modal list from adminButtons
+const activeModals = adminButtons.map(({ action, component }) => ({ action, component }))
+
+// Login & DB buttons
 const loginButtons = computed(() => [
     {
         labelKey: loggingOut.value ? 'loggingOut' : 'logoutButton',
@@ -133,46 +117,30 @@ const loginButtons = computed(() => [
             loggingOut.value = false
         }
     },
-    {
-        labelKey: 'replaceDB',
-        icon: 'fas fa-upload',
-        action: () => handleDatabaseReplace()
-    },
-    {
-        labelKey: 'downloadDB',
-        icon: 'fas fa-database',
-        action: () => handleFileAction('/api/database/download-db', 'db.sqlite', 'downloadSuccess', 'downloadError')
-    },
-    {
-        labelKey: 'exportSQL',
-        icon: 'fas fa-file-export',
-        action: () => handleFileAction('/api/database/export-sql', 'backup.sql', 'exportSuccess', 'exportError')
-    }
+    { labelKey: 'replaceDB', icon: 'fas fa-upload', action: handleDatabaseReplace },
+    { labelKey: 'downloadDB', icon: 'fas fa-database', action: () => handleFileAction('/api/database/download-db', 'db.sqlite', 'downloadSuccess', 'downloadError') },
+    { labelKey: 'exportSQL', icon: 'fas fa-file-export', action: () => handleFileAction('/api/database/export-sql', 'backup.sql', 'exportSuccess', 'exportError') }
 ])
 
 // Modal management
-const handleButtonClick = (btn, e) =>
-    activeModals.some(m => m.action === btn.action) ? openModal(btn, e) : console.log('No modal:', btn.action)
-
 const openModal = (btn, e) => {
     const r = e.currentTarget.getBoundingClientRect()
     activeButton.value = e.currentTarget
     modalPosition.value = { top: r.top + r.height / 2, left: r.left + r.width / 2, size: r.width }
     activeModal.value = btn
 }
-
 const closeModal = () => (activeModal.value = null)
+const handleButtonClick = (btn, e) =>
+    activeModals.some(m => m.action === btn.action) ? openModal(btn, e) : console.log('No modal:', btn.action)
 
-// Database replacement with restart handling
+// Database replacement with file picker
 const handleDatabaseReplace = async () => {
     clearMessage()
     try {
         const fileInput = refFileInput.value
         if (!fileInput) throw new Error('File input not found')
-
         fileInput.value = ''
         fileInput.click()
-
         const file = await new Promise((resolve, reject) => {
             const handler = e => {
                 fileInput.removeEventListener('change', handler)
@@ -180,15 +148,10 @@ const handleDatabaseReplace = async () => {
             }
             fileInput.addEventListener('change', handler)
         })
-
         showMessage('success', 'replaceSuccess')
         await replaceDatabase(file)
-        // Page will reload automatically after restart
     } catch (e) {
-        console.error(e)
-        if (e.message !== 'No file selected') {
-            showMessage('error', 'replaceError')
-        }
+        if (e.message !== 'No file selected') showMessage('error', 'replaceError')
     }
 }
 
@@ -206,18 +169,14 @@ const handleFileAction = async (url, filename, successKey, errorKey) => {
         URL.revokeObjectURL(a.href)
         showMessage('success', successKey)
     } catch (e) {
-        console.error(e)
         showMessage('error', errorKey)
     }
 }
 
-// SEO and page metadata
+// SEO metadata reactive to language
 const pageKey = 'admin'
 const adminSections = computed(() =>
-    Array.from({ length: 5 }, (_, i) => ({
-        titleKey: `adminSection${i + 1}Title`,
-        contentKey: `adminSection${i + 1}Content`
-    }))
+    Array.from({ length: 5 }, (_, i) => ({ titleKey: `adminSection${i + 1}Title`, contentKey: `adminSection${i + 1}Content` }))
 )
 useSeoMeta(seoMetaData(pageKey, $lang))
 watch(() => $lang.current.value, () => useSeoMeta(seoMetaData(pageKey, $lang)))

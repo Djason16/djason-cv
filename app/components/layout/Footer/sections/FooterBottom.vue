@@ -139,6 +139,7 @@ const footerLinks = [
 }
 
 .icons a {
+    min-height: 2.5vh;
     color: inherit;
     transition: color 0.3s ease;
     display: inline-flex;

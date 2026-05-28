@@ -8,6 +8,7 @@ export default defineNitroPlugin(async () => {
         // Ensure all required tables exist
         await Promise.all([
             createUsersTable(db),
+            createOtpTable(db), 
             createSessionsTable(db),
             createClientsTable(db),
             createServicesTable(db),

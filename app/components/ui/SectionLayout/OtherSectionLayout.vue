@@ -1,3 +1,4 @@
+<!-- ContentContainer.vue -->
 <template>
     <div class="content-container">
         <!-- Header with dynamic title and subtitle processed for links -->
@@ -24,8 +25,8 @@
 
 <script setup>
 import FooterTop from "~/components/layout/Footer/sections/FooterTop.vue"
-import CustomList from "../List/CustomList.vue"
 import { useTextEscape } from '~/composables/useTextEscape'
+import CustomList from "../List/CustomList.vue"
 
 const { processText } = useTextEscape()
 
@@ -50,19 +51,22 @@ const contentBackgroundColor = "var(--third-color)"
 
 <style scoped>
 .content-container {
-    padding: 2.5rem;
+    padding: 4rem 2.5rem 3rem;
     background: var(--third-color);
     color: var(--text-color-light);
     line-height: 1.8;
 }
 
 .header {
-    margin-bottom: 2.5rem;
+    margin-bottom: 3rem;
     text-align: left;
+    padding-bottom: 1.75rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .subtitle {
     margin-top: 0.8rem;
     color: var(--text-color-light);
+    opacity: 0.75;
 }
 </style>

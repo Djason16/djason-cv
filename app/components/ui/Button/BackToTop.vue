@@ -1,65 +1,29 @@
 <template>
-    <!-- Show Back-to-Top button when scrolled down -->
-    <button v-show="isVisible" @click="scrollToTop" class="back-to-top text-small"
-        :aria-label="$lang.getTranslation('backToTop')" :title="$lang.getTranslation('backToTop')">
-        <i class="fa-solid fa-arrow-up" aria-hidden="true"></i>
-    </button>
+    <FloatingButton :show="isVisible" :aria-label="$lang.getTranslation('backToTop')" @click="scrollToTop">
+        <i class="fa-solid fa-arrow-up" aria-hidden="true" />
+    </FloatingButton>
 </template>
 
 <script setup>
+import { useNuxtApp } from '#app'
 import { onMounted, onUnmounted, ref } from 'vue'
+import FloatingButton from '~/components/ui/Button/FloatingButton.vue'
 
 const { $lang } = useNuxtApp()
-const isVisible = ref(false) // track button visibility
+const isVisible = ref(false)
 
-// Smooth scroll to top
+// Smooth scroll back to top of the page
 const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
 onMounted(() => {
-    const onScroll = () => (isVisible.value = window.scrollY > 200) // show if scrolled >200px
-    onScroll() // initial check
+    // Show button once user scrolls past 200px
+    const onScroll = () => (isVisible.value = window.scrollY > 200)
+
+    // Run once on mount to set initial state
+    onScroll()
     window.addEventListener('scroll', onScroll)
+
+    // Clean up listener on unmount
     onUnmounted(() => window.removeEventListener('scroll', onScroll))
 })
 </script>
-
-<style scoped>
-.back-to-top {
-    position: fixed;
-    bottom: 7.25rem;
-    right: calc((100vw - 90vw) / 5 - 0.875rem);
-    background-color: var(--third-color);
-    color: var(--text-color-light);
-    border: none;
-    width: 2.5rem;
-    height: 2.5rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    opacity: 0.8;
-    transition: opacity 0.3s ease;
-    z-index: 10;
-}
-
-.back-to-top:hover {
-    opacity: 1;
-}
-
-.back-to-top i {
-    margin: 0;
-}
-
-@media (max-width: 1024px) {
-    .back-to-top {
-        background-color: var(--fifth-color);
-        right: 1.5rem;
-        opacity: .8;
-    }
-
-    .back-to-top:hover {
-        opacity: .8;
-    }
-}
-</style>

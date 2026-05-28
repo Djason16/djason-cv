@@ -2,6 +2,8 @@ import { defineNuxtPlugin, useHead, useRoute } from '#app'
 import { withTrailingSlash } from '@/utils/pathHelpers.js'
 import { computed, nextTick, ref } from 'vue'
 
+import cookie from './translations/common/cookie.js'
+import error from './translations/common/error.js'
 import index from './translations/common/index.js'
 import navigationFooter from './translations/common/navigationFooter.js'
 import seoMetaData from './translations/common/seoMetaData.js'
@@ -24,7 +26,7 @@ const ROUTE_TO_MODULE = Object.fromEntries(
 )
 
 // Preloaded translations
-const STATIC_MODULES = { common: [seoMetaData, index, navigationFooter], home: [aboutMe, hero, project, service, skill], payMe: [payMe] }
+const STATIC_MODULES = { common: [seoMetaData, index, navigationFooter, error, cookie], home: [aboutMe, hero, project, service, skill], payMe: [payMe] }
 
 // Lazy-loaded translation groups
 const LAZY_MODULES = {

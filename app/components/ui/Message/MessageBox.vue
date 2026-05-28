@@ -16,7 +16,7 @@ const props = defineProps({
 
 <style scoped>
 .message-box p {
-    margin-top: 2rem;
+    margin: 3rem 0 0;
     text-align: center;
     padding: 1rem;
     border-radius: 4px;

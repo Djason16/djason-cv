@@ -1,12 +1,18 @@
 <template>
     <!-- Simple carousel controls with previous/next buttons -->
     <div class="carousel-controls">
-        <button @click="prevSlide" aria-label="Previous Slide"><i class="fas fa-chevron-left"></i></button>
-        <button @click="nextSlide" aria-label="Next Slide"><i class="fas fa-chevron-right"></i></button>
+        <FloatingButton :show="true" :aria-label="'Previous Slide'" class="carousel-controls__btn" @click="prevSlide">
+            <i class="fas fa-chevron-left" aria-hidden="true" />
+        </FloatingButton>
+        <FloatingButton :show="true" :aria-label="'Next Slide'" class="carousel-controls__btn" @click="nextSlide">
+            <i class="fas fa-chevron-right" aria-hidden="true" />
+        </FloatingButton>
     </div>
 </template>
 
 <script setup>
+import FloatingButton from '~/components/ui/Button/FloatingButton.vue';
+
 // Props: functions to navigate slides, passed from parent
 const { prevSlide, nextSlide } = defineProps({ prevSlide: Function, nextSlide: Function })
 </script>
@@ -14,40 +20,27 @@ const { prevSlide, nextSlide } = defineProps({ prevSlide: Function, nextSlide: F
 <style scoped>
 .carousel-controls {
     display: flex;
-    gap: .75rem;
+    gap: 0.75rem;
     position: absolute;
     bottom: 36px;
     left: 50%;
     transform: translateX(-50%);
 }
 
-.carousel-controls button {
+.carousel-controls :deep(.floating-btn) {
     background: rgba(255, 255, 255, 0.5);
     color: var(--text-color-dark);
-    border: none;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
+    opacity: 1;
 }
 
-.carousel-controls button:hover {
+.carousel-controls :deep(.floating-btn:hover) {
     background: rgba(255, 255, 255, 0.8);
+    opacity: 1;
 }
 
 @media (max-width: 1024px) {
-    .carousel-controls button:hover {
+    .carousel-controls :deep(.floating-btn:hover) {
         background: rgba(255, 255, 255, 0.5);
-    }
-}
-
-@media (max-width: 768px) {
-    .carousel-controls button {
-        width: 30px;
-        height: 30px;
     }
 }
 </style>

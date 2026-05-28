@@ -2,6 +2,8 @@ export default {
     french: {
         defaultSeoTitle: "{{name}} | Développeur Web Full-Stack Expert France",
         defaultSeoDescription: "Développeur web freelance expert : création sites internet sur mesure, applications React Vue Angular Node.js, e-commerce, SEO. Services professionnels Paris, Lyon, Marseille, Toulouse, Bordeaux, Nantes, Nice, Strasbourg. Montage vidéo VFX et services IT disponibles.",
+        seoNotFoundTitle: "{{name}} | Page Introuvable 404",
+        seoNotFoundDescription: "La page que vous cherchez n'existe pas ou a été déplacée. Revenez à l'accueil pour découvrir les services de développement web, montage vidéo et IT.",
         seoIndexTitle: "{{name}} | Développeur Web Full-Stack & Monteur Truquiste",
         seoIndexDescription: "Création sites web sur mesure, applications modernes React Vue Angular, développement e-commerce et SEO. Expert freelance développement web professionnel en France : Paris, Lyon, Marseille, Toulouse, Bordeaux, Nice, Montpellier, Nantes, Strasbourg, Lille. Services montage vidéo VFX et réparation informatique.",
         seoTermsTitle: "{{name}} | Conditions Générales Développement Web",
@@ -23,6 +25,8 @@ export default {
     english: {
         defaultSeoTitle: "{{name}} | Full-Stack Web Developer Expert France",
         defaultSeoDescription: "Expert freelance web developer: custom website creation, React Vue Angular Node.js applications, e-commerce, SEO. Professional services Paris, Lyon, Marseille, Toulouse, Bordeaux, Nantes, Nice, Strasbourg. VFX video editing and IT services available.",
+        seoNotFoundTitle: "{{name}} | Page Not Found 404",
+        seoNotFoundDescription: "The page you are looking for does not exist or has been moved. Go back to the home page to discover web development, video editing and IT services.",
         seoIndexTitle: "{{name}} | Full-Stack Web Developer & Compositing Editor",
         seoIndexDescription: "Custom website creation, modern React Vue Angular applications, e-commerce development and SEO. Expert freelance professional web development in France: Paris, Lyon, Marseille, Toulouse, Bordeaux, Nice, Montpellier, Nantes, Strasbourg, Lille. VFX video editing and computer repair services.",
         seoTermsTitle: "{{name}} | Web Development Terms and Conditions",
