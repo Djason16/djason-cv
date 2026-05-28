@@ -19,6 +19,7 @@ if (!process.env.CONFIG_LOADED) {
 const isDev = process.env.NODE_ENV !== 'production'
 
 export default defineNuxtConfig({
+  // @ts-ignore — site is injected by @nuxtjs/sitemap
   site: {
     name: process.env.NUXT_PUBLIC_PERSONAL_NAME,
     url: process.env.NUXT_PUBLIC_FRONTEND_DOMAIN,
@@ -26,17 +27,16 @@ export default defineNuxtConfig({
   },
 
   ssr: true,
-  devtools: { enabled: true },
-  compatibilityDate: '2024-11-01', // Latest stable date
+  devtools: { enabled: isDev },
+  compatibilityDate: '2024-11-01',
   css: ['./assets/css/main.css', '@fortawesome/fontawesome-free/css/all.min.css'],
 
-  // Modern JS for supported browsers
+  // Transpile CJS packages that need it
   build: { transpile: ['entities'] },
+
   experimental: {
     payloadExtraction: false,
-    // Enable view transitions for smoother page changes
     viewTransition: true,
-    // Enable component islands for better performance
     componentIslands: true
   },
 
@@ -50,6 +50,7 @@ export default defineNuxtConfig({
       reportCompressedSize: true,
       chunkSizeWarningLimit: 500,
       minify: 'terser',
+      sourcemap: false,
       terserOptions: {
         compress: {
           drop_console: !isDev,
@@ -59,7 +60,6 @@ export default defineNuxtConfig({
       },
       rollupOptions: {
         output: {
-          // Optimize chunk file names
           chunkFileNames: '_nuxt/[name]-[hash].js',
           entryFileNames: '_nuxt/[name]-[hash].js',
           assetFileNames: '_nuxt/[name]-[hash][extname]'
@@ -67,8 +67,14 @@ export default defineNuxtConfig({
       },
     },
     optimizeDeps: {
-      include: ['gsap', 'bcryptjs', 'entities'], // Pre-bundle heavy dependencies
-      exclude: ['sql.js'], // Exclude WASM from pre-bundling
+      include: [
+        'gsap',
+        'bcryptjs',
+        'entities',
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+      ],
+      exclude: ['sql.js', '@vue/devtools-api'],
       esbuildOptions: {
         target: 'es2022',
         supported: { 'top-level-await': true, bigint: true }
@@ -86,10 +92,11 @@ export default defineNuxtConfig({
     experimental: { wasm: true, database: true },
     compressPublicAssets: { gzip: true, brotli: true },
     externals: {
-      inline: ['entities', 'sharp']
+      inline: ['entities', 'sharp'],
+      external: ['@vue/devtools-api']
     },
     alias: {
-      'entities/decode': 'entities/dist/commonjs/decode.js'
+      'entities/decode': 'entities/dist/commonjs/decode.js',
     },
     database: {
       default: { connector: 'sqlite', options: { filename: resolve('./.data/db.sqlite') } }
@@ -106,20 +113,15 @@ export default defineNuxtConfig({
       ignoreUnprefixedPublicAssets: true
     },
     routeRules: {
-      // Static assets with long-term caching
       '/images/svg/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' } },
       '/images/**': { headers: { 'Cache-Control': 'public, max-age=7200', 'X-Content-Type-Options': 'nosniff' } },
       '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' } },
       '/_ipx/**': { headers: { 'Cache-Control': 'public, max-age=7200', 'Vary': 'Accept' } },
-      // Admin routes - no cache, require auth
       '/admin/**': { ssr: true, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate', 'X-Robots-Tag': 'noindex, nofollow' } },
-      // Public pages with short cache
       '/': { ssr: true, headers: { 'Cache-Control': 'public, max-age=600, s-maxage=3600' } },
       '/pay-me': { ssr: true, headers: { 'Cache-Control': 'public, max-age=600, s-maxage=3600' } },
-      // Legal pages - longer cache
       '/legal/**': { ssr: true, headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=7200' } }
     },
-    // Minify server output
     minify: !isDev
   },
 
@@ -138,12 +140,10 @@ export default defineNuxtConfig({
     '@pinia/nuxt'
   ],
 
-  // Image optimization settings
   image: {
     quality: 80,
     format: ['webp', 'avif'],
     screens: { xs: 320, sm: 640, md: 768, lg: 1024, xl: 1280, xxl: 1536 },
-    // Utiliser 'none' en dev si sharp pose problème
     provider: isDev ? 'none' : 'ipx',
     ipx: { maxAge: 60 * 60 * 24 * 7 }
   },
@@ -157,7 +157,6 @@ export default defineNuxtConfig({
         { rel: 'preload', href: '/fonts/BarlowCondensed/BarlowCondensed-Bold.woff', as: 'font', type: 'font/woff', crossorigin: 'anonymous', fetchpriority: 'high' },
         { rel: 'icon', type: 'image/jpeg', href: '/favicon_dc.jpg' }
       ],
-      // Add security headers
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -167,7 +166,6 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    // Private variables (server only) - must match env variable names
     stripeSecretKey: process.env.STRIPE_SECRET_KEY,
     adminEmail: process.env.ADMIN_EMAIL,
     adminPassword: process.env.ADMIN_PASSWORD,
@@ -181,7 +179,6 @@ export default defineNuxtConfig({
     bankIban: process.env.BANK_IBAN,
     bankBic: process.env.BANK_BIC,
     dbReplaceTrigger: process.env.DB_REPLACE_TRIGGER,
-    // Public variables (client + server)
     public: {
       frontendDomain: process.env.NUXT_PUBLIC_FRONTEND_DOMAIN,
       stripePublicKey: process.env.NUXT_PUBLIC_STRIPE_PUBLIC_KEY,

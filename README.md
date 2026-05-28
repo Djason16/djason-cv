@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/app/public/images/main_logo_dark.png" alt="Portfolio Logo" width="400" />
+  <img src="/app/public/images/main_logo_dark.png" alt="Portfolio Logo" width="400" />
 </p>
 
 <hr>
@@ -86,12 +86,12 @@
   <li>RESTful API routes in <code>server/api/</code></li>
   <li>Server utilities and middleware</li>
   <li>Environment-based configuration</li>
-  <li><strong>MySQL Database</strong> integration for data persistence</li>
+  <li><strong>SQLite Database</strong> integration for data persistence</li>
 </ul>
 
 <h3>Deployment</h3>
 <ul>
-  <li>Deployed on <strong>Infomaniak</strong> with <strong>PM2</strong> process manager</li>
+  <li>Deployed on <strong>Infomaniak</strong></li>
   <li>Single unified application (no separate backend server needed)</li>
   <li>Automatic SSL/HTTPS support</li>
 </ul>
@@ -127,7 +127,7 @@
   </tr>
   <tr>
     <td><strong>Deployment</strong></td>
-    <td>Infomaniak, PM2</td>
+    <td>Infomaniak</td>
   </tr>
   <tr>
     <td><strong>Build Tool</strong></td>
@@ -185,8 +185,6 @@
 
 <h3>For Mac/Linux Users</h3>
 
-<p>Use the following npm commands directly:</p>
-
 <pre><code># Clone and setup
 git clone https://github.com/Djason16/djason-cv.git
 cd djason-cv
@@ -200,8 +198,6 @@ npm run dev
 </code></pre>
 
 <h3>First-Time Setup Checklist</h3>
-
-<p>Before running the project for the first time:</p>
 
 <ul>
   <li>✅ Install Node.js 18+ (<code>node -v</code> to check)</li>
@@ -229,12 +225,11 @@ cd djason-cv</code></pre>
 
 <p>Copy the example file to create your own <code>.env</code>:</p>
 
-<pre><code>cp .env.example .env.development</code></pre> 
+<pre><code>cp .env.example .env.development</code></pre>
 
 <p>Edit <code>.env.development</code> for development:</p>
 
-<pre>
-<code>
+<pre><code>
 # --------------------------------------------------
 # Environment
 # --------------------------------------------------
@@ -248,16 +243,12 @@ NUXT_PUBLIC_FRONTEND_DOMAIN=http://localhost:3000
 
 # --------------------------------------------------
 # Stripe (Payments)
-# Public key is exposed to the frontend
-# Secret key MUST stay server-side
 # --------------------------------------------------
 NUXT_PUBLIC_STRIPE_PUBLIC_KEY=STRIPE_PUBLIC_KEY_HERE
 STRIPE_SECRET_KEY=STRIPE_SECRET_KEY_HERE
 
 # --------------------------------------------------
 # Default Admin Login
-# Server-side only
-# Used for initial backoffice access
 # --------------------------------------------------
 ADMIN_EMAIL=admin@example.com
 ADMIN_PASSWORD=admin123
@@ -265,26 +256,20 @@ ADMIN_NAME="Admin User"
 
 # --------------------------------------------------
 # Security
-# Server-side only
-# Used for account recovery / verification
-# Example question: "What is your birth city?"
 # --------------------------------------------------
 SECURITY_ANSWER=examplecity
 
 # --------------------------------------------------
 # SMTP Configuration
-# Server-side only
-# Used to send emails (password reset, notifications)
 # --------------------------------------------------
 SMTP_HOST=smtp.example.com
-SMTP_PORT=587      # Usually 587 for TLS (STARTTLS) or 465 for SSL
-SMTP_SECURE=false  # false for TLS/STARTTLS, true for SSL
+SMTP_PORT=587
+SMTP_SECURE=false
 SMTP_USER=smtp-user@example.com
 SMTP_PASS=examplepassword
 
 # --------------------------------------------------
 # Public identity & contact information
-# Exposed to the frontend
 # --------------------------------------------------
 NUXT_PUBLIC_PERSONAL_NAME="John Doe"
 NUXT_PUBLIC_PERSONAL_EMAIL=contact@example.com
@@ -293,7 +278,6 @@ NUXT_PUBLIC_PERSONAL_BIRTHDATE=1990-01-01
 
 # --------------------------------------------------
 # Legal & billing information
-# Public (required for legal mentions & invoices)
 # --------------------------------------------------
 NUXT_PUBLIC_LEGAL_SIRET=12345678900000
 NUXT_PUBLIC_LEGAL_TVA=FR00123456789
@@ -302,15 +286,13 @@ NUXT_PUBLIC_LEGAL_INVOICE_ADDRESS="10 Demo Street, 75000 Paris"
 
 # --------------------------------------------------
 # Banking information
-# STRICTLY server-side
-# NEVER exposed to frontend
+# STRICTLY server-side — NEVER expose to frontend
 # --------------------------------------------------
 BANK_IBAN=FR0000000000000000000000000
 BANK_BIC=TESTFRXX
 
 # --------------------------------------------------
 # Public professional links
-# Exposed to the frontend
 # --------------------------------------------------
 NUXT_PUBLIC_LINKEDIN=https://www.linkedin.com/in/example
 NUXT_PUBLIC_GITHUB=https://github.com/example
@@ -320,109 +302,15 @@ NUXT_PUBLIC_WHATSAPP=https://wa.me/33123456789
 
 # --------------------------------------------------
 # Database Management
-# Server-side only, DO NOT expose secrets
 # --------------------------------------------------
 DB_REPLACE_TRIGGER=0
 </code></pre>
 
-<p>For production, create <code>.env.production</code>:</p> 
+<p>For production, create <code>.env.production</code> with the same structure and replace values accordingly (domain, Stripe live keys, real SMTP, etc.).</p>
 
-<pre>
-<code>
-# --------------------------------------------------
-# Environment
-# --------------------------------------------------
-NODE_ENV=production
-
-# --------------------------------------------------
-# Nuxt Frontend
-# Public – exposed to the client
-# --------------------------------------------------
-NUXT_PUBLIC_FRONTEND_DOMAIN=https://djason-chery.dev
-
-# --------------------------------------------------
-# Stripe (Payments)
-# Public key is exposed to the frontend
-# Secret key MUST stay server-side
-# --------------------------------------------------
-NUXT_PUBLIC_STRIPE_PUBLIC_KEY=STRIPE_PUBLIC_KEY_HERE
-STRIPE_SECRET_KEY=STRIPE_SECRET_KEY_HERE
-
-# --------------------------------------------------
-# Default Admin Login
-# Server-side only
-# Used for initial backoffice access
-# --------------------------------------------------
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=admin123
-ADMIN_NAME="Admin User"
-
-# --------------------------------------------------
-# Security
-# Server-side only
-# Used for account recovery / verification
-# Example question: "What is your birth city?"
-# --------------------------------------------------
-SECURITY_ANSWER=examplecity
-
-# --------------------------------------------------
-# SMTP Configuration
-# Server-side only
-# Used to send emails (password reset, notifications)
-# --------------------------------------------------
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587      # Usually 587 for TLS (STARTTLS) or 465 for SSL
-SMTP_SECURE=false  # false for TLS/STARTTLS, true for SSL
-SMTP_USER=smtp-user@example.com
-SMTP_PASS=examplepassword
-
-# --------------------------------------------------
-# Public identity & contact information
-# Exposed to the frontend
-# --------------------------------------------------
-NUXT_PUBLIC_PERSONAL_NAME="John Doe"
-NUXT_PUBLIC_PERSONAL_EMAIL=contact@example.com
-NUXT_PUBLIC_PERSONAL_PHONE=+33123456789
-NUXT_PUBLIC_PERSONAL_BIRTHDATE=1990-01-01
-
-# --------------------------------------------------
-# Legal & billing information
-# Public (required for legal mentions & invoices)
-# --------------------------------------------------
-NUXT_PUBLIC_LEGAL_SIRET=12345678900000
-NUXT_PUBLIC_LEGAL_TVA=FR00123456789
-NUXT_PUBLIC_LEGAL_ADDRESS="Sample Town, France"
-NUXT_PUBLIC_LEGAL_INVOICE_ADDRESS="10 Demo Street, 75000 Paris"
-
-# --------------------------------------------------
-# Banking information
-# STRICTLY server-side
-# NEVER exposed to frontend
-# --------------------------------------------------
-BANK_IBAN=FR0000000000000000000000000
-BANK_BIC=TESTFRXX
-
-# --------------------------------------------------
-# Public professional links
-# Exposed to the frontend
-# --------------------------------------------------
-NUXT_PUBLIC_LINKEDIN=https://www.linkedin.com/in/example
-NUXT_PUBLIC_GITHUB=https://github.com/example
-NUXT_PUBLIC_MALT=https://www.malt.fr/profile/example
-NUXT_PUBLIC_INSTAGRAM=https://www.instagram.com/example
-NUXT_PUBLIC_WHATSAPP=https://wa.me/33123456789
-
-# --------------------------------------------------
-# Database Management
-# Server-side only, DO NOT expose secrets
-# --------------------------------------------------
-DB_REPLACE_TRIGGER=0
-</code></pre>
-
-<p><strong>⚠️ Important:</strong> Never commit <code>.env.development</code> or <code>.env.production</code> files to Git. Add them to <code>.gitignore</code>.</p>
+<p><strong>⚠️ Important:</strong> Never commit <code>.env.development</code> or <code>.env.production</code> to Git. Add them to <code>.gitignore</code>.</p>
 
 <h3>First-Time Setup Checklist</h3>
-<p>Before running the project for the first time:</p>
 <ul>
   <li>✅ Install Node.js 18+ (<code>node -v</code> to check)</li>
   <li>✅ Clone the repository</li>
@@ -446,7 +334,6 @@ DB_REPLACE_TRIGGER=0
 
 <h3>Build for Production</h3>
 
-<p>Build the application for production:</p>
 <pre><code>npm run build</code></pre>
 
 <p>This creates a <code>.output/</code> folder containing the optimized production build.</p>
@@ -455,29 +342,22 @@ DB_REPLACE_TRIGGER=0
 
 <h4>1. Upload files via SFTP/SSH</h4>
 
-<p>Connect using FileZilla or any SFTP client. Copy the connection info and drag the following files into <code>sites/your-site</code>:</p>
+<p>Connect using WinSCP or any SFTP client and upload the following files into <code>sites/your-site</code>:</p>
 
-<pre><code>.output/              # Production build
-ecosystem.config.cjs   # PM2 configuration
-package.json           # Dependencies
-package-lock.json      # Lock file
-.env.production        # Environment variables
+<pre><code>.output/            # Production build
+package.json        # Dependencies
+package-lock.json   # Lock file
+.env.production     # Environment variables
 </code></pre>
 
 <h4>2. Node.js Settings</h4>
 
 <ul>
-  <li>Build Command: <code>npm run build</code> (uncheck “run build automatically” in Infomaniak panel)</li>
   <li>Start Command: <code>npm run start</code></li>
   <li>Port: 3000</li>
 </ul>
 
-<p>On Infomaniak, you only need to set the build command but <strong>do not run it automatically</strong>. Use <code>npm run start</code> to start the server.</p>
-
-
 <h3>Alternative: Static Generation</h3>
-
-<p>For static hosting (no Node.js server needed):</p>
 
 <pre><code>npm run generate</code></pre>
 
@@ -609,8 +489,6 @@ package-lock.json      # Lock file
   <li>Data analytics and reporting</li>
   <li>File uploads and media management</li>
 </ul>
-
-<p>For a complete list of available endpoints, explore the <code>server/api/</code> directory in the source code.</p>
 
 <hr>
 
