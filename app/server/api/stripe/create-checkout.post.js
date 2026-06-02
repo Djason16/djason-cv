@@ -1,7 +1,7 @@
 export default defineEventHandler(async event => {
     try {
         // Read and validate checkout data from request body
-        const { amount, currency, email } = validateCheckoutData(await readBody(event))
+        const { amount, currency, email, cardType } = validateCheckoutData(await readBody(event))
 
         // Access runtime config for frontend URLs
         const config = useRuntimeConfig(event)
@@ -12,6 +12,7 @@ export default defineEventHandler(async event => {
             amount,
             currency,
             email,
+            cardType,
             successUrl: `${frontend}/api/stripe/payment-result?type=success`,
             cancelUrl: `${frontend}/api/stripe/payment-result?type=cancel`,
         })

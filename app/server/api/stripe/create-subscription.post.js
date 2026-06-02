@@ -1,7 +1,7 @@
 export default defineEventHandler(async event => {
     try {
         // Read and validate subscription data
-        const { email, name, amount } = validateSubscriptionData(await readBody(event))
+        const { email, name, amount, currency, cardType } = validateSubscriptionData(await readBody(event))
 
         // Access runtime config for frontend URLs
         const config = useRuntimeConfig(event)
@@ -12,6 +12,8 @@ export default defineEventHandler(async event => {
             email,
             name,
             amount,
+            currency,
+            cardType,
             successUrl: `${frontend}/api/stripe/subscription-result?type=success`,
             cancelUrl: `${frontend}/api/stripe/subscription-result?type=cancel`,
         })

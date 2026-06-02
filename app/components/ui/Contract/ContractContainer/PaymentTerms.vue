@@ -19,24 +19,9 @@
                         {{ $lang.getTranslation('numberOfInstallments') }}: <span class="amount-value">{{ nbMensualites
                         }}</span><br />
 
-                        <!-- Stripe fees breakdown -->
-                        <div class="stripe-fees-detail">
-                            <strong>{{ $lang.getTranslation('stripeFeesInfo') }}:</strong>
-                            <ul class="bullet-list">
-                                <li>{{ $lang.getTranslation('monthlyNetAmount') }}: <span class="amount-value">{{
-                                    formatPrice(monthlyPayment) }}</span></li>
-                                <li>{{ $lang.getTranslation('processingFees') }}: <span class="amount-value">{{
-                                    formatPrice(calculateStripeFees(monthlyPayment).fees) }}</span> (1,5% + 0,25€)
-                                </li>
-                                <li>{{ $lang.getTranslation('monthlyTotalAmount') }}: <span class="amount-value">{{
-                                    formatPrice(calculateStripeFees(monthlyPayment).total) }}</span></li>
-                                <li>{{ $lang.getTranslation('totalOver12Months') }}: <span class="amount-value">{{
-                                    formatPrice(calculateStripeFees(monthlyPayment).total * nbMensualites) }}</span>
-                                </li>
-                            </ul>
-                        </div>
+                        <StripeFeesList :netAmount="monthlyPayment" :months="nbMensualites"
+                            :calculateStripeFees="calculateStripeFees" :formatPrice="formatPrice" />
 
-                        <!-- Bank transfer alternative -->
                         <div class="bank-transfer-option">
                             <strong>{{ $lang.getTranslation('bankTransferOption') }}:</strong>
                             <ul class="bullet-list">
@@ -75,23 +60,9 @@
                         {{ $lang.getTranslation('monthlyPaymentOption') }}<br />
                         {{ $lang.getTranslation('numberOfInstallments') }}: <span class="amount-value">12</span><br />
 
-                        <!-- Stripe fees breakdown for alternative -->
-                        <div class="stripe-fees-detail">
-                            <strong>{{ $lang.getTranslation('stripeFeesInfo') }}:</strong>
-                            <ul class="bullet-list">
-                                <li>{{ $lang.getTranslation('monthlyNetAmount') }}: <span class="amount-value">{{
-                                    formatPrice(totalAmount / 12) }}</span></li>
-                                <li>{{ $lang.getTranslation('processingFees') }}: <span class="amount-value">{{
-                                    formatPrice(calculateStripeFees(totalAmount / 12).fees) }}</span> (1,5% + 0,25€)
-                                </li>
-                                <li>{{ $lang.getTranslation('monthlyTotalAmount') }}: <span class="amount-value">{{
-                                    formatPrice(calculateStripeFees(totalAmount / 12).total) }}</span></li>
-                                <li>{{ $lang.getTranslation('totalOver12Months') }}: <span class="amount-value">{{
-                                    formatPrice(calculateStripeFees(totalAmount / 12).total * 12) }}</span></li>
-                            </ul>
-                        </div>
+                        <StripeFeesList :netAmount="totalAmount / 12" :months="12"
+                            :calculateStripeFees="calculateStripeFees" :formatPrice="formatPrice" />
 
-                        <!-- Bank transfer alternative -->
                         <div class="bank-transfer-option">
                             <strong>{{ $lang.getTranslation('bankTransferOption') }}:</strong>
                             <ul class="bullet-list">
@@ -112,8 +83,7 @@
             <p class="section-subtitle"><strong>{{ $lang.getTranslation('automaticDebitAuth') }}</strong></p>
             <p class="section-text">
                 {{ $lang.getTranslation('automaticDebitInfo', {
-                    amount:
-                        formatPrice(calculateStripeFees(monthlyPayment).total)
+                    amount: formatPrice(calculateStripeFees(monthlyPayment, 'european').total)
                 }) }}
             </p>
             <p class="section-text">
@@ -134,12 +104,10 @@
         <ul class="bullet-list text-small">
             <li>{{ $lang.getTranslation('paymentByCard') }} <a :href="`${websiteUrl}/pay-me`">{{ websiteUrl
             }}/pay-me</a></li>
-            <li>
-                {{ $lang.getTranslation('paymentByBankTransfer', {
-                    iban: providerInfo.bank.iban,
-                    bic: providerInfo.bank.bic
-                }) }}
-            </li>
+            <li>{{ $lang.getTranslation('paymentByBankTransfer', {
+                iban: providerInfo.bank.iban, bic:
+                    providerInfo.bank.bic
+            }) }}</li>
             <li>{{ $lang.getTranslation('paymentOtherMeans') }}</li>
         </ul>
     </section>
@@ -147,6 +115,8 @@
 
 <script setup>
 import { useNuxtApp } from '#app';
+import StripeFeesList from './StripeFeesList.vue';
+
 const { $lang } = useNuxtApp()
 
 const props = defineProps({
@@ -156,6 +126,7 @@ const props = defineProps({
     monthlyPayment: Number,
     serviceType: String,
     formatPrice: Function,
+    calculateStripeFees: Function,
     websiteUrl: String,
     providerInfo: Object
 })
@@ -220,13 +191,6 @@ const props = defineProps({
     color: var(--third-color)
 }
 
-.stripe-fees-detail {
-    background: #e3f2fd;
-    border-left: 4px solid var(--accent-blue);
-    padding: 10px;
-    margin: 10px 0
-}
-
 .bank-transfer-option {
     background: #f4edf7;
     border-left: 4px solid var(--accent-purple);
@@ -268,13 +232,11 @@ const props = defineProps({
     font-weight: bold
 }
 
-.stripe-fees-detail .bullet-list,
 .bank-transfer-option .bullet-list {
     margin: 8px 0 0 0;
     padding-left: 20px
 }
 
-.stripe-fees-detail .bullet-list li,
 .bank-transfer-option .bullet-list li {
     margin-bottom: 4px
 }

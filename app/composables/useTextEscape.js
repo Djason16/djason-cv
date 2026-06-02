@@ -8,7 +8,7 @@ export const useTextEscape = ($lang) => {
 
     const escapeLabel = txt => txt.replace(/[.,!?;:]$/, '')
 
-    // Replace {{email}} / {{phone}} placeholders with links
+    // Replace {{email}} / {{phone}} / {{url}} placeholders with links
     const injectVars = (txt, vars) =>
         txt?.replace(/{{(.*?)}}/g, (_, key) => {
             const val = vars[key.trim()]
@@ -26,6 +26,18 @@ export const useTextEscape = ($lang) => {
             }
             return val
         }) || txt
+
+    // Parse [label](url) Markdown links — runs after {{vars}} are injected
+    const parseMarkdownLinks = txt => {
+        if (!txt) return txt
+        return txt.replace(
+            /\[([^\]]+)\]\(((?:https?:\/\/|\/)[^\)]+)\)/g,
+            (_, label, href) => {
+                const title = escapeLabel(label)
+                return `<a href="${href}" target="_blank" rel="noopener noreferrer" title="${title}" aria-label="${title}" class="text-bold">${label}</a>`
+            }
+        )
+    }
 
     // Make plain text clickable (emails, phones, URLs)
     const autoLinks = txt => {
@@ -66,8 +78,8 @@ export const useTextEscape = ($lang) => {
         return out
     }
 
-    // Apply variables first, then detect links
-    const process = (txt, vars = {}) => autoLinks(injectVars(txt, vars))
+    // Apply variables → parse Markdown links → detect plain links
+    const process = (txt, vars = {}) => autoLinks(parseMarkdownLinks(injectVars(txt, vars)))
 
     return { processText: process, cleanInvisible, createAutoLinks: injectVars, makeLinksClickable: autoLinks }
 }

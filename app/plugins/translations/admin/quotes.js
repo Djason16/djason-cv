@@ -8,7 +8,7 @@ export default {
         quoteNumberRequired: "Le numéro de devis est obligatoire.",
         invalidQuoteNumber: "Numéro du devis invalide. Veuillez entrer uniquement des chiffres (ex: 5000).",
         validUntil: "Valable jusqu'au",
-        quoteValidityNotice: "Ce devis est valable {{days}} jours à compter de sa date d'émission. Passé ce délai, les conditions tarifaires sont susceptibles d'être révisées.",
+        quoteValidityNotice: "Ce devis est valable {{days}} jours à compter de sa date d'émission. Passé ce délai, sans acceptation écrite de votre part, il est caduc et les conditions tarifaires sont susceptibles d'être révisées.",
         paymentOptionsTitle: "Modalités de paiement proposées",
         option: "Option",
         during: "pendant",
@@ -21,7 +21,7 @@ export default {
         fullPayment: "Paiement intégral",
         clientSignature: "Signature du client",
         signatureDate: "Date",
-        signaturePrecedBy: "\"Bon pour accord\" précédé de la mention \"Lu et approuvé\"",
+        signaturePrecedBy: "\"Bon pour accord\" précédé de la mention manuscrite \"Lu et approuvé\"",
     },
 
     english: {
@@ -33,7 +33,7 @@ export default {
         quoteNumberRequired: "The quote number is required.",
         invalidQuoteNumber: "Invalid quote number. Please enter numbers only (e.g., 5000).",
         validUntil: "Valid until",
-        quoteValidityNotice: "This quote is valid for {{days}} days from its issue date. After this period, pricing conditions may be revised.",
+        quoteValidityNotice: "This quote is valid for {{days}} days from its issue date. After this period, without your written acceptance, it becomes void and pricing conditions may be revised.",
         paymentOptionsTitle: "Proposed payment terms",
         option: "Option",
         during: "for",
@@ -46,6 +46,6 @@ export default {
         fullPayment: "Full payment",
         clientSignature: "Client Signature",
         signatureDate: "Date",
-        signaturePrecedBy: "\"Approved\" preceded by \"Read and approved\"",
+        signaturePrecedBy: "\"Approved\" preceded by the handwritten mention \"Read and approved\"",
     }
 }

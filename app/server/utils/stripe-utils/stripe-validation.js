@@ -20,20 +20,36 @@ export const validatePositiveNumber = (value, name = 'Value') => {
     return true
 }
 
+// Allowed Stripe card types — must match STRIPE_RATES keys in stripe-fees.js
+const VALID_CARD_TYPES = ['european', 'europeanPremium', 'uk', 'nonEuropean']
+
+// Allowed currencies
+const VALID_CURRENCIES = ['eur', 'usd']
+
+// Validate and sanitize card type — fallback to 'european' if unknown
+export const validateCardType = (cardType = 'european') => {
+    return VALID_CARD_TYPES.includes(cardType) ? cardType : 'european'
+}
+
+// Validate and sanitize currency — fallback to 'eur' if unknown
+export const validateCurrency = (currency = 'eur') => {
+    return VALID_CURRENCIES.includes(currency?.toLowerCase()) ? currency.toLowerCase() : 'eur'
+}
+
 // Validate checkout form data
-export const validateCheckoutData = ({ amount, currency, email }) => {
+export const validateCheckoutData = ({ amount, currency, email, cardType }) => {
     validateRequired({ amount, currency, email }, ['amount', 'currency', 'email'])
     validateEmail(email)
     validatePositiveNumber(amount, 'Amount')
-    return { amount, currency, email }
+    return { amount, currency: validateCurrency(currency), email, cardType: validateCardType(cardType) }
 }
 
 // Validate subscription form data
-export const validateSubscriptionData = ({ email, name, amount }) => {
+export const validateSubscriptionData = ({ email, name, amount, currency, cardType }) => {
     validateRequired({ email, name, amount }, ['email', 'name', 'amount'])
     validateEmail(email)
     validatePositiveNumber(amount, 'Amount')
-    return { email, name, amount: parseFloat(amount) }
+    return { email, name, amount: parseFloat(amount), currency: validateCurrency(currency), cardType: validateCardType(cardType) }
 }
 
 // Ensure session ID exists

@@ -20,7 +20,7 @@
             <!-- Payment terms -->
             <PaymentTerms :totalAmount="totalAmount" :deposit="deposit" :nbMensualites="nbMensualites"
                 :monthlyPayment="monthlyPayment" :serviceType="serviceType" :formatPrice="formatPrice"
-                :websiteUrl="websiteUrl" :providerInfo="providerInfo" />
+                :calculateStripeFees="calculateStripeFees" :websiteUrl="websiteUrl" :providerInfo="providerInfo" />
 
             <!-- Other contract sections -->
             <LatePayment />

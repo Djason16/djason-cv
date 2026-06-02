@@ -2,7 +2,7 @@
     <OtherSectionLayout pageTitleKey="payMeTitle" pageSubtitleKey="payMeIntro" :sections="payMeSections" titleTag="h2"
         titleClass="text-xlarge text-bold" titleColor="var(--text-color-light)" contentClass="text-normal"
         contentColor="var(--text-color-light)"
-        :dynamicData="{ name: config.public.name, email: config.public.contactEmail, phone: config.public.contactPhone }">
+        :dynamicData="{ name: config.public.name, email: config.public.contactEmail, phone: config.public.contactPhone, refundPolicyUrl: '/refund-policy' }">
         <template v-slot:custom-content>
             <div class="stripe-payment-form">
                 <SlideInFromRight>
@@ -69,15 +69,12 @@ const { translatedMessage, showMessage, clearMessage } = useMessage()
 const isSubscription = ref(false)
 
 // Reactive form state
-const formData = reactive({
-    email: '',
-    name: '',
-    amount: 0,
-    currency: computed(() => $lang.current.value === 'french' ? 'eur' : 'usd')
-})
+const formData = reactive({ email: '', name: '', amount: 0, currency: 'eur', cardType: 'european' })
+const defaultCurrency = computed(() => $lang.current.value === 'french' ? 'eur' : 'usd')
+watch(defaultCurrency, val => { formData.currency = val }, { immediate: true })
 
 // Layout sections
-const payMeSections = Array.from({ length: 9 }, (_, i) => ({
+const payMeSections = Array.from({ length: 10 }, (_, i) => ({
     titleKey: `payMeSection${i + 1}Title`,
     contentKey: `payMeSection${i + 1}Content`
 }))
@@ -88,27 +85,54 @@ const seoExtra = { name: config.public.name, email: config.public.contactEmail, 
 useSeoMeta(seoMetaData(pageKey, $lang, seoExtra))
 watch(() => $lang.current.value, () => useSeoMeta(seoMetaData(pageKey, $lang, seoExtra)))
 
+// Shared reusable select fields
+const currencyField = (id) => ({
+    id,
+    type: 'select',
+    model: 'currency',
+    labelKey: 'currency',
+    autocomplete: 'off',
+    options: [
+        { value: 'eur', labelKey: 'eurCurrency' },
+        { value: 'usd', labelKey: 'usdCurrency' }
+    ]
+})
+
+const cardTypeField = (id) => ({
+    id,
+    type: 'select',
+    model: 'cardType',
+    labelKey: 'cardType',
+    autocomplete: 'off',
+    options: [
+        { value: 'european', labelKey: 'europeanCard' },
+        { value: 'europeanPremium', labelKey: 'europeanPremiumCard' },
+        { value: 'uk', labelKey: 'ukCard' },
+        { value: 'nonEuropean', labelKey: 'nonEuropeanCard' }
+    ]
+})
+
 // Form fields for one-time payment
 const oneTimeFormFields = [
     { id: 'email', type: 'email', model: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', required: true, autocomplete: 'email' },
     { id: 'amount', type: 'number', model: 'amount', labelKey: 'amountToPay', placeholderKey: 'enterAmount', min: 1, required: true, autocomplete: 'off' },
-    {
-        id: 'currency', type: 'select', model: 'currency', labelKey: 'currency', autocomplete: 'off',
-        options: [{ value: 'usd', labelKey: 'usdCurrency' }, { value: 'eur', labelKey: 'eurCurrency' }]
-    }
+    currencyField('currency'),
+    cardTypeField('cardType'),
 ]
 
 // Form fields for subscription (12-month web development)
 const subscriptionFormFields = [
     { id: 'name', type: 'text', model: 'name', labelKey: 'fullName', placeholderKey: 'enterName', required: true, autocomplete: 'name' },
     { id: 'email-sub', type: 'email', model: 'email', labelKey: 'emailAddress', placeholderKey: 'enterEmail', required: true, autocomplete: 'email' },
-    { id: 'total-amount', type: 'number', model: 'amount', labelKey: 'totalProjectAmount', placeholderKey: 'enterTotalAmount', min: 1, required: true, autocomplete: 'off' }
+    { id: 'total-amount', type: 'number', model: 'amount', labelKey: 'totalProjectAmount', placeholderKey: 'enterTotalAmount', min: 1, required: true, autocomplete: 'off' },
+    currencyField('currency-sub'),
+    cardTypeField('cardType-sub'),
 ]
 
 // Computed: active fields based on mode
 const currentFormFields = computed(() => isSubscription.value ? subscriptionFormFields : oneTimeFormFields)
 
-// Toggle payment mode and reset form
+// Toggle payment mode and reset form — keep currency and cardType across toggle
 const togglePaymentMode = () => {
     isSubscription.value = !isSubscription.value
     clearMessage()
@@ -147,7 +171,7 @@ const openStripePopup = (url, sessionId, checkFn) => {
 const startCheckout = async () => {
     clearMessage()
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    const nameRegex = /^[a-zA-ZÀ-ÿ\s'-]{2,50}$/
+    const nameRegex = /^.{2,50}$/
 
     if (formData.amount <= 0) return showMessage('error', 'invalidAmount', 0)
     if (!formData.email || !emailRegex.test(formData.email)) return showMessage('error', 'invalidEmail', 0)
@@ -159,7 +183,7 @@ const startCheckout = async () => {
             // Subscription checkout (12 months)
             const data = await $fetch('/api/stripe/create-subscription', {
                 method: 'POST',
-                body: { amount: formData.amount, email: formData.email, name: formData.name.trim() }
+                body: { amount: formData.amount, currency: formData.currency, email: formData.email, name: formData.name.trim(), cardType: formData.cardType }
             })
             if (!data.url || !data.sessionId) throw new Error('Missing URL/sessionId')
             openStripePopup(data.url, data.sessionId, checkSubscriptionStatus)
@@ -167,7 +191,7 @@ const startCheckout = async () => {
             // One-time payment checkout
             const data = await $fetch('/api/stripe/create-checkout', {
                 method: 'POST',
-                body: { amount: formData.amount * 100, currency: formData.currency, email: formData.email }
+                body: { amount: formData.amount * 100, currency: formData.currency, email: formData.email, cardType: formData.cardType }
             })
             if (!data.url || !data.sessionId) throw new Error('Missing URL/sessionId')
             openStripePopup(data.url, data.sessionId, checkPaymentStatus)

@@ -24,7 +24,8 @@ const providerInfo = {
     email: config.public.contactEmail,
     phone: config.public.contactPhone,
     siret: config.public.legalSiret,
-    address: config.public.legalAddress
+    address: config.public.legalAddress,
+    privacyPolicyUrl: '/privacy'
 }
 
 // Generate legal sections dynamically
