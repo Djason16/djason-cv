@@ -3,6 +3,7 @@ import { addNoBreakClasses } from './pdf/pdfClasses'
 import { applyPageBreakStyles } from './pdf/pdfStyles'
 import { waitForElement } from './pdf/pdfUtils'
 
+
 export const usePDFExport = () => {
     const renderAndExport = async ({
         component,
@@ -12,6 +13,7 @@ export const usePDFExport = () => {
         pdfOptions = {}
     }) => {
         if (process.server) return
+
 
         // Offscreen container used for rendering the PDF layout
         const container = Object.assign(document.createElement('div'), {
@@ -26,7 +28,9 @@ export const usePDFExport = () => {
             `
         })
 
+
         document.body.appendChild(container)
+
 
         try {
             // Mount component into the hidden container
@@ -34,22 +38,30 @@ export const usePDFExport = () => {
             app.mount(container)
             await nextTick()
 
+
             // Inject print-safe CSS rules
             const styleElement = applyPageBreakStyles()
 
+
             // Allow layout, images, and fonts to fully settle
-            await new Promise(r => setTimeout(r, pdfOptions.delay || 1500))
+            const delay = pdfOptions.delay ?? 1500
+            await new Promise(r => setTimeout(r, delay))
+
 
             // Wait for the target element to exist and be measurable
             const el = await waitForElement(container, containerClass)
 
+
             // Mark critical nodes to prevent page splitting
             addNoBreakClasses(el)
 
+
             const html2pdf = (await import('html2pdf.js')).default
 
+
             const defaultOptions = {
-                margin: [5, 5, 5, 5],
+                margin: [10, 10, 10, 10],
+                delay: 1500,
                 filename: `${fileName}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: {
@@ -57,9 +69,12 @@ export const usePDFExport = () => {
                     useCORS: true,
                     scrollX: 0,
                     scrollY: 0,
+                    windowWidth: 794,
                     windowHeight: el.scrollHeight,
                     logging: false,
-                    letterRendering: true
+                    letterRendering: true,
+                    allowTaint: false,
+                    imageTimeout: 0
                 },
                 jsPDF: {
                     unit: 'mm',
@@ -90,21 +105,24 @@ export const usePDFExport = () => {
                 }
             }
 
+
             // Merge user overrides while preserving deep defaults
             const options = {
                 ...defaultOptions,
                 ...pdfOptions,
                 html2canvas: {
                     ...defaultOptions.html2canvas,
-                    ...pdfOptions.html2canvas
+                    ...pdfOptions.html2canvas,
+                    windowHeight: el.scrollHeight
                 },
                 jsPDF: {
                     ...defaultOptions.jsPDF,
                     ...pdfOptions.jsPDF
                 },
                 pagebreak: {
-                    ...defaultOptions.pagebreak,
-                    ...pdfOptions.pagebreak,
+                    mode: pdfOptions.pagebreak?.mode ?? defaultOptions.pagebreak.mode,
+                    before: pdfOptions.pagebreak?.before ?? defaultOptions.pagebreak.before,
+                    after: pdfOptions.pagebreak?.after ?? defaultOptions.pagebreak.after,
                     avoid: [
                         ...defaultOptions.pagebreak.avoid,
                         ...(pdfOptions.pagebreak?.avoid || [])
@@ -112,7 +130,9 @@ export const usePDFExport = () => {
                 }
             }
 
+
             await html2pdf().set(options).from(el).save()
+
 
             app.unmount()
             styleElement?.parentNode?.removeChild(styleElement)
@@ -123,6 +143,7 @@ export const usePDFExport = () => {
             document.body.removeChild(container)
         }
     }
+
 
     return { renderAndExport }
 }

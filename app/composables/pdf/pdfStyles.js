@@ -86,6 +86,13 @@ export const applyPageBreakStyles = () => {
         /* Ensure payment detail children stay together */
         .payment-details > * {
             page-break-inside: avoid !important;
+            break-inside: avoid !important;
+        }
+
+        /* Children's main content */
+        .content > * {
+            page-break-inside: avoid !important;
+            break-inside: avoid !important;
         }
     `
 

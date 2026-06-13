@@ -7,12 +7,14 @@
                     class="text-small" />
             </div>
 
+
             <!-- Editable contracts table -->
             <EditableTable v-if="columns && groupedContracts" :items="groupedContracts" :columns="columns"
                 :actions-label="$lang.getTranslation('actions')" :delete-label="$lang.getTranslation('delete')"
                 :download-label="$lang.getTranslation('downloadContract')"
                 :empty-message="$lang.getTranslation('noContractsFound')" :show-delete="false" :show-download="true"
                 @download="downloadContract" />
+
 
             <!-- Modal footer with close button -->
             <div class="modal-footer">
@@ -22,6 +24,7 @@
         </div>
     </ModalDialog>
 </template>
+
 
 <script setup>
 import { useNuxtApp } from '#app'
@@ -35,10 +38,12 @@ import { useDocumentInfo } from '~/composables/useDocumentInfo'
 import { usePDFExport } from '~/composables/usePDFExport'
 import ModalDialog from '../ModalDialog.vue'
 
+
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
 const close = () => emit('close')
+
 
 // Composables for contracts, PDF export, and payment calculations
 const { renderAndExport } = usePDFExport()
@@ -46,13 +51,16 @@ const { groupedContracts, columns, fetchAllData, search } = useContractData(prop
 const { getPaymentConfig, getPaymentOptions, normalizeServiceType } = useContractCalculator()
 const { promptDocumentNumber, promptDocumentDate } = useDocumentInfo()
 
+
 // Fetch contracts when modal opens
 watch(() => props.show, v => v && fetchAllData())
+
 
 // Prompt user for payment choice, returns selected value or null if canceled
 const promptPaymentOption = (serviceType, totalAmount) => {
     const options = getPaymentOptions(totalAmount, serviceType)
     if (options.length === 1) return options[0].value
+
 
     let message = $lang.getTranslation('contractPaymentChoice')
     options.forEach((opt, i) => {
@@ -61,6 +69,7 @@ const promptPaymentOption = (serviceType, totalAmount) => {
         message += '\n'
     })
     message += $lang.getTranslation('contractPaymentChoicePrompt')
+
 
     let choice = null
     while (choice === null) {
@@ -73,22 +82,28 @@ const promptPaymentOption = (serviceType, totalAmount) => {
     return choice
 }
 
+
 // Handle PDF download for a contract
 const downloadContract = async group => {
     if (process.server) return
 
+
     const contractNumber = await promptDocumentNumber('contract')
     if (!contractNumber) return
+
 
     const serviceType = normalizeServiceType(group.serviceType)
     const totalAmount = Number(group.totalAmount) || 0
     const paymentChoice = promptPaymentOption(serviceType, totalAmount)
     if (paymentChoice === null) return
 
+
     const contractDate = promptDocumentDate('contract')
     if (contractDate === null) return
 
+
     const paymentConfig = getPaymentConfig(totalAmount, serviceType, paymentChoice)
+
 
     // Fetch bank info
     let bankInfo = { iban: null, bic: null }
@@ -104,7 +119,9 @@ const downloadContract = async group => {
         console.error('Could not fetch bank info:', err)
     }
 
+
     const fileName = `CO-${new Date().getFullYear()}-${contractNumber.padStart(4, '0')}`
+
 
     await renderAndExport({
         component: ContractContainer,
@@ -133,15 +150,12 @@ const downloadContract = async group => {
         fileName,
         containerClass: '.contract-container',
         pdfOptions: {
-            margin: [10, 10, 10, 10],
-            delay: 500,
-            html2canvas: { scale: 2, useCORS: true, scrollY: 0, scrollX: 0, letterRendering: true, logging: false, removeContainer: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true },
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'], before: '.page-break' }
+            html2canvas: { removeContainer: true }
         }
     })
 }
 </script>
+
 
 <style scoped>
 .contracts-modal {
@@ -156,10 +170,12 @@ const downloadContract = async group => {
     color: var(--text-color-dark)
 }
 
+
 .search-bar {
     display: flex;
     justify-content: flex-end
 }
+
 
 .modal-footer {
     display: flex;

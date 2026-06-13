@@ -45,6 +45,8 @@
   <li><a href="#quick-start">Quick Start</a></li>
   <li><a href="#installation">Installation</a></li>
   <li><a href="#deployment">Deployment</a></li>
+  <li><a href="#api-routes">API Routes</a></li>
+  <li><a href="#scripts">Available Scripts</a></li>
   <li><a href="#contact">Contact</a></li>
   <li><a href="#license">License</a></li>
 </ul>
@@ -65,20 +67,21 @@
 
 <h3>Frontend</h3>
 <ul>
-  <li>Built with <strong>Nuxt 4 (v4.2.2)</strong> - Vue.js meta-framework</li>
+  <li>Built with <strong>Nuxt 4 (v4.4.8)</strong> - Vue.js meta-framework</li>
   <li>Server-Side Rendering (SSR) for optimal SEO</li>
   <li>Static Site Generation (SSG) support</li>
-  <li>Styled with <strong>CSS 3</strong>, <strong>GSAP</strong> animations, and <strong>Font Awesome</strong> icons</li>
+  <li>Styled with <strong>CSS 3</strong>, <strong>GSAP v3.15</strong> animations, and <strong>Font Awesome v7</strong> icons</li>
   <li>Responsive design for all devices</li>
   <li>Multi-language support with custom language switcher</li>
-  <li>Optimized images with <strong>@nuxt/image</strong></li>
-  <li>Automatic sitemap generation with <strong>@nuxtjs/sitemap</strong></li>
+  <li>Optimized images with <strong>@nuxt/image v2</strong></li>
+  <li>Automatic sitemap generation with <strong>@nuxtjs/sitemap v8</strong></li>
+  <li>SEO-ready with <strong>@nuxtjs/robots v6</strong></li>
 </ul>
 
 <h3>Backend (API Routes)</h3>
 <ul>
   <li><strong>Nitro</strong> server (built into Nuxt 4)</li>
-  <li><strong>Stripe API</strong> integration for secure payment processing</li>
+  <li><strong>Stripe API v22</strong> integration for secure payment processing</li>
   <li><strong>Complete Client Management System</strong> - CRUD operations for client data</li>
   <li><strong>Mission Management</strong> - Track and manage missions with client associations</li>
   <li><strong>Service Management</strong> - Organize and categorize services</li>
@@ -86,7 +89,7 @@
   <li>RESTful API routes in <code>server/api/</code></li>
   <li>Server utilities and middleware</li>
   <li>Environment-based configuration</li>
-  <li><strong>SQLite Database</strong> integration for data persistence</li>
+  <li><strong>SQLite Database</strong> via <strong>sql.js v1.14</strong> for data persistence</li>
 </ul>
 
 <h3>Deployment</h3>
@@ -104,34 +107,57 @@
   <tr>
     <th>Category</th>
     <th>Technologies</th>
+    <th>Version</th>
   </tr>
   <tr>
     <td><strong>Framework</strong></td>
     <td>Nuxt 4 (Vue 3)</td>
+    <td>4.4.8 / 3.5.38</td>
   </tr>
   <tr>
     <td><strong>Server Engine</strong></td>
     <td>Nitro</td>
+    <td>built-in</td>
+  </tr>
+  <tr>
+    <td><strong>State Management</strong></td>
+    <td>Pinia</td>
+    <td>3.0.4</td>
   </tr>
   <tr>
     <td><strong>Styling</strong></td>
     <td>CSS 3, GSAP</td>
+    <td>3.15.0</td>
   </tr>
   <tr>
     <td><strong>Icons</strong></td>
     <td>Font Awesome</td>
+    <td>7.2.0</td>
   </tr>
   <tr>
     <td><strong>Payment</strong></td>
     <td>Stripe API</td>
+    <td>22.2.1</td>
+  </tr>
+  <tr>
+    <td><strong>Database</strong></td>
+    <td>SQLite (sql.js)</td>
+    <td>1.14.1</td>
+  </tr>
+  <tr>
+    <td><strong>Email</strong></td>
+    <td>Nodemailer</td>
+    <td>8.0.11</td>
   </tr>
   <tr>
     <td><strong>Deployment</strong></td>
     <td>Infomaniak</td>
+    <td>—</td>
   </tr>
   <tr>
     <td><strong>Build Tool</strong></td>
     <td>Vite</td>
+    <td>built-in</td>
   </tr>
 </table>
 
@@ -139,11 +165,12 @@
 
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-  <li><strong>Node.js</strong> version 18.x or higher</li>
-  <li><strong>npm</strong> (comes with Node.js)</li>
+  <li><strong>Node.js</strong> version 20.x or higher (recommended: 22.x LTS)</li>
+  <li><strong>npm</strong> version 10.x or higher</li>
 </ul>
 <p>Ensure Node.js is installed before proceeding:</p>
-<pre><code>node -v  # Should be >= 18.0.0</code></pre>
+<pre><code>node -v  # Should be >= 20.0.0
+npm -v   # Should be >= 10.0.0</code></pre>
 
 <hr>
 
@@ -200,11 +227,11 @@ npm run dev
 <h3>First-Time Setup Checklist</h3>
 
 <ul>
-  <li>✅ Install Node.js 18+ (<code>node -v</code> to check)</li>
+  <li>✅ Install Node.js 20+ (<code>node -v</code> to check)</li>
   <li>✅ Clone the repository</li>
   <li>✅ Run <code>npm install</code></li>
-  <li>✅ Create <code>.env</code> file with your environment variables</li>
-  <li>✅ Add your Stripe keys (test keys for development)</li>
+  <li>✅ Create <code>.env.development</code> file with your environment variables</li>
+  <li>✅ Add your Stripe test keys</li>
   <li>✅ Run <code>npm run dev</code> or use <code>start.bat</code></li>
 </ul>
 
@@ -312,7 +339,7 @@ DB_REPLACE_TRIGGER=0
 
 <h3>First-Time Setup Checklist</h3>
 <ul>
-  <li>✅ Install Node.js 18+ (<code>node -v</code> to check)</li>
+  <li>✅ Install Node.js 20+ (<code>node -v</code> to check)</li>
   <li>✅ Clone the repository</li>
   <li>✅ Run <code>npm install</code></li>
   <li>✅ Copy <code>.env.example</code> to <code>.env.development</code> and update values</li>

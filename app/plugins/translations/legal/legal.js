@@ -7,7 +7,7 @@ export default {
         legalSection2Title: "2. Où est hébergé le site ?",
         legalSection2Content: "Le site est hébergé par Infomaniak Network SA, dont le siège est situé au 26 rue Eugène-Marziano, 1227 Genève, Suisse. Leur numéro de téléphone est le +41 22 820 35 44. Leur site web : www.infomaniak.com.",
         legalSection3Title: "3. Propriété intellectuelle",
-        legalSection3Content: "Tous les éléments présents sur ce site (textes, images, vidéos, codes sources, logos) sont protégés par le Code de la propriété intellectuelle français. Vous ne pouvez pas les reproduire sans mon autorisation écrite. Toute contrefaçon est passible de sanctions pénales selon les articles L.335-2 et suivants de ce même Code.",
+        legalSection3Content: "Tous les éléments présents sur ce site (textes, images, vidéos, codes sources, architectures logicielles, logos) sont protégés par le Code de la propriété intellectuelle français et restent la propriété exclusive de l'éditeur. Vous ne pouvez pas les reproduire, modifier ou distribuer sans mon autorisation écrite. Toute contrefaçon ou extraction de code est passible de sanctions pénales selon les articles L.335-2 et suivants de ce même Code.",
         legalSection4Title: "4. Directeur de publication",
         legalSection4Content: "Le directeur de la publication de ce site est {{name}}. Pour toute question, contactez-moi à {{email}}.",
         legalSection5Title: "5. Protection de vos données personnelles",
@@ -16,8 +16,8 @@ export default {
         legalSection6Content: "Ce site utilise uniquement des cookies techniques nécessaires à son bon fonctionnement, conformément à la loi Informatique et Libertés. Vous pouvez les désactiver dans les paramètres de votre navigateur si vous le souhaitez.",
         legalSection7Title: "7. Responsabilité",
         legalSection7Content: "Les informations présentes sur ce site sont fournies à titre indicatif et peuvent évoluer sans préavis. Je m'efforce de les maintenir exactes et à jour, sans pouvoir en garantir l'exhaustivité ni l'exactitude absolue. Ma responsabilité ne saurait être engagée pour tout dommage direct ou indirect résultant de l'utilisation de ce site.",
-        legalSection8Title: "8. Droit applicable",
-        legalSection8Content: "Ce site est soumis au droit français. En cas de litige, les tribunaux français seront compétents.",
+        legalSection8Title: "8. Droit applicable et attribution de juridiction",
+        legalSection8Content: "Ce site et ses conditions d'utilisation sont soumis au droit français. En cas de litige découlant de l'utilisation de ce site ou de l'interprétation de ses mentions, et à défaut d'accord amiable, compétence exclusive est attribuée aux tribunaux compétents du siège social de l'éditeur.",
     },
 
     english: {
@@ -28,7 +28,7 @@ export default {
         legalSection2Title: "2. Where is the site hosted?",
         legalSection2Content: "The site is hosted by Infomaniak Network SA, headquartered at 26 rue Eugène-Marziano, 1227 Geneva, Switzerland. Their phone number is +41 22 820 35 44. Their website: www.infomaniak.com.",
         legalSection3Title: "3. Intellectual Property",
-        legalSection3Content: "All elements on this site (texts, images, videos, source codes, logos) are protected by French intellectual property law. You cannot reproduce them without my written authorization. Any infringement is subject to criminal penalties under Articles L.335-2 and following of that same Code.",
+        legalSection3Content: "All elements on this site (texts, images, videos, source codes, software architecture, logos) are protected by French intellectual property law and remain the exclusive property of the publisher. You cannot reproduce, modify, or distribute them without my written authorization. Any infringement or code extraction is subject to criminal penalties under Articles L.335-2 and following of that same Code.",
         legalSection4Title: "4. Publishing Director",
         legalSection4Content: "The publishing director of this site is {{name}}. For any questions, contact me at {{email}}.",
         legalSection5Title: "5. Protection of your personal data",
@@ -37,7 +37,7 @@ export default {
         legalSection6Content: "This site only uses technical cookies necessary for its proper functioning, in accordance with the French Data Protection Act. You can disable them in your browser settings if you wish.",
         legalSection7Title: "7. Liability",
         legalSection7Content: "The information on this site is provided for informational purposes and may change without notice. I strive to keep it accurate and up-to-date, without being able to guarantee its completeness or absolute accuracy. I cannot be held liable for any direct or indirect damage resulting from the use of this site.",
-        legalSection8Title: "8. Applicable Law",
-        legalSection8Content: "This site is subject to French law. In case of dispute, French courts will have jurisdiction.",
+        legalSection8Title: "8. Applicable Law and Jurisdiction",
+        legalSection8Content: "This site and its terms of use are governed by French law. In the event of a dispute arising from the use of this site or the interpretation of its notices, and failing an amicable solution, exclusive jurisdiction is granted to the competent courts of the publisher's registered office.",
     }
 }

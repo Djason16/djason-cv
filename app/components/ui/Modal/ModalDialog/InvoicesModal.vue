@@ -7,11 +7,13 @@
                     class="text-small" autocomplete="off" />
             </div>
 
+
             <!-- Editable table listing invoices -->
             <EditableTable :items="groupedData" :columns="columns" :actions-label="$lang.getTranslation('actions')"
                 :delete-label="$lang.getTranslation('delete')" :download-label="$lang.getTranslation('downloadInvoice')"
                 :empty-message="$lang.getTranslation('noMissionsFound')" :show-delete="false" :show-download="true"
                 @download="downloadInvoice" />
+
 
             <!-- Footer with close button -->
             <div class="modal-footer">
@@ -21,6 +23,7 @@
         </div>
     </ModalDialog>
 </template>
+
 
 <script setup>
 import { useNuxtApp } from '#app'
@@ -35,10 +38,12 @@ import { usePaymentCalculator } from '~/composables/usePaymentCalculator'
 import { usePDFExport } from '~/composables/usePDFExport'
 import ModalDialog from '../ModalDialog.vue'
 
+
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
 const close = () => emit('close')
+
 
 // Composables for PDF export, data, calculations, and payment
 const { renderAndExport } = usePDFExport()
@@ -47,12 +52,15 @@ const { calculateTotals } = useFinancialCalculations()
 const { promptDocumentNumber, promptDeliveryAddress, promptOptionalInfo } = useDocumentInfo()
 const { promptIndividualPayment, getCompanyPaymentData } = usePaymentCalculator()
 
+
 // Fetch data when modal opens
 watch(() => props.show, v => v && fetchAllData())
+
 
 // Handle invoice PDF download
 const downloadInvoice = async group => {
     if (process.server) return
+
 
     // Prompt for invoice number, delivery, optional info
     const invoiceNumber = await promptDocumentNumber('invoice')
@@ -62,6 +70,7 @@ const downloadInvoice = async group => {
     const optionalInfo = await promptOptionalInfo(group.clientType)
     if (!optionalInfo) return
 
+
     // Compute totals and payment details
     const { totalHT, totalTVA, totalTTC } = calculateTotals(group.missions)
     const isIndividual = group.clientType === 'individual'
@@ -69,6 +78,7 @@ const downloadInvoice = async group => {
         ? await promptIndividualPayment(group.missions[0]?.service_name || '', totalTTC)
         : getCompanyPaymentData()
     if (!paymentData) return
+
 
     let bankInfo = { iban: null, bic: null }
     try {
@@ -83,8 +93,10 @@ const downloadInvoice = async group => {
         console.error('Could not fetch bank info:', err)
     }
 
+
     // Prepare filename
     const fileName = `${isIndividual ? 'CL' : 'FA'}-${new Date().getFullYear()}-${invoiceNumber.padStart(4, '0')}`
+
 
     // Export PDF with all necessary props
     await renderAndExport({
@@ -121,31 +133,10 @@ const downloadInvoice = async group => {
         },
         fileName,
         containerClass: '.document-container',
-        pdfOptions: {
-            margin: [10, 10, 10, 10],
-            delay: 1500,
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                scrollY: 0,
-                scrollX: 0,
-                letterRendering: true,
-                logging: false
-            },
-            jsPDF: {
-                unit: 'mm',
-                format: 'a4',
-                orientation: 'portrait',
-                compress: true
-            },
-            pagebreak: {
-                mode: ['avoid-all', 'css', 'legacy'],
-                before: '.page-break'
-            }
-        }
     })
 }
 </script>
+
 
 <style scoped>
 .invoices-modal {
@@ -160,10 +151,12 @@ const downloadInvoice = async group => {
     color: var(--text-color-dark)
 }
 
+
 .search-bar {
     display: flex;
     justify-content: flex-end
 }
+
 
 .modal-footer {
     display: flex;

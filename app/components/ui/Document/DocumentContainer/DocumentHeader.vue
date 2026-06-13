@@ -31,18 +31,18 @@ import { useNuxtApp } from '#app';
 
 // Props for header info and company details
 const props = defineProps({
-    issueDate: String,
-    documentNumber: String,
-    quoteValidityDate: String,
-    isQuoteType: Boolean,
-    companyLogo: String,
-    companyWebsite: String,
-    companyAddress: String,
-    companySiret: String,
-    hasTVA: Boolean,
-    companyTvaNumber: String,
-    companyPhone: String,
-    companyEmail: String
+    issueDate: { type: String, default: '' },
+    documentNumber: { type: String, default: '' },
+    quoteValidityDate: { type: String, default: '' },
+    isQuoteType: { type: Boolean, default: false },
+    companyLogo: { type: String, default: '' },
+    companyWebsite: { type: String, default: '' },
+    companyAddress: { type: String, default: '' },
+    companySiret: { type: [String, Number], default: '' },
+    hasTVA: { type: Boolean, default: false },
+    companyTvaNumber: { type: String, default: '' },
+    companyPhone: { type: String, default: '' },
+    companyEmail: { type: String, default: '' }
 })
 
 const { $lang } = useNuxtApp()

@@ -7,12 +7,14 @@
                     class="text-small" autocomplete="off" />
             </div>
 
+
             <!-- Table of individual client quotes -->
             <EditableTable :items="individualMissions" :columns="columns"
                 :actions-label="$lang.getTranslation('actions')" :delete-label="$lang.getTranslation('delete')"
                 :download-label="$lang.getTranslation('downloadQuote')"
                 :empty-message="$lang.getTranslation('noMissionsFound')" :show-delete="false" :show-download="true"
                 @download="downloadQuote" />
+
 
             <!-- Footer with close button -->
             <div class="modal-footer">
@@ -22,6 +24,7 @@
         </div>
     </ModalDialog>
 </template>
+
 
 <script setup>
 import { useNuxtApp } from '#app'
@@ -36,10 +39,12 @@ import { usePDFExport } from '~/composables/usePDFExport'
 import { useQuoteCalculator } from '~/composables/useQuoteCalculator'
 import ModalDialog from '../ModalDialog.vue'
 
+
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
 const close = () => emit('close')
+
 
 // Composables
 const { renderAndExport } = usePDFExport()
@@ -48,15 +53,19 @@ const { calculateTotals } = useFinancialCalculations()
 const { promptDocumentNumber, promptDeliveryAddress, promptOptionalInfo } = useDocumentInfo()
 const { getQuoteValidityDate, getIndividualPaymentOptions } = useQuoteCalculator()
 
+
 // Filter for individual clients only
 const individualMissions = computed(() => groupedData.value.filter(g => g.clientType === 'individual'))
+
 
 // Fetch data when modal opens
 watch(() => props.show, v => v && fetchAllData())
 
+
 // Handle PDF download for individual client quote
 const downloadQuote = async group => {
     if (process.server || group.clientType !== 'individual') return
+
 
     // Prompt for document number, delivery info, and optional info
     const quoteNumber = await promptDocumentNumber('quote')
@@ -66,11 +75,13 @@ const downloadQuote = async group => {
     const optionalInfo = await promptOptionalInfo(group.clientType)
     if (!optionalInfo) return
 
+
     // Calculate totals and get validity/payment info
     const { totalHT, totalTVA, totalTTC } = calculateTotals(group.missions)
     const issueDate = new Date().toISOString()
     const validityDate = getQuoteValidityDate(issueDate)
     const paymentOptions = getIndividualPaymentOptions(group.missions[0]?.service_name || '', totalTTC)
+
 
     let bankInfo = { iban: null, bic: null }
     try {
@@ -85,7 +96,9 @@ const downloadQuote = async group => {
         console.error('Could not fetch bank info:', err)
     }
 
+
     const fileName = `DE-${new Date().getFullYear()}-${quoteNumber.padStart(4, '0')}`
+
 
     await renderAndExport({
         component: DocumentContainer,
@@ -112,31 +125,10 @@ const downloadQuote = async group => {
         },
         fileName,
         containerClass: '.document-container',
-        pdfOptions: {
-            margin: [10, 10, 10, 10],
-            delay: 1500,
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                scrollY: 0,
-                scrollX: 0,
-                letterRendering: true,
-                logging: false
-            },
-            jsPDF: {
-                unit: 'mm',
-                format: 'a4',
-                orientation: 'portrait',
-                compress: true
-            },
-            pagebreak: {
-                mode: ['avoid-all', 'css', 'legacy'],
-                before: '.page-break'
-            }
-        }
     })
 }
 </script>
+
 
 <style scoped>
 .quotes-modal {
@@ -151,10 +143,12 @@ const downloadQuote = async group => {
     color: var(--text-color-dark)
 }
 
+
 .search-bar {
     display: flex;
     justify-content: flex-end
 }
+
 
 .modal-footer {
     display: flex;
