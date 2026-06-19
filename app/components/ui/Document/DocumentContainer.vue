@@ -118,7 +118,6 @@ const quoteValidityDate = computed(() => {
 
 // Static texts
 const operationNature = $lang.getTranslation('serviceProvision')
-const legalText = $lang.getTranslation('latePaymentNotice')
 const quoteLegalText = computed(() => $lang.getTranslation('quoteValidityNotice', { days: props.quoteValidityDays }))
 const paymentMethod = $lang.getTranslation('bankTransfer')
 
