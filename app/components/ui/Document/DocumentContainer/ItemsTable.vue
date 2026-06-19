@@ -1,12 +1,12 @@
 <template>
-    <!-- Items table: adapts headers and columns based on client type and TVA -->
+    <!-- Items table: adapts columns based on pricing mode and TVA -->
     <table class="items-table text-small">
         <thead>
             <tr>
-                <th v-if="isIndividualType(clientType)">{{ $lang.getTranslation('description') }}</th>
-                <th v-else>{{ $lang.getTranslation('date') }}</th>
-                <th v-if="!isIndividualType(clientType)">{{ $lang.getTranslation('hours') }}</th>
-                <th v-if="!isIndividualType(clientType)">{{ $lang.getTranslation('mission') }}</th>
+                <th>{{ isIndividualType(clientType) ? $lang.getTranslation('description') : $lang.getTranslation('date')
+                }}</th>
+                <th v-if="hasTjmItems">{{ $lang.getTranslation('hours') }}</th>
+                <th v-if="hasTjmItems">{{ $lang.getTranslation('mission') }}</th>
                 <th>{{ $lang.getTranslation('qty') }}</th>
                 <th>{{ $lang.getTranslation('unitPriceHt') }}</th>
                 <th v-if="hasTVA">{{ $lang.getTranslation('tva') }}</th>
@@ -17,10 +17,9 @@
         <tbody>
             <!-- Render each item row -->
             <tr v-for="(item, i) in items" :key="i">
-                <td v-if="isIndividualType(clientType)">{{ item.name }}</td>
-                <td v-else>{{ formatDate(item.date) }}</td>
-                <td v-if="!isIndividualType(clientType)">{{ item.hours || '' }}</td>
-                <td v-if="!isIndividualType(clientType)">{{ item.mission || '' }}</td>
+                <td>{{ isIndividualType(clientType) ? item.name : formatDate(item.date) }}</td>
+                <td v-if="hasTjmItems">{{ item.hours != null ? item.hours : '-' }}</td>
+                <td v-if="hasTjmItems">{{ item.mission || '-' }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>{{ formatPrice(item.unitPrice) }}</td>
                 <td v-if="hasTVA">{{ item.tvaApplicable ? tvaRateLabel : $lang.getTranslation('no') }}</td>
@@ -37,6 +36,8 @@
 
 <script setup>
 import { useNuxtApp } from '#app'
+import { computed } from 'vue'
+import { isIndividualType } from '~/utils/clientTypes'
 
 const props = defineProps({
     items: Array,
@@ -48,21 +49,24 @@ const props = defineProps({
 
 const { $lang } = useNuxtApp()
 
-// Helpers for client type, formatting prices and dates
-const isIndividualType = t => t === 'individual'
+// True if at least one item was billed with TJM mode (tjm > 0 → hours is set)
+const hasTjmItems = computed(() => props.items.some(i => i.hours != null && i.hours > 0))
+
+// Format price by locale
 const formatPrice = v => $lang.locale.value === 'fr'
     ? `${(v ?? 0).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €`
     : `$${(v ?? 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 
+// Format date by locale
 const formatDate = d => d
     ? new Date(d).toLocaleDateString($lang.locale.value === 'fr' ? 'fr-FR' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' })
     : ''
 
-// Determine colspan dynamically based on client type and TVA
+// Determine colspan dynamically based on TJM presence and TVA
 const getColspan = () => {
-    let base = 5
-    if (['company', 'freelance'].includes(props.clientType)) base += 3
-    if (props.hasTVA) base += 1
+    let base = 4 // date/description + qty + unitPrice + amountHt
+    if (hasTjmItems.value) base += 2 // hours + mission
+    if (props.hasTVA) base += 2 // tva + amountTtc
     return base
 }
 </script>

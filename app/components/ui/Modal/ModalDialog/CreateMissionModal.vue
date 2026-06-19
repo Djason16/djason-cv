@@ -36,34 +36,42 @@
                 </div>
             </div>
 
-            <!-- Date and optional hourly rate -->
-            <div class="row-group">
-                <div class="form-group">
-                    <label for="date">{{ $lang.getTranslation('missionDate') }}</label>
-                    <input id="date" name="date" v-model="refsMap.date" type="date" required
-                        :title="$lang.getTranslation('missionDate')"
-                        :aria-label="$lang.getTranslation('missionDate')" />
-                </div>
-                <div v-if="!isIndividual" class="form-group">
-                    <label for="tjm">{{ $lang.getTranslation('hourlyRate') || 'Hourly Rate (€/h)' }}</label>
-                    <input id="tjm" name="tjm" v-model="refsMap.tjm" type="number" min="0" step="0.01"
-                        :title="$lang.getTranslation('hourlyRate') || 'Taux Horaire'"
-                        :aria-label="$lang.getTranslation('hourlyRate') || 'Taux Horaire'"
-                        :placeholder="$lang.getTranslation('enterHourlyRate') || 'Ex: 30'" />
-                </div>
+            <!-- Date -->
+            <div class="form-group">
+                <label for="date">{{ $lang.getTranslation('missionDate') }}</label>
+                <input id="date" name="date" v-model="refsMap.date" type="date" required
+                    :title="$lang.getTranslation('missionDate')" :aria-label="$lang.getTranslation('missionDate')" />
             </div>
 
-            <!-- Duration selection for non-individuals -->
+            <!-- Pricing mode toggle — only for professional clients -->
             <div v-if="!isIndividual" class="form-group">
-                <label for="duration">{{ $lang.getTranslation('missionDuration') }}</label>
-                <select id="duration" name="duration" v-model="displayDuration" required
-                    :title="$lang.getTranslation('missionDuration')"
-                    :aria-label="$lang.getTranslation('missionDuration')">
-                    <option v-for="opt in durationOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+                <label for="pricingMode">{{ $lang.getTranslation('pricingMode') || 'Mode de tarification' }}</label>
+                <select id="pricingMode" v-model="pricingMode" :title="$lang.getTranslation('pricingMode')">
+                    <option value="tjm">{{ $lang.getTranslation('pricingModeTjm') || 'Taux horaire × durée' }}</option>
+                    <option value="manual">{{ $lang.getTranslation('pricingModeManual') || 'Prix direct' }}</option>
                 </select>
             </div>
 
-            <!-- Quantity and pricing -->
+            <!-- TJM mode: hourly rate + duration -->
+            <div v-if="!isIndividual && pricingMode === 'tjm'" class="row-group">
+                <div class="form-group">
+                    <label for="tjm">{{ $lang.getTranslation('hourlyRate') || 'Taux horaire (€/h)' }}</label>
+                    <input id="tjm" name="tjm" v-model="refsMap.tjm" type="number" min="0" step="0.01"
+                        :title="$lang.getTranslation('hourlyRate')" :aria-label="$lang.getTranslation('hourlyRate')"
+                        :placeholder="$lang.getTranslation('enterHourlyRate') || 'Ex: 30'" />
+                </div>
+                <div class="form-group">
+                    <label for="duration">{{ $lang.getTranslation('missionDuration') }}</label>
+                    <select id="duration" name="duration" v-model="displayDuration"
+                        :title="$lang.getTranslation('missionDuration')"
+                        :aria-label="$lang.getTranslation('missionDuration')">
+                        <option v-for="opt in durationOptions" :key="opt.value" :value="opt.value">{{ opt.label }}
+                        </option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Quantity and unit price -->
             <div class="row-group">
                 <div class="form-group">
                     <label for="quantity">{{ $lang.getTranslation('quantity') }}</label>
@@ -75,7 +83,8 @@
                     <label for="unitPrice">{{ refsMap.quantity > 1 ? ($lang.getTranslation('totalAmount') || 'Total') :
                         $lang.getTranslation('unitPrice') }}</label>
                     <input id="unitPrice" name="unitPrice" v-model="refsMap.unitPrice" type="number" min="0" step="0.01"
-                        required
+                        required :readonly="!isIndividual && pricingMode === 'tjm'"
+                        :class="{ 'input-readonly': !isIndividual && pricingMode === 'tjm' }"
                         :title="refsMap.quantity > 1 ? ($lang.getTranslation('totalAmount') || 'Total') : $lang.getTranslation('unitPrice')"
                         :aria-label="refsMap.quantity > 1 ? ($lang.getTranslation('totalAmount') || 'Total') : $lang.getTranslation('unitPrice')" />
                 </div>
@@ -110,6 +119,7 @@ import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import MessageBox from '~/components/ui/Message/MessageBox.vue'
 import { useMessage } from '~/composables/useMessage'
 import { useMissions } from '~/composables/useMissions'
+import { isProfessionalType } from '~/utils/clientTypes'
 import { getDurationOptions } from '~/utils/durationOptions'
 import ModalDialog from '../ModalDialog.vue'
 
@@ -125,22 +135,60 @@ const formRef = ref(null)
 const hasScroll = ref(false)
 const displayDuration = ref('7.00')
 
+// 'tjm' = rate × duration → calculated price | 'manual' = price entered directly
+const pricingMode = ref('tjm')
+
 // Reactive form state
-const refsMap = reactive({ clientId: '', serviceId: '', title: '', date: '', duration: 7, quantity: 1, unitPrice: 0, tvaApplicable: false, tjm: 0 })
+const refsMap = reactive({ clientId: '', serviceId: '', title: '', date: '', duration: 7, quantity: 1, unitPrice: 0, tvaApplicable: false, tjm: 30 })
 
-// Duration options and client type
+// Duration options
 const durationOptions = computed(() => getDurationOptions())
+
+// Resolve selected client type
+const selectedClientType = computed(() => clients.value.find(c => c.id === refsMap.clientId)?.type)
+
+// True only for individual (non-B2B)
 const isIndividual = computed(() => isIndividualClient(refsMap.clientId))
-const availableServices = computed(() => isIndividual.value ? services.value.slice(0, 3) : services.value.filter(s => s.name.includes('Corporate')))
 
-// Recalculate unit price
-const calculateUnitPrice = () => { if (!isIndividual.value && refsMap.tjm && refsMap.duration) refsMap.unitPrice = Math.round(refsMap.tjm * refsMap.duration * refsMap.quantity * 100) / 100 }
+// Services filtered by client type
+const availableServices = computed(() =>
+    isIndividual.value
+        ? services.value.filter(s => !s.name.includes('Corporate'))
+        : services.value.filter(s => s.name.includes('Corporate'))
+)
 
-// Watchers for reactive updates
+// Recalculate unit price from TJM × duration × quantity (only in TJM mode)
+const calculateUnitPrice = () => {
+    if (pricingMode.value === 'tjm' && isProfessionalType(selectedClientType.value) && refsMap.tjm && refsMap.duration)
+        refsMap.unitPrice = Math.round(refsMap.tjm * refsMap.duration * refsMap.quantity * 100) / 100
+}
+
+// Watchers for reactive price recalculation
 watch(displayDuration, val => { refsMap.duration = parseFloat(val) || 7; calculateUnitPrice() })
 watch(() => refsMap.quantity, calculateUnitPrice)
 watch(() => refsMap.tjm, calculateUnitPrice)
 watch(() => refsMap.duration, calculateUnitPrice)
+
+// On mode switch: clear when going manual, reverse-calculate tjm when going TJM
+watch(pricingMode, mode => {
+    if (mode === 'manual') {
+        refsMap.tjm = 0; refsMap.duration = 7; displayDuration.value = '7.00'; refsMap.unitPrice = 0
+    } else {
+        const dur = refsMap.duration || 7
+        const qty = refsMap.quantity || 1
+        const existingPrice = refsMap.unitPrice || 0
+        // Infer tjm from current price — fallback to 30 if no price set yet
+        refsMap.tjm = existingPrice > 0
+            ? Math.round((existingPrice / (dur * qty)) * 100) / 100
+            : 30
+        calculateUnitPrice()
+    }
+})
+
+// On switch to individual: reset pricing to TJM mode with clean state
+watch(isIndividual, nowIndividual => {
+    if (nowIndividual) { pricingMode.value = 'tjm'; refsMap.tjm = 0; refsMap.duration = 7; displayDuration.value = '7.00' }
+})
 
 // Initial form snapshot
 let initialForm = {}
@@ -149,25 +197,38 @@ watch(() => props.show, async val => {
         formLoading.value = true
         await fetchData()
         if (!refsMap.clientId && clients.value.length) refsMap.clientId = clients.value[0].id
-        if (!refsMap.serviceId && services.value.length) refsMap.serviceId = isIndividual.value ? services.value[0]?.id : services.value.find(s => s.name.includes('Corporate'))?.id || services.value[0]?.id || ''
+        if (!refsMap.serviceId && services.value.length)
+            refsMap.serviceId = isIndividual.value
+                ? services.value.find(s => !s.name.includes('Corporate'))?.id || services.value[0]?.id || ''
+                : services.value.find(s => s.name.includes('Corporate'))?.id || services.value[0]?.id || ''
         initialForm = { ...refsMap }
         displayDuration.value = '7.00'
+        pricingMode.value = 'tjm'
         setTimeout(checkScroll, 100)
         formLoading.value = false
     }
 })
 
 // Close/reset form
-const close = () => { Object.assign(refsMap, initialForm); displayDuration.value = '7'; clearMessage(); formLoading.value = false; emit('close') }
+const close = () => { Object.assign(refsMap, initialForm); displayDuration.value = '7'; pricingMode.value = 'tjm'; clearMessage(); formLoading.value = false; emit('close') }
 
-// Submit handler
+// Submit handler — send tjm = 0 for manual mode, tjm = value for TJM mode
 const handleSubmit = async () => {
     clearMessage(); formLoading.value = true
     try {
-        const { tjm, ...dataToSend } = refsMap
-        await $fetch('/api/missions/create-mission', { method: 'POST', body: dataToSend })
+        const body = {
+            ...refsMap,
+            // manual mode → tjm = 0 explicitly, individual → tjm = null (not applicable)
+            tjm: isIndividual.value ? null : (pricingMode.value === 'manual' ? 0 : refsMap.tjm)
+        }
+        await $fetch('/api/missions/create-mission', { method: 'POST', body })
         showMessage('success', $lang.getTranslation('missionAdded'), 1500)
-        setTimeout(() => { Object.assign(refsMap, { clientId: '', serviceId: '', title: '', date: '', duration: 7, quantity: 1, unitPrice: 0, tvaApplicable: false, tjm: 0 }); displayDuration.value = '7'; close(); emit('saved') }, 1500)
+        setTimeout(() => {
+            Object.assign(refsMap, { clientId: '', serviceId: '', title: '', date: '', duration: 7, quantity: 1, unitPrice: 0, tvaApplicable: false, tjm: 30 })
+            displayDuration.value = '7'
+            pricingMode.value = 'tjm'
+            close(); emit('saved')
+        }, 1500)
     } catch (err) { showMessage('error', err.message || $lang.getTranslation('errorSavingMission'), 0) }
     finally { formLoading.value = false }
 }
@@ -179,7 +240,12 @@ onMounted(() => { checkScroll(); window.addEventListener('resize', checkScroll);
 onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resize', checkScroll) })
 
 // Auto-set service on client change
-watch(() => refsMap.clientId, () => { if (!refsMap.serviceId && services.value.length) refsMap.serviceId = isIndividual.value ? services.value[0]?.id : services.value.find(s => s.name.includes('Corporate'))?.id || services.value[0]?.id || '' })
+watch(() => refsMap.clientId, () => {
+    if (services.value.length)
+        refsMap.serviceId = isIndividual.value
+            ? services.value.find(s => !s.name.includes('Corporate'))?.id || services.value[0]?.id || ''
+            : services.value.find(s => s.name.includes('Corporate'))?.id || services.value[0]?.id || ''
+})
 </script>
 
 <style scoped>
@@ -226,6 +292,11 @@ watch(() => refsMap.clientId, () => { if (!refsMap.serviceId && services.value.l
 .modal-footer {
     gap: 1rem;
     margin-top: auto
+}
+
+.input-readonly {
+    opacity: 0.6;
+    cursor: not-allowed
 }
 
 ::v-deep(.message-box p) {

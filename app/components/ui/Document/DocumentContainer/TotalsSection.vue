@@ -1,9 +1,9 @@
 <template>
-    <!-- Totals table for individuals, companies, quotes, and payments -->
+    <!-- Totals table: month concerned for companies, deposit/installments for all others -->
     <div class="totals-section">
         <table class="totals-table text-small">
-            <!-- Non-individual clients -->
-            <tbody v-if="!isIndividualType(clientType)">
+            <tbody>
+                <!-- Common rows for all clients -->
                 <tr>
                     <td class="text-bold">{{ $lang.getTranslation('totalHt') }}</td>
                     <td class="text-bold">{{ formatPrice(totalHT) }}</td>
@@ -14,45 +14,31 @@
                 </tr>
                 <tr v-if="hasTVA">
                     <td class="text-bold">{{ $lang.getTranslation('totalTtc') }}</td>
-                    <td class="text-bold">{{ formatPrice(totalTTC) }}</td>
+                    <td class="text-bold">{{ formatPrice(isCompanyType(clientType) ? totalTTC : finalTotal) }}</td>
                 </tr>
-                <tr v-if="!isQuoteType">
+
+                <!-- Company only: month concerned (B2B monthly contract) -->
+                <tr v-if="!isQuoteType && isCompanyType(clientType)">
                     <td class="text-bold">{{ $lang.getTranslation('monthConcerned') }}</td>
                     <td class="text-bold">{{ formatMonth(monthConcerned) }}</td>
                 </tr>
-            </tbody>
 
-            <!-- Individual clients -->
-            <tbody v-else>
-                <tr>
-                    <td class="text-bold">{{ $lang.getTranslation('totalHt') }}</td>
-                    <td class="text-bold">{{ formatPrice(totalHT) }}</td>
-                </tr>
-                <tr v-if="hasTVA">
-                    <td class="text-bold">{{ $lang.getTranslation('totalTva') }}</td>
-                    <td class="text-bold">{{ formatPrice(totalTVA) }}</td>
-                </tr>
-                <tr v-if="hasTVA">
-                    <td class="text-bold">{{ $lang.getTranslation('totalTtc') }}</td>
-                    <td class="text-bold">{{ formatPrice(finalTotal) }}</td>
-                </tr>
-                <tr v-if="!isQuoteType && (deposit || (nbMensualites && amountPaid))">
+                <!-- All non-company clients: deposit, remaining, installments -->
+                <tr v-if="!isQuoteType && !isCompanyType(clientType) && (deposit || (nbMensualites && amountPaid))">
                     <td class="text-bold">{{ $lang.getTranslation('paid') }}</td>
                     <td class="text-bold">{{ formatPrice(amountPaid) }}</td>
                 </tr>
-                <tr v-if="!isQuoteType && shouldShowRemaining">
+                <tr v-if="!isQuoteType && !isCompanyType(clientType) && shouldShowRemaining">
                     <td class="text-bold">{{ $lang.getTranslation('remaining') }}</td>
                     <td class="text-bold">{{ formatPrice(remainingToPay) }}</td>
                 </tr>
-                <tr v-if="!isQuoteType && nbMensualites && remainingToPay">
+                <tr v-if="!isQuoteType && !isCompanyType(clientType) && nbMensualites && remainingToPay">
                     <td class="text-bold">{{ $lang.getTranslation('installments') }} ({{ nbMensualites }} {{
                         $lang.getTranslation('months') }})</td>
                     <td class="text-bold">{{ formatPrice(monthlyPayment) }}</td>
                 </tr>
-            </tbody>
 
-            <!-- Currency row -->
-            <tbody>
+                <!-- Currency row -->
                 <tr>
                     <td class="text-bold">{{ $lang.getTranslation('currency') }}</td>
                     <td class="text-bold">{{ currency }}</td>
@@ -65,6 +51,7 @@
 <script setup>
 import { useNuxtApp } from '#app'
 import { computed } from 'vue'
+import { isCompanyType } from '~/utils/clientTypes'
 
 const props = defineProps({
     clientType: String, totalHT: Number, totalTVA: Number, totalTTC: Number, finalTotal: Number,
@@ -73,9 +60,6 @@ const props = defineProps({
 })
 
 const { $lang } = useNuxtApp()
-
-// Determine if client is individual
-const isIndividualType = t => t === 'individual'
 
 // Flag if VAT is present
 const hasTVA = computed(() => props.totalTVA > 0)

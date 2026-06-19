@@ -21,9 +21,9 @@
                 <label for="type">{{ $lang.getTranslation('clientType') }}</label>
                 <select id="type" v-model="refsMap.type" required :title="$lang.getTranslation('clientType')"
                     :aria-label="$lang.getTranslation('clientType')">
-                    <option value="individual">{{ $lang.getTranslation('individual') }}</option>
-                    <option value="company">{{ $lang.getTranslation('company') }}</option>
-                    <option value="freelance">{{ $lang.getTranslation('freelance') }}</option>
+                    <option v-for="opt in clientTypeOptions" :key="opt.value" :value="opt.value">
+                        {{ $lang.getTranslation(opt.labelKey) }}
+                    </option>
                 </select>
             </div>
 
@@ -42,12 +42,13 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import MessageBox from '~/components/ui/Message/MessageBox.vue'
-import ModalDialog from '../ModalDialog.vue'
 import { useClients } from '~/composables/useClients'
 import { useMessage } from '~/composables/useMessage'
+import { getClientTypeOptions } from '~/utils/clientTypes'
+import ModalDialog from '../ModalDialog.vue'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close', 'saved'])
@@ -58,6 +59,9 @@ const { translatedMessage, showMessage, clearMessage } = useMessage()
 const formRef = ref(null)
 const formLoading = ref(false)
 const hasScroll = ref(false)
+
+// All available client type options for the select
+const clientTypeOptions = getClientTypeOptions()
 
 // Reactive form data
 const refsMap = reactive({ firstname: '', lastname: '', company_name: '', email: '', phone: '', address: '', postal_code: '', city: '', siret: '', type: 'individual' })

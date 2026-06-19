@@ -7,14 +7,11 @@
                     class="text-small" autocomplete="off" />
             </div>
 
-
-            <!-- Table of individual client quotes -->
-            <EditableTable :items="individualMissions" :columns="columns"
-                :actions-label="$lang.getTranslation('actions')" :delete-label="$lang.getTranslation('delete')"
-                :download-label="$lang.getTranslation('downloadQuote')"
+            <!-- Table of non-company client quotes (individual, freelance, association) -->
+            <EditableTable :items="quotableMissions" :columns="columns" :actions-label="$lang.getTranslation('actions')"
+                :delete-label="$lang.getTranslation('delete')" :download-label="$lang.getTranslation('downloadQuote')"
                 :empty-message="$lang.getTranslation('noMissionsFound')" :show-delete="false" :show-download="true"
                 @download="downloadQuote" />
-
 
             <!-- Footer with close button -->
             <div class="modal-footer">
@@ -24,7 +21,6 @@
         </div>
     </ModalDialog>
 </template>
-
 
 <script setup>
 import { useNuxtApp } from '#app'
@@ -37,14 +33,13 @@ import { useDocumentsData } from '~/composables/useDocumentsData'
 import { useFinancialCalculations } from '~/composables/useFinancialCalculations'
 import { usePDFExport } from '~/composables/usePDFExport'
 import { useQuoteCalculator } from '~/composables/useQuoteCalculator'
+import { CLIENT_TYPE_COMPANY } from '~/utils/clientTypes'
 import ModalDialog from '../ModalDialog.vue'
-
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 const { $lang } = useNuxtApp()
 const close = () => emit('close')
-
 
 // Composables
 const { renderAndExport } = usePDFExport()
@@ -53,19 +48,15 @@ const { calculateTotals } = useFinancialCalculations()
 const { promptDocumentNumber, promptDeliveryAddress, promptOptionalInfo } = useDocumentInfo()
 const { getQuoteValidityDate, getIndividualPaymentOptions } = useQuoteCalculator()
 
-
-// Filter for individual clients only
-const individualMissions = computed(() => groupedData.value.filter(g => g.clientType === 'individual'))
-
+// Filter for all non-company clients (individual, freelance, association)
+const quotableMissions = computed(() => groupedData.value.filter(g => g.clientType !== CLIENT_TYPE_COMPANY))
 
 // Fetch data when modal opens
 watch(() => props.show, v => v && fetchAllData())
 
-
-// Handle PDF download for individual client quote
+// Handle PDF download for non-company client quote
 const downloadQuote = async group => {
-    if (process.server || group.clientType !== 'individual') return
-
+    if (process.server || group.clientType === CLIENT_TYPE_COMPANY) return
 
     // Prompt for document number, delivery info, and optional info
     const quoteNumber = await promptDocumentNumber('quote')
@@ -75,30 +66,21 @@ const downloadQuote = async group => {
     const optionalInfo = await promptOptionalInfo(group.clientType)
     if (!optionalInfo) return
 
-
     // Calculate totals and get validity/payment info
     const { totalHT, totalTVA, totalTTC } = calculateTotals(group.missions)
     const issueDate = new Date().toISOString()
     const validityDate = getQuoteValidityDate(issueDate)
     const paymentOptions = getIndividualPaymentOptions(group.missions[0]?.service_name || '', totalTTC)
 
-
     let bankInfo = { iban: null, bic: null }
     try {
         const bankData = await $fetch('/api/bank')
-        if (bankData) {
-            bankInfo = {
-                iban: bankData.iban,
-                bic: bankData.bic
-            }
-        }
+        if (bankData) bankInfo = { iban: bankData.iban, bic: bankData.bic }
     } catch (err) {
         console.error('Could not fetch bank info:', err)
     }
 
-
     const fileName = `DE-${new Date().getFullYear()}-${quoteNumber.padStart(4, '0')}`
-
 
     await renderAndExport({
         component: DocumentContainer,
@@ -113,8 +95,12 @@ const downloadQuote = async group => {
             sameAsClientAddress: deliveryInfo.sameAsClient,
             items: group.missions.map(m => ({
                 name: m.title?.trim() || translateServiceName(m.service_name) || '-',
-                date: m.date, hours: m.duration, mission: '', quantity: m.quantity || 1,
-                unitPrice: m.unit_price, tvaApplicable: !!m.vat_applicable
+                date: m.date,
+                hours: m.tjm > 0 ? m.duration : null,
+                mission: m.tjm > 0 ? (m.title?.trim() || '') : '',
+                quantity: m.quantity || 1,
+                unitPrice: m.unit_price,
+                tvaApplicable: !!m.vat_applicable
             })),
             issueDate, documentType: 'quote',
             description: translateServiceName(group.missions[0]?.service_name || '') || optionalInfo.objectDescription,
@@ -129,7 +115,6 @@ const downloadQuote = async group => {
 }
 </script>
 
-
 <style scoped>
 .quotes-modal {
     display: flex;
@@ -143,12 +128,10 @@ const downloadQuote = async group => {
     color: var(--text-color-dark)
 }
 
-
 .search-bar {
     display: flex;
     justify-content: flex-end
 }
-
 
 .modal-footer {
     display: flex;

@@ -5,10 +5,11 @@ export default defineEventHandler(async event => {
     try {
         // Query rates, prioritizing active ones first
         const rates = await db.sql`
-      SELECT id, rate, valid_from, valid_until, created_at
-      FROM dc_interest_rates
-      ORDER BY 
+        SELECT id, rate, type, valid_from, valid_until, created_at
+        FROM dc_interest_rates
+        ORDER BY
         CASE WHEN valid_from <= ${now} AND valid_until >= ${now} THEN 0 ELSE 1 END,
+        type ASC,
         valid_from DESC
     `
         return { success: true, rates }

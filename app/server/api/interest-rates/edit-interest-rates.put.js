@@ -10,12 +10,13 @@ export default defineEventHandler(async event => {
     try {
         // Update interest rate fields if provided
         await db.sql`
-      UPDATE dc_interest_rates
-      SET
+        UPDATE dc_interest_rates
+        SET
         rate = ${body.rate || null},
+        type = ${body.type || null},
         valid_from = ${body.valid_from || null},
         valid_until = ${body.valid_until || null}
-      WHERE id = ${body.id}
+        WHERE id = ${body.id}
     `
         return { success: true, id: body.id }
     } catch (err) {

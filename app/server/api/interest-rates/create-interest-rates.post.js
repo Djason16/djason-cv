@@ -8,15 +8,17 @@ export default defineEventHandler(async event => {
     // Basic input validation
     if (!body.rate || !body.valid_from || !body.valid_until)
         return { success: false, error: 'Rate, valid_from, and valid_until are required' }
+    if (!body.type || !['professional', 'individual'].includes(body.type))
+        return { success: false, error: 'Type must be professional or individual' }
 
     const id = crypto.randomUUID()
 
     try {
         // Insert new interest rate into database
         await db.sql`
-      INSERT INTO dc_interest_rates (id, rate, valid_from, valid_until)
-      VALUES (${id}, ${body.rate}, ${body.valid_from}, ${body.valid_until})
-    `
+        INSERT INTO dc_interest_rates (id, rate, type, valid_from, valid_until)
+        VALUES (${id}, ${body.rate}, ${body.type}, ${body.valid_from}, ${body.valid_until})
+        `
         return { success: true, id }
     } catch (err) {
         console.error('Error creating interest rate:', err)

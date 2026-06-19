@@ -1,5 +1,6 @@
 import { useNuxtApp } from '#app'
 import { computed, ref } from 'vue'
+import { isIndividualLike, isProfessionalType } from '~/utils/clientTypes'
 
 export function useClients() {
     const { $lang } = useNuxtApp()
@@ -36,11 +37,6 @@ export function useClients() {
         )
     })
 
-    // Client type checks
-    const isIndividualType = t => t === 'individual'
-    const isCompanyType = t => t === 'company'
-    const isFreelanceType = t => t === 'freelance'
-
     // Update name fields dynamically
     const updateNameField = (item, value) => {
         if (!item.firstname && !item.lastname) item.company_name = value
@@ -52,11 +48,10 @@ export function useClients() {
         const oldType = item.type
         item.type = newType
 
-        if (oldType === 'company' && ['individual', 'freelance'].includes(newType)) {
+        if (isProfessionalType(oldType) && isIndividualLike(newType)) {
             if (item.company_name) { const [first, ...rest] = item.company_name.split(' '); item.firstname = first; item.lastname = rest.join(' ') }
             item.company_name = null
-        }
-        else if (['individual', 'freelance'].includes(oldType) && newType === 'company') {
+        } else if (isIndividualLike(oldType) && isProfessionalType(newType)) {
             item.company_name = [item.firstname, item.lastname].filter(Boolean).join(' ') || null
             item.firstname = item.lastname = null
         }
@@ -75,10 +70,9 @@ export function useClients() {
         { id: 'siret', labelKey: 'siret', placeholderKey: 'enterSiret', type: 'text', required: false, autocomplete: 'off' }
     ]
 
-    // Determine visible fields based on client type
+    // Professional types use company_name; individual uses firstname/lastname
     const getVisibleFields = type => {
-        if (type === 'company') return clientFields.filter(f => !['firstname', 'lastname'].includes(f.id))
-        if (type === 'freelance') return clientFields.filter(f => f.id !== 'company_name')
+        if (isProfessionalType(type)) return clientFields.filter(f => !['firstname', 'lastname'].includes(f.id))
         return clientFields.filter(f => f.id !== 'company_name')
     }
 
@@ -107,9 +101,6 @@ export function useClients() {
         filteredClients,
         displayClientName,
         displayValue,
-        isIndividualType,
-        isCompanyType,
-        isFreelanceType,
         updateNameField,
         updateClientType,
         clientFields,

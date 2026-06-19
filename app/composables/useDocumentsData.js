@@ -1,5 +1,6 @@
 import { useNuxtApp } from '#app'
 import { computed, ref, watch } from 'vue'
+import { CLIENT_TYPE_COMPANY, isCompanyType, isProfessionalType } from '~/utils/clientTypes'
 import { getServiceTranslationKey, serviceTranslations } from '~/utils/serviceTranslations'
 
 export const useDocumentData = (props, options = {}) => {
@@ -35,7 +36,7 @@ export const useDocumentData = (props, options = {}) => {
                 return {
                     ...m,
                     service_name: s?.name || m.service_id || '-',
-                    client_type: c.type || 'company',
+                    client_type: c.type || CLIENT_TYPE_COMPANY,
                     client_name: c.company_name || `${c.firstname || ''} ${c.lastname || ''}`.trim() || 'Unknown',
                     client_address: c.address || '',
                     client_postal_code: c.postal_code || '',
@@ -58,8 +59,7 @@ export const useDocumentData = (props, options = {}) => {
     // Key to group missions by client/date or contract
     const getGroupingKey = m => {
         if (groupingStrategy === 'contracts') return `${m.client_id}_${m.month_concerned || m.date?.slice(0, 7) || 'unknown'}`
-        const type = m.client_type || 'company'
-        return (type === 'company' || type === 'freelance')
+        return isCompanyType(m.client_type)
             ? `${m.client_id}_${m.month_concerned || m.date?.slice(0, 7) || 'unknown'}`
             : `${m.client_id}_${m.date}_${m.service_id}`
     }
@@ -76,7 +76,7 @@ export const useDocumentData = (props, options = {}) => {
                 if (groups[key]) groups[key].missions.push(m)
                 else groups[key] = {
                     client: m.client_name || 'Unknown',
-                    clientType: m.client_type || 'company',
+                    clientType: m.client_type || CLIENT_TYPE_COMPANY,
                     month: m.month_concerned || m.date?.slice(0, 7) || 'unknown',
                     missions: [m],
                     client_address: m.client_address,
@@ -91,9 +91,11 @@ export const useDocumentData = (props, options = {}) => {
         })
 
         let result = Object.values(groups)
+
+        // Contracts strategy: enrich all non-company groups (individual, freelance, association)
         if (groupingStrategy === 'contracts') {
             result = result
-                .filter(g => g.clientType === 'individual')
+                .filter(g => g.clientType !== CLIENT_TYPE_COMPANY)
                 .map(g => {
                     const totalAmount = g.missions.reduce((sum, m) => {
                         const line = (Number(m.unit_price) || 0) * (Number(m.quantity) || 1)
@@ -102,6 +104,7 @@ export const useDocumentData = (props, options = {}) => {
                     return { ...g, totalAmount, hasTVA: g.missions.some(m => m.vat_applicable === 1) }
                 })
         }
+
         return result
     })
 
@@ -113,14 +116,13 @@ export const useDocumentData = (props, options = {}) => {
         const day = String(d.getDate()).padStart(2, '0')
         const month = String(d.getMonth() + 1).padStart(2, '0')
         const year = d.getFullYear()
-        if (format === 'month-only' && (g.clientType === 'company' || g.clientType === 'freelance')) return `XX/${month}/${year}`
+        if (format === 'month-only' && isCompanyType(g.clientType)) return `XX/${month}/${year}`
         return `${day}/${month}/${year}`
     }
 
     // Summarize mission titles for display
     const formatMissionsSummary = g => {
-        const isCompany = g.clientType === 'company' || g.clientType === 'freelance'
-        if (isCompany) return g.missions.map(m => m.title?.trim() || translateServiceName(m.service_name) || m.service_name || '-').join(' + ')
+        if (isProfessionalType(g.clientType)) return g.missions.map(m => m.title?.trim() || translateServiceName(m.service_name) || m.service_name || '-').join(' + ')
         if (g.missions.length > 1) return g.missions.map(m => m.title?.trim() || '-').join(' + ')
         return g.missions[0]?.title?.trim() || translateServiceName(g.missions[0]?.service_name) || g.missions[0]?.service_name || '-'
     }

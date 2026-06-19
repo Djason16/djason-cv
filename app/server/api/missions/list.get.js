@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
     try {
         // Fetch missions with client info
         const missions = await db.sql`
-            SELECT m.id, m.client_id, c.firstname, c.lastname, c.company_name, m.title, m.service_id, m.date, m.duration, m.quantity, m.unit_price, m.vat_applicable
+            SELECT m.id, m.client_id, c.firstname, c.lastname, c.company_name, m.title, m.service_id, m.date, m.month_concerned, m.duration, m.quantity, m.unit_price, m.tjm, m.vat_applicable
             FROM dc_missions m
             LEFT JOIN dc_clients c ON m.client_id = c.id
             ORDER BY m.date DESC 

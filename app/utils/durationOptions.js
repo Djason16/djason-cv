@@ -1,10 +1,5 @@
-// Cache duration options to avoid recalculating
-let cachedOptions = null
-
 // Generate selectable duration options (5min–12h, in 5min steps)
 export const getDurationOptions = () => {
-    if (cachedOptions) return cachedOptions
-
     const opts = []
 
     // Add durations under 1 hour
@@ -23,5 +18,5 @@ export const getDurationOptions = () => {
         }
     }
 
-    return (cachedOptions = opts)
+    return opts
 }

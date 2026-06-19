@@ -23,7 +23,7 @@
                 :calculateStripeFees="calculateStripeFees" :websiteUrl="websiteUrl" :providerInfo="providerInfo" />
 
             <!-- Other contract sections -->
-            <LatePayment />
+            <LatePayment :interestRate="interestRate" :clientType="client?.type" />
             <DeliveryAndTransfer :serviceType="serviceType" :getDeliveryText="getDeliveryText" />
             <IntellectualProperty :serviceType="serviceType"
                 :getIntellectualPropertyText="getIntellectualPropertyText" />
@@ -76,6 +76,7 @@ const props = defineProps({
     deposit: { type: Number, default: 0 },
     nbMensualites: { type: Number, default: 0 },
     monthlyPayment: { type: Number, default: 0 },
+    interestRate: { type: Number, default: null },
     hasTVA: { type: Boolean, default: false },
     bankInfo: { type: Object, default: () => ({ iban: null, bic: null }) }
 })

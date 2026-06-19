@@ -36,6 +36,7 @@ import { useDocumentsData } from '~/composables/useDocumentsData'
 import { useFinancialCalculations } from '~/composables/useFinancialCalculations'
 import { usePaymentCalculator } from '~/composables/usePaymentCalculator'
 import { usePDFExport } from '~/composables/usePDFExport'
+import { isCompanyType } from '~/utils/clientTypes'
 import ModalDialog from '../ModalDialog.vue'
 
 
@@ -95,7 +96,7 @@ const downloadInvoice = async group => {
 
 
     // Prepare filename
-    const fileName = `${isIndividual ? 'CL' : 'FA'}-${new Date().getFullYear()}-${invoiceNumber.padStart(4, '0')}`
+    const fileName = `${isCompanyType(group.clientType) ? 'FA' : 'CL'}-${new Date().getFullYear()}-${invoiceNumber.padStart(4, '0')}`
 
 
     // Export PDF with all necessary props
@@ -111,10 +112,13 @@ const downloadInvoice = async group => {
             deliveryAddress: deliveryInfo.deliveryAddress,
             sameAsClientAddress: deliveryInfo.sameAsClient,
             items: group.missions.map(m => ({
-                name: m.title?.trim() || (isIndividual ? translateServiceName(m.service_name) : m.service_name) || '-',
-                date: m.date, hours: m.duration,
-                mission: !isIndividual ? m.title || m.service_name || '-' : '',
-                quantity: m.quantity || 1, unitPrice: m.unit_price, tvaApplicable: !!m.vat_applicable
+                name: m.title?.trim() || translateServiceName(m.service_name) || '-',
+                date: m.date,
+                hours: m.tjm > 0 ? m.duration : null,
+                mission: m.tjm > 0 ? (m.title?.trim() || '') : '',
+                quantity: m.quantity || 1,
+                unitPrice: m.unit_price,
+                tvaApplicable: !!m.vat_applicable
             })),
             issueDate: new Date().toISOString(),
             documentType: 'invoice',

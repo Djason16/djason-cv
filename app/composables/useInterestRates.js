@@ -1,5 +1,6 @@
 import { useNuxtApp } from '#app'
 import { computed, ref } from 'vue'
+import { isProfessionalType } from '~/utils/clientTypes'
 
 export const useInterestRates = () => {
     const { $lang } = useNuxtApp()
@@ -33,7 +34,7 @@ export const useInterestRates = () => {
         if (!Array.isArray(interestRates.value)) return []
         const q = search.value.toLowerCase()
         return interestRates.value.filter(r =>
-            [formatRate(r.rate), r.valid_from, r.valid_until]
+            [formatRate(r.rate), r.valid_from, r.valid_until, r.type]
                 .filter(Boolean)
                 .some(v => v.toString().toLowerCase().includes(q))
         )
@@ -45,12 +46,29 @@ export const useInterestRates = () => {
         return rate.valid_from <= now && rate.valid_until >= now
     }
 
+    // Returns the active interest rate for a given client type
+    const getApplicableRate = clientType => {
+        const now = new Date().toISOString().split('T')[0]
+        const type = isProfessionalType(clientType) ? 'professional' : 'individual'
+        return interestRates.value.find(r =>
+            r.type === type &&
+            r.valid_from <= now &&
+            r.valid_until >= now
+        )?.rate ?? null
+    }
+
     // Field configuration for forms
     const interestRateFields = [
+        {
+            id: 'type', labelKey: 'type', type: 'select', required: true, options: [
+                { value: 'professional', labelKey: 'professional' },
+                { value: 'individual', labelKey: 'individual' }
+            ]
+        },
         { id: 'rate', labelKey: 'rate', placeholderKey: 'enterRate', type: 'number', required: true, step: '0.0001', min: '0', max: '1' },
         { id: 'valid_from', labelKey: 'validFrom', placeholderKey: 'enterValidFrom', type: 'date', required: true },
         { id: 'valid_until', labelKey: 'validUntil', placeholderKey: 'enterValidUntil', type: 'date', required: true }
     ]
 
-    return { $lang, interestRates, loading, search, fetchInterestRates, filteredInterestRates, displayValue, formatRate, formatDate, isActiveRate, interestRateFields }
+    return { $lang, interestRates, loading, search, fetchInterestRates, filteredInterestRates, displayValue, formatRate, formatDate, isActiveRate, getApplicableRate, interestRateFields }
 }

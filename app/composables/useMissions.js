@@ -1,5 +1,6 @@
 import { useNuxtApp } from '#app'
 import { computed, ref } from 'vue'
+import { isIndividualType, isProfessionalType } from '~/utils/clientTypes'
 import { getDurationOptions } from '~/utils/durationOptions'
 import { getServiceTranslationKey, serviceTranslations } from '~/utils/serviceTranslations'
 
@@ -15,7 +16,7 @@ export function useMissions() {
     const durationOptions = computed(() => getDurationOptions())
 
     // Check if client is individual
-    const isIndividualClient = id => clients.value.find(c => c.id === id)?.type === 'individual'
+    const isIndividualClient = id => isIndividualType(clients.value.find(c => c.id === id)?.type)
 
     // Return value or fallback placeholder
     const displayValue = v => v ?? '-'
@@ -26,7 +27,7 @@ export function useMissions() {
         return $lang.getTranslation(key)
     }
 
-    // Fetch missions, clients, and services, calculate TJM for missions
+    // Fetch missions, clients, and services
     const fetchData = async () => {
         loading.value = true
         try {
@@ -36,12 +37,20 @@ export function useMissions() {
                 $fetch('/api/services/list')
             ])
 
-            if (mR.success) missions.value = mR.missions.map(m => ({
-                ...m,
-                tjm: m.duration && m.quantity && m.unit_price
-                    ? Math.round((m.unit_price / (m.duration * m.quantity)) * 100) / 100
-                    : 0
-            }))
+            // tjm = null → old mission, infer from unit_price/duration/quantity (fallback)
+            // tjm = 0    → explicit manual pricing mode
+            // tjm > 0    → explicit TJM mode with hourly rate
+            if (mR.success) missions.value = mR.missions.map(m => {
+                const client = (cR.clients?.rows || []).find(c => c.id === m.client_id)
+                return {
+                    ...m,
+                    tjm: (m.tjm !== null && m.tjm !== undefined)
+                        ? m.tjm
+                        : (isProfessionalType(client?.type) && m.duration && m.quantity && m.unit_price
+                            ? Math.round((m.unit_price / (m.duration * m.quantity)) * 100) / 100
+                            : 0)
+                }
+            })
 
             if (cR.success) clients.value = cR.clients.rows
             if (sR.success) services.value = sR.services.rows

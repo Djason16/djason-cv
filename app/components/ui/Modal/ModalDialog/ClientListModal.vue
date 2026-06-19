@@ -27,6 +27,7 @@ import { computed, watch } from 'vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
 import EditableTable from '~/components/ui/Table/EditableTable.vue'
 import { useClients } from '~/composables/useClients'
+import { getClientTypeOptions } from '~/utils/clientTypes'
 import ModalDialog from '../ModalDialog.vue'
 
 const props = defineProps({ show: Boolean })
@@ -34,6 +35,9 @@ const emit = defineEmits(['close'])
 
 // Composable for client state and helpers
 const { $lang, clients, search, fetchClients, filteredClients, displayClientName, displayValue, updateNameField, updateClientType } = useClients()
+
+// Build select options from utility (auto-includes association)
+const typeOptions = getClientTypeOptions().map(opt => ({ value: opt.value, label: $lang.getTranslation(opt.labelKey) }))
 
 // Table column definitions with inline formatters and editable options
 const columns = computed(() => [
@@ -47,11 +51,7 @@ const columns = computed(() => [
         key: 'type', label: $lang.getTranslation('type'), type: 'select',
         formatter: c => $lang.getTranslation(c.type || '-'),
         editValue: c => c.type,
-        options: [
-            { value: 'individual', label: $lang.getTranslation('individual') },
-            { value: 'company', label: $lang.getTranslation('company') },
-            { value: 'freelance', label: $lang.getTranslation('freelance') }
-        ]
+        options: typeOptions
     },
     { key: 'siret', label: $lang.getTranslation('siret'), formatter: c => displayValue(c.siret) }
 ])
@@ -59,11 +59,11 @@ const columns = computed(() => [
 // Fetch clients when modal opens
 watch(() => props.show, val => val && fetchClients())
 
-// Handle inline table updates
+// Handle inline table updates — convert empty strings to null so displayValue shows '-'
 const handleUpdate = async ({ item, field, value }) => {
     if (field === 'name') updateNameField(item, value)
     else if (field === 'type') updateClientType(item, value)
-    else item[field] = value
+    else item[field] = value === '' ? null : value
 
     try {
         await $fetch('/api/clients/edit-client', { method: 'PUT', body: { ...item, firstname: item.firstname || null, lastname: item.lastname || null, company_name: item.company_name || null, siret: item.siret || null } })

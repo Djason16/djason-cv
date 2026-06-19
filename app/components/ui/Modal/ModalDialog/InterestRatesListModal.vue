@@ -37,6 +37,15 @@ const { $lang, interestRates, search, fetchInterestRates, filteredInterestRates,
 
 // Table structure with formatters and editable definitions
 const columns = computed(() => [
+    {
+        key: 'type', label: $lang.getTranslation('type') || 'Type', type: 'select',
+        formatter: r => r.type === 'professional' ? ($lang.getTranslation('professional') || 'Professionnel') : ($lang.getTranslation('individual') || 'Particulier'),
+        editValue: r => r.type,
+        options: [
+            { value: 'professional', label: $lang.getTranslation('professional') || 'Professionnel' },
+            { value: 'individual', label: $lang.getTranslation('individual') || 'Particulier' }
+        ]
+    },
     { key: 'rate', label: $lang.getTranslation('rate'), formatter: r => formatRate(r.rate), editValue: r => r.rate, inputType: 'number', step: '0.0001', min: '0', max: '1', autocomplete: 'off' },
     { key: 'valid_from', label: $lang.getTranslation('validFrom'), formatter: r => formatDate(r.valid_from), editValue: r => r.valid_from, inputType: 'date', autocomplete: 'off' },
     { key: 'valid_until', label: $lang.getTranslation('validUntil'), formatter: r => formatDate(r.valid_until), editValue: r => r.valid_until, inputType: 'date', autocomplete: 'off' },
@@ -50,7 +59,7 @@ watch(() => props.show, v => v && fetchInterestRates())
 const handleUpdate = async ({ item, field, value }) => {
     item[field] = value
     try {
-        await $fetch('/api/interest-rates/edit-interest-rates', { method: 'PUT', body: { id: item.id, rate: item.rate, valid_from: item.valid_from, valid_until: item.valid_until } })
+        await $fetch('/api/interest-rates/edit-interest-rates', { method: 'PUT', body: { id: item.id, rate: item.rate, type: item.type, valid_from: item.valid_from, valid_until: item.valid_until } })
     } catch (e) { console.error('Failed updating interest rate', e) }
 }
 

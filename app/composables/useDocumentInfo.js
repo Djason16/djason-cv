@@ -1,4 +1,5 @@
 import { useNuxtApp } from '#app'
+import { isProfessionalType } from '~/utils/clientTypes'
 import { useValidation } from './useValidation'
 
 // Provides prompts and validation for document numbers, delivery info, and optional fields
@@ -53,7 +54,7 @@ export const useDocumentInfo = () => {
 
     // Prompt for delivery address; confirm if same as client or input manually
     const promptDeliveryAddress = async clientType => {
-        if (!['company', 'freelance'].includes(clientType)) return { sameAsClient: true, deliveryAddress: '' }
+        if (!isProfessionalType(clientType)) return { sameAsClient: true, deliveryAddress: '' }
 
         const sameAsClient = confirm($lang.getTranslation('sameDeliveryAddressConfirm'))
         let deliveryAddress = ''
@@ -66,8 +67,7 @@ export const useDocumentInfo = () => {
 
     // Prompt for optional information like object description and order reference
     const promptOptionalInfo = async clientType => {
-        const isIndividual = clientType === 'individual'
-        const objectDescription = !isIndividual ? prompt($lang.getTranslation('enterObjectOptional')) || '' : ''
+        const objectDescription = isProfessionalType(clientType) ? prompt($lang.getTranslation('enterObjectOptional')) || '' : ''
         if (objectDescription === null) return null
 
         const orderReference = prompt($lang.getTranslation('enterOrderRefOptional')) || ''

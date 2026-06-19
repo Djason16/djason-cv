@@ -42,7 +42,7 @@ export const createClientsTable = async db => db.sql`
     postal_code TEXT,
     city TEXT,
     siret TEXT,
-    type TEXT CHECK(type IN ('individual','company','freelance')) NOT NULL,
+    type TEXT CHECK(type IN ('individual', 'company', 'freelance', 'association')) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `
@@ -72,9 +72,11 @@ export const createMissionsTable = async db => db.sql`
     service_id TEXT NOT NULL,
     title TEXT,
     date DATE,
+    month_concerned TEXT,
     duration REAL DEFAULT 0,
     quantity REAL DEFAULT 1,
-    unit_price REAL DEFAULT 0,
+    unit_price REAL,
+    tjm REAL DEFAULT NULL,
     vat_applicable INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY(client_id) REFERENCES dc_clients(id) ON DELETE CASCADE,
@@ -86,6 +88,7 @@ export const createInterestRatesTable = async db => db.sql`
   CREATE TABLE IF NOT EXISTS dc_interest_rates (
     id TEXT PRIMARY KEY,
     rate REAL NOT NULL,
+    type TEXT CHECK(type IN ('professional', 'individual')) NOT NULL DEFAULT 'professional',
     valid_from DATETIME NOT NULL,
     valid_until DATETIME NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -160,15 +163,19 @@ export const seedInterestRates = async db => {
   if (rows[0].count) return
 
   const rates = [
-    { rate: 0.0667, validFrom: '2026-01-01', validUntil: '2026-06-30' },
-    { rate: 0.0665, validFrom: '2025-07-01', validUntil: '2025-12-31' }
+    // Professionals (B2B)
+    { rate: 0.0667, type: 'professional', validFrom: '2026-01-01', validUntil: '2026-06-30' },
+    { rate: 0.0665, type: 'professional', validFrom: '2025-07-01', validUntil: '2025-12-31' },
+    // Individuals (B2C)
+    { rate: 0.0354, type: 'individual', validFrom: '2026-01-01', validUntil: '2026-06-30' },
+    { rate: 0.0368, type: 'individual', validFrom: '2025-07-01', validUntil: '2025-12-31' }
   ]
 
   for (const r of rates) {
     await db.sql`
-      INSERT INTO dc_interest_rates (id, rate, valid_from, valid_until)
-      VALUES (${crypto.randomUUID()}, ${r.rate}, ${r.validFrom}, ${r.validUntil})
-    `
+    INSERT INTO dc_interest_rates (id, rate, type, valid_from, valid_until)
+    VALUES (${crypto.randomUUID()}, ${r.rate}, ${r.type}, ${r.validFrom}, ${r.validUntil})
+  `
   }
 }
 
