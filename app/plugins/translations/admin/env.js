@@ -15,7 +15,7 @@ export default {
     },
 
     english: {
-        viewEnvironmentVariables: "View Environment Variables",
+        viewEnvironmentVariables: "View environment variables",
         noEnvVars: "No environment variables.",
         environment: "Environment",
         frontend: "Frontend",

@@ -1,10 +1,11 @@
 <template>
     <!-- Simple carousel controls with previous/next buttons -->
     <div class="carousel-controls">
-        <FloatingButton :show="true" :aria-label="'Previous Slide'" class="carousel-controls__btn" @click="prevSlide">
+        <FloatingButton :show="true" :aria-label="'Previous slide'" class="carousel-controls__btn" @click="prevSlide">
             <i class="fas fa-chevron-left" aria-hidden="true" />
         </FloatingButton>
-        <FloatingButton :show="true" :aria-label="'Next Slide'" class="carousel-controls__btn" @click="nextSlide">
+
+        <FloatingButton :show="true" :aria-label="'Next slide'" class="carousel-controls__btn" @click="nextSlide">
             <i class="fas fa-chevron-right" aria-hidden="true" />
         </FloatingButton>
     </div>
@@ -14,7 +15,7 @@
 import FloatingButton from '~/components/ui/Button/FloatingButton.vue';
 
 // Props: functions to navigate slides, passed from parent
-const { prevSlide, nextSlide } = defineProps({ prevSlide: Function, nextSlide: Function })
+defineProps({ prevSlide: Function, nextSlide: Function })
 </script>
 
 <style scoped>

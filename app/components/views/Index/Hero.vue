@@ -1,12 +1,14 @@
 <template>
-    <div id="hero-banner" class="hero-banner" role="banner" :aria-labelledby="'hero-banner__title'">
+    <section id="hero-banner" class="hero-banner" aria-labelledby="hero-banner__title">
         <div class="hero-banner__content">
             <!-- Availability status + optional message -->
             <div class="availability-wrapper">
                 <AvailabilityButton :status="currentAvailability" />
-                <span v-if="showAvailabilityMessage" class="availability-schedule text-normal">
+
+                <p v-if="showAvailabilityMessage" class="availability-schedule text-normal" role="status"
+                    aria-live="polite">
                     {{ availabilityMessage }}
-                </span>
+                </p>
             </div>
 
             <!-- Main hero title -->
@@ -22,7 +24,7 @@
                     :title="$lang.getTranslation(action.ariaKey, contactArgs)" />
             </div>
         </div>
-    </div>
+    </section>
 </template>
 
 <script setup>
@@ -46,14 +48,25 @@ const contactArgs = { email: config.public.contactEmail, phone: config.public.co
 
 // Hero actions (email & phone)
 const heroActions = [
-    { labelKey: 'sendEmailButton', ariaKey: 'sendEmail', href: `mailto:${config.public.contactEmail}`, icon: 'fas fa-envelope' },
-    { labelKey: 'callPhoneButton', ariaKey: 'callPhone', href: `tel:${config.public.contactPhone.replace(/\s+/g, '')}`, icon: 'fas fa-phone' }
+    {
+        labelKey: 'sendEmailButton',
+        ariaKey: 'sendEmail',
+        href: `mailto:${config.public.contactEmail}`,
+        icon: 'fas fa-envelope'
+    },
+    {
+        labelKey: 'callPhoneButton',
+        ariaKey: 'callPhone',
+        href: `tel:${config.public.contactPhone.replace(/\s+/g, '')}`,
+        icon: 'fas fa-phone'
+    }
 ]
 
 // Reactive availability state
 const currentAvailability = ref('unavailable')
 const availabilityMessage = ref('')
 const dataLoaded = ref(false)
+
 const showAvailabilityMessage = computed(() => {
     return !override.value?.enabled && Boolean(availabilityMessage.value)
 })
@@ -61,9 +74,16 @@ const showAvailabilityMessage = computed(() => {
 // Update availability & generate message based on periods, override, and settings
 const updateAvailability = () => {
     if (!dataLoaded.value) return
+
     const locale = $lang.current.value === 'french' ? 'fr-FR' : 'en-US'
     currentAvailability.value = getAvailability(periods.value, override.value, settings.value)
-    availabilityMessage.value = getWorkingHours($lang.getTranslation, periods.value, override.value, settings.value, locale)
+    availabilityMessage.value = getWorkingHours(
+        $lang.getTranslation,
+        periods.value,
+        override.value,
+        settings.value,
+        locale
+    )
 
     console.log('Availability Update:', {
         status: currentAvailability.value,
@@ -76,10 +96,9 @@ const updateAvailability = () => {
 }
 
 // Fetch data on mount and refresh every minute
-onMounted(() => {
-    let intervalId
-    onUnmounted(() => intervalId && clearInterval(intervalId))
+let intervalId
 
+onMounted(() => {
     const fetchData = async () => {
         try {
             await Promise.all([fetchAvailability(), fetchSettings()])
@@ -90,7 +109,12 @@ onMounted(() => {
             console.error('Failed to fetch initial data:', err)
         }
     }
+
     fetchData()
+})
+
+onUnmounted(() => {
+    if (intervalId) clearInterval(intervalId)
 })
 
 // React to changes in unavailability periods, overrides, settings, or language

@@ -1,9 +1,11 @@
 <template>
     <!-- Navigation tabs for services -->
-    <div class="services-section__nav" role="tablist">
-        <button v-for="(service, i) in services" :key="i" type="button" class="services-section__tab text-small"
-            :class="{ 'services-section__tab--active': activeService === i }" @click="setActiveService(i)" role="tab"
-            :aria-selected="activeService === i" :aria-controls="`panel-${i}`" :id="`tab-${i}`">
+    <div class="services-section__nav" role="tablist" :aria-label="$lang.getTranslation('servicesTitle')">
+        <button v-for="(service, i) in services" :key="i" :ref="el => setTabRef(el, i)" type="button"
+            class="services-section__tab text-small" :class="{ 'services-section__tab--active': activeService === i }"
+            @click="setActiveService(i)" @keydown="onKeydown($event, i)" role="tab"
+            :aria-selected="activeService === i ? 'true' : 'false'" :aria-controls="`panel-${i}`" :id="`tab-${i}`"
+            :tabindex="activeService === i ? 0 : -1">
             <i :class="service.icon" class="services-section__tab-icon" aria-hidden="true"></i>
             <span class="services-section__tab-title text-uppercase text-bold">
                 {{ $lang.getTranslation(service.titleKey) }}
@@ -15,35 +17,74 @@
     </div>
 
     <!-- Tab panels -->
-    <div v-for="(service, i) in services" :key="i" v-show="activeService === i"
-        class="services-section__content fade-in" role="tabpanel" :id="`panel-${i}`" :aria-labelledby="`tab-${i}`">
-        <h2 class="services-section__title text-xlarge text-bold text-uppercase">
+    <section v-for="(service, i) in services" :key="i" v-show="activeService === i"
+        class="services-section__content fade-in" role="tabpanel" :id="`panel-${i}`" :aria-labelledby="`tab-${i}`"
+        :tabindex="0">
+        <h3 class="services-section__title text-xlarge text-bold text-uppercase">
             {{ $lang.getTranslation(service.titleKey) }}
-        </h2>
+        </h3>
+
         <p class="services-section__intro text-normal">
             {{ $lang.getTranslation(service.introKey) }}
         </p>
 
-        <CustomList :items="service.sections" titleTag="h3" titleClass="text-large text-bold"
+        <CustomList :items="service.sections" titleTag="h4" titleClass="text-large text-bold"
             titleColor="var(--text-color-light)" contentClass="text-normal" contentColor="var(--text-color-light)" />
 
         <p class="services-section__added-value text-normal">
             {{ $lang.getTranslation('addedValue') }}
             <span class="text-bold">{{ $lang.getTranslation(service.addedValueKey) }}</span>
         </p>
-    </div>
+    </section>
 </template>
 
 <script setup>
+import { useNuxtApp } from '#app'
 import { services } from "@/src/data/servicesData.js"
 import { ref } from "vue"
 import CustomList from "~/components/ui/List/CustomList.vue"
 
+const { $lang } = useNuxtApp()
+
 // Active service index, defaulting to the middle tab
 const activeService = ref(Math.floor(services.length / 2))
+const tabRefs = ref([])
 
 // Update the active service when a tab is clicked
 const setActiveService = i => (activeService.value = i)
+
+const setTabRef = (el, i) => {
+    if (el) tabRefs.value[i] = el
+}
+
+const focusTab = i => {
+    tabRefs.value[i]?.focus()
+    activeService.value = i
+}
+
+const onKeydown = (event, i) => {
+    const lastIndex = services.length - 1
+
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+        event.preventDefault()
+        focusTab(i === lastIndex ? 0 : i + 1)
+    }
+
+    if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+        event.preventDefault()
+        focusTab(i === 0 ? lastIndex : i - 1)
+    }
+
+    if (event.key === 'Home') {
+        event.preventDefault()
+        focusTab(0)
+    }
+
+    if (event.key === 'End') {
+        event.preventDefault()
+        focusTab(lastIndex)
+    }
+}
 </script>
 
 <style scoped>

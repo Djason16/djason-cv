@@ -207,7 +207,7 @@ export default {
     },
 
     english: {
-        viewCalendar: "View Calendar",
+        viewCalendar: "View calendar",
         timezone: "Timezone",
         field: "Field",
         value: "Value",

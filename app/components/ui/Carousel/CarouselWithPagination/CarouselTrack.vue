@@ -2,7 +2,8 @@
     <!-- Carousel track container with optional transition -->
     <div class="carousel-track" :class="{ 'no-transition': !transitionEnabled }" :style="trackStyle">
         <!-- Loop through each slide -->
-        <div v-for="(item, index) in slides" :key="item?.id || index" class="carousel-item">
+        <article v-for="(item, index) in slides" :key="item?.id || index" class="carousel-item" role="group"
+            aria-roledescription="slide" :aria-label="`${getRealIndex(index) + 1} / ${itemsLength}`">
             <!-- Only render if item exists -->
             <template v-if="item && item.name">
                 <!-- Default slot content for slide -->
@@ -11,41 +12,65 @@
                         <div class="carousel-overlay">
                             <!-- Slide title -->
                             <h3 class="project-title text-xlarge">{{ item.name }}</h3>
+
                             <!-- Short description -->
                             <p class="project-description text-normal">{{ item.short }}</p>
+
                             <!-- Skills list -->
                             <ul v-if="item.skills && item.skills.length > 0" class="project-skills">
                                 <li v-for="(skill, i) in item.skills" :key="i" class="skill text-normal">
                                     {{ $lang.getTranslation(skill) || skill }}
                                 </li>
                             </ul>
+
                             <!-- Optional external link -->
                             <a v-if="item.link" :href="item.link" target="_blank" rel="noopener noreferrer"
-                                :title="item.name + ' - ' + ($lang.getTranslation('viewMore') || 'View More')"
+                                :title="`${item.name} - ${$lang.getTranslation('viewMore') || 'View more'}`"
                                 class="project-link text-normal text-bold">
-                                {{ $lang.getTranslation('viewMore') || 'View More' }}
+                                {{ $lang.getTranslation('viewMore') || 'View more' }}
                             </a>
                         </div>
+
                         <!-- API image served directly (dynamic, no NuxtImg) -->
                         <img v-if="(item.image || item.img)?.startsWith('api/')" :src="item.image || item.img"
-                            :alt="item.name" :title="item.name" class="carousel-image" loading="lazy" />
+                            :alt="itemAlt(item)" class="carousel-image" loading="lazy" width="640" height="480" />
+
                         <!-- Static image via NuxtImg -->
-                        <NuxtImg v-else-if="item.image || item.img" :src="item.image || item.img" :alt="item.name"
-                            :title="item.name" class="carousel-image" width="640" height="480" loading="lazy" />
+                        <NuxtImg v-else-if="item.image || item.img" :src="item.image || item.img" :alt="itemAlt(item)"
+                            class="carousel-image" width="640" height="480" loading="lazy" />
                     </div>
                 </slot>
             </template>
-        </div>
+        </article>
     </div>
 </template>
 
 <script setup>
+import { useNuxtApp } from '#app'
+
+const { $lang } = useNuxtApp()
+
 // Props: slides array, dynamic track style, and transition toggle
-defineProps({
+const props = defineProps({
     slides: { type: Array, default: () => [] },
     trackStyle: Object,
-    transitionEnabled: Boolean
+    transitionEnabled: Boolean,
+    activeIndex: { type: Number, default: 0 },
+    itemsLength: { type: Number, default: 0 }
 })
+
+const getRealIndex = index => {
+    if (props.itemsLength <= 1) return index
+    if (index === 0) return props.itemsLength - 1
+    if (index === props.slides.length - 1) return 0
+    return index - 1
+}
+
+const itemAlt = item => {
+    if (!item?.name && !item?.short) return ''
+    if (item?.short) return `${item.name} — ${item.short}`
+    return item.name
+}
 </script>
 
 <style scoped>
@@ -101,11 +126,13 @@ defineProps({
     z-index: 2;
 }
 
-.carousel-content:hover .carousel-overlay {
+.carousel-content:hover .carousel-overlay,
+.carousel-content:focus-within .carousel-overlay {
     opacity: 1;
 }
 
-.carousel-content:hover .carousel-image {
+.carousel-content:hover .carousel-image,
+.carousel-content:focus-within .carousel-image {
     filter: brightness(0.5);
 }
 
@@ -158,6 +185,7 @@ defineProps({
     }
 
     .carousel-overlay {
+        opacity: 1;
         display: flex;
         justify-content: center;
         align-items: flex-end;

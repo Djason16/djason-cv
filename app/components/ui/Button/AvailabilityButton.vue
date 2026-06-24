@@ -1,9 +1,8 @@
 <template>
     <!-- Render only on client-side to avoid SSR issues -->
     <div v-if="isMounted" :class="['availability-button', `is-${status}`]"
-        :aria-label="$lang.getTranslation(status) || status" :title="$lang.getTranslation(status) || status"
-        role="status">
-        <span class="availability-button__dot"></span> <!-- Colored dot showing status -->
+        :aria-label="$lang.getTranslation(status) || status" :title="$lang.getTranslation(status) || status">
+        <span class="availability-button__dot" aria-hidden="true"></span> <!-- Colored dot showing status -->
         <span class="availability-button__text text-normal text-uppercase text-bold">
             {{ $lang.getTranslation(status) || status }}
         </span>
@@ -11,12 +10,13 @@
 </template>
 
 <script setup>
+import { useNuxtApp } from '#app'
 import { onMounted, ref } from 'vue'
 
 const { $lang } = useNuxtApp() // Nuxt language plugin
 
 // Props: restrict to valid statuses
-const props = defineProps({
+defineProps({
     status: { type: String, required: true, validator: v => ['available', 'busy', 'unavailable'].includes(v) }
 })
 

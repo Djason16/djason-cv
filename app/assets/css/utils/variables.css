@@ -46,6 +46,7 @@
     --font-primary: "Barlow Condensed", "Roboto Condensed", roboto, oxygen, "Fira Sans", arial, sans-serif;
 
     /* Font sizes */
+    --font-tiny: 0.5rem;
     --font-smaller: 0.6rem;
     --font-small: 0.8rem;
     --font-normal: 1rem;

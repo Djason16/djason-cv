@@ -1,9 +1,10 @@
 <template>
     <!-- Carousel pagination buttons, highlighting active slide -->
-    <div class="carousel-pagination">
+    <div class="carousel-pagination" aria-label="Carousel pagination">
         <button v-for="i in visibleButtons" :key="i" :class="{ active: getSlideIndex(i) === activeIndex }"
-            @click="$emit('goToSlide', getSlideIndex(i) + 1)"
-            :aria-label="`Go to slide ${getSlideIndex(i) + 1}`"></button>
+            :aria-label="`Go to slide ${getSlideIndex(i) + 1}`"
+            :aria-current="getSlideIndex(i) === activeIndex ? 'true' : undefined"
+            @click="$emit('goToSlide', getSlideIndex(i) + 1)"></button>
     </div>
 </template>
 

@@ -1,10 +1,13 @@
 <template>
-    <section id="about-me" class="about-section">
+    <section id="about-me" class="about-section" aria-labelledby="about-me-title">
         <!-- Image gallery -->
         <AboutImages :images="images" />
 
         <div class="about-section__content">
-            <h2 class="about-section__title text-tall text-uppercase">{{ $lang.getTranslation('aboutMe') }}</h2>
+            <h2 id="about-me-title" class="about-section__title text-tall text-uppercase">
+                {{ $lang.getTranslation('aboutMe') }}
+            </h2>
+
             <div class="about-section__description text-normal">
                 {{ $lang.getTranslation('aboutDescription', variables) }}
             </div>
@@ -38,7 +41,19 @@ const shuffleArray = arr => {
 }
 
 // Base images repeated to fill 6 slots
-const baseImages = ['/images/me_1.jpg', '/images/me_2.jpg']
+const baseImages = [
+    {
+        src: '/images/me_1.jpg',
+        alt: `Selfie de ${config.public.name}.`,
+        eager: true,
+    },
+    {
+        src: '/images/me_2.jpg',
+        alt: `${config.public.name} en costume, portrait professionnel.`,
+        eager: false,
+    }
+]
+
 const images = ref([...baseImages, ...baseImages, ...baseImages].slice(0, 6))
 
 // Shuffle only on client to avoid SSR hydration mismatch
@@ -46,7 +61,11 @@ onMounted(() => images.value = shuffleArray(images.value))
 
 // Variables for translation interpolation
 const birthDate = new Date(config.public.birthDate)
-const variables = { name: config.public.name, address: config.public.legalAddress, age: calculateAge(birthDate) }
+const variables = {
+    name: config.public.name,
+    address: config.public.legalAddress,
+    age: calculateAge(birthDate)
+}
 </script>
 
 <style scoped>

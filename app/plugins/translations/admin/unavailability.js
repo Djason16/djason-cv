@@ -7,9 +7,9 @@ export default {
     },
 
     english: {
-        viewUnavailability: "View Unavailability Periods",
+        viewUnavailability: "View unavailability periods",
         noUnavailabilityPeriods: "No unavailability periods.",
-        startDate: "Start Date",
-        endDate: "End Date",
+        startDate: "Start date",
+        endDate: "End date",
     }
 }

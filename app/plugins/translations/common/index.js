@@ -1,21 +1,21 @@
 export default {
     french: {
-        sendEmail: 'Envoyer un e-mail à {{email}}',
-        callPhone: 'Appeler {{phone}}',
-        visitUrl: 'Visiter {{url}}',
+        sendEmail: "Envoyer un e-mail à {{email}}",
+        callPhone: "Appeler {{phone}}",
+        visitUrl: "Visiter {{url}}",
         backToTop: "Retour en haut",
-        english: "Anglais",
+        english: "English",
         french: "Français",
-        switchToLang: "Passer en {{lang}}",
+        switchToLang: "Passer en {{lang}}"
     },
 
     english: {
-        sendEmail: 'Send email to {{email}}',
-        callPhone: 'Call {{phone}}',
-        visitUrl: 'Visit {{url}}',
+        sendEmail: "Send email to {{email}}",
+        callPhone: "Call {{phone}}",
+        visitUrl: "Visit {{url}}",
         backToTop: "Back to top",
         english: "English",
-        french: "French",
-        switchToLang: "Switch to {{lang}}",
+        french: "Français",
+        switchToLang: "Switch to {{lang}}"
     }
 }

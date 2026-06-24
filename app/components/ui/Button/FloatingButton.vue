@@ -1,6 +1,6 @@
 <template>
     <button v-if="show" class="floating-btn text-small" v-bind="$attrs" :aria-label="ariaLabel" :title="ariaLabel"
-        @click="$emit('click')">
+        type="button" @click="$emit('click')">
         <slot />
     </button>
 </template>

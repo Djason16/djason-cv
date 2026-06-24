@@ -1,10 +1,11 @@
 <template>
     <!-- Skills section wrapper -->
-    <section id="skills" class="skills-section">
+    <section id="skills" class="skills-section" aria-labelledby="skills-section__title">
         <div class="skills-section__content">
-            <h2 class="skills-section__title text-tall text-uppercase">
+            <h2 id="skills-section__title" class="skills-section__title text-tall text-uppercase">
                 {{ $lang.getTranslation('skillsTitle') }}
             </h2>
+
             <div class="skills-section__description text-normal">
                 {{ $lang.getTranslation('skillsDescription') }}
             </div>

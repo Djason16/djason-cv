@@ -1,13 +1,13 @@
 export default {
     french: {
-        lastProjects: 'Derniers projets',
-        projectDescription: 'Sélection de réalisations récentes illustrant mon savoir-faire, ma vision créative et les solutions concrètes apportées à mes clients.',
-        djasonCheryShort: "Mon portfolio personnel présentant mes réalisations et compétences, incluant ce site.",
+        lastProjects: "Derniers projets",
+        projectDescription: "Sélection de projets récents en développement web et post-production audiovisuelle, réalisés pour répondre à des besoins concrets en performance, visibilité, création et communication.",
+        djasonCheryShort: "Mon portfolio personnel présentant mes projets, mes compétences, mes services et ce site développé sur mesure.",
         editing: "Montage",
-        vfx: "Effets Visuels",
+        vfx: "Effets visuels",
         compositing: "Compositing",
         tracking: "Tracking",
-        motionDesign: "Motion Design",
+        motionDesign: "Motion design",
         threeDimensional: "3D",
         animation: "Animation",
         vue: "Vue.js",
@@ -24,18 +24,18 @@ export default {
         responsive: "Responsive",
         figma: "Figma",
         photoshop: "Photoshop",
-        viewMore: "En savoir plus",
+        viewMore: "Voir le projet"
     },
 
     english: {
-        lastProjects: 'Recent Projects',
-        projectDescription: 'Selection of recent work showcasing my expertise, creative vision, and concrete solutions delivered to clients.',
-        djasonCheryShort: "My personal portfolio showcasing my work and skills, including this very website.",
+        lastProjects: "Recent projects",
+        projectDescription: "Selection of recent web development and audiovisual post-production projects delivered to meet real needs in performance, visibility, creation and communication.",
+        djasonCheryShort: "My personal portfolio showcasing my projects, skills, services and this custom-built website.",
         editing: "Editing",
-        vfx: "Visual Effects",
+        vfx: "Visual effects",
         compositing: "Compositing",
         tracking: "Tracking",
-        motionDesign: "Motion Design",
+        motionDesign: "Motion design",
         threeDimensional: "3D",
         animation: "Animation",
         vue: "Vue.js",
@@ -52,6 +52,7 @@ export default {
         responsive: "Responsive",
         figma: "Figma",
         photoshop: "Photoshop",
-        viewMore: "Learn more",
+
+        viewMore: "View project"
     }
 }

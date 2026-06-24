@@ -1,6 +1,11 @@
 @import "../utils/variables.css";
 
 /* Typography styles */
+.text-tiny {
+    font-size: var(--font-tiny) !important;
+    transition: font-size 0.3s ease-in-out;
+}
+
 .text-smaller {
     font-size: var(--font-smaller) !important;
     transition: font-size 0.3s ease-in-out;
@@ -50,6 +55,10 @@
 
 /* Responsive typography */
 @media (max-width: 768px) {
+    .text-tiny {
+        font-size: calc(var(--font-tiny) - 0.05rem) !important;
+    }
+
     .text-smaller {
         font-size: calc(var(--font-smaller) - 0.1rem) !important;
     }
@@ -80,6 +89,10 @@
 }
 
 @media (max-width: 480px) {
+    .text-tiny {
+        font-size: calc(var(--font-tiny) - 0.1rem) !important;
+    }
+
     .text-smaller {
         font-size: calc(var(--font-smaller) - 0.2rem) !important;
     }

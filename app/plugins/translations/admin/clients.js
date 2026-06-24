@@ -42,13 +42,13 @@ export default {
         clientAdded: "Client ajouté !",
         errorSavingClient: "Erreur lors de l'enregistrement du client.",
         deleteClientConfirm: "Êtes-vous sûr de vouloir supprimer {{name}} ?",
-        deleteClientFailed: "Échec de la suppression du client.",
+        deleteClientFailed: "Échec de la suppression du client."
     },
 
     english: {
         addClient: "Add client",
         editClient: "Edit client",
-        viewClients: "View Clients",
+        viewClients: "View clients",
         searchClients: "Search clients",
         noClientsFound: "No clients found.",
         name: "Name",
@@ -81,13 +81,13 @@ export default {
         association: "Association",
         clientType_individual: "Individual",
         clientType_company: "Company",
-        clientType_freelance: "Freelance / Self-employed",
+        clientType_freelance: "Freelancer / Self-employed",
         clientType_association: "Association",
         actions: "Actions",
         delete: "Delete",
         clientAdded: "Client added!",
         errorSavingClient: "Error saving client.",
         deleteClientConfirm: "Are you sure you want to delete {{name}}?",
-        deleteClientFailed: "Failed to delete client.",
+        deleteClientFailed: "Failed to delete client."
     }
 }

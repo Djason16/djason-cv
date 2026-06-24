@@ -1,27 +1,38 @@
 <template>
     <!-- Skills grid with dynamic modifier and expandable items -->
     <div class="skills-grid-container">
-        <div :class="`skills-grid--${gridClass} skills-grid`">
-            <div v-for="(skill, i) in skills" :key="i" :class="['skills-item', { expanded: expandedSkill === i }]"
-                @click.stop="toggleExpand(i)"> <!-- Toggle expansion on click -->
-                <img :src="skill.svg" :alt="skill.name" :title="$lang.getTranslation(skill.descriptionKey)"
-                    :aria-label="$lang.getTranslation(skill.descriptionKey)" class="skills-item__icon" loading="lazy" />
-                <!-- Skill icon -->
-                <div class="skills-item__content">
-                    <h3 class="skills-item__title text-smaller text-bold">{{ skill.name }}</h3> <!-- Skill name -->
-                </div>
-            </div>
-        </div>
+        <ul :class="`skills-grid--${gridClass} skills-grid`" role="list">
+            <li v-for="(skill, i) in skills" :key="i" :class="['skills-item', { expanded: expandedSkill === i }]">
+                <button type="button" class="skills-item__button"
+                    :aria-expanded="expandedSkill === i ? 'true' : 'false'"
+                    :aria-label="`${skill.name} - ${$lang.getTranslation(skill.descriptionKey)}`"
+                    @click.stop="toggleExpand(i)">
+                    <img :src="skill.svg" alt="" class="skills-item__icon" loading="lazy" />
+
+                    <!-- Skill icon -->
+                    <div class="skills-item__content">
+                        <h3 class="skills-item__title text-smaller text-bold">{{ skill.name }}</h3>
+                        <p v-if="expandedSkill === i" class="skills-item__description text-tiny">
+                            {{ $lang.getTranslation(skill.descriptionKey) }}
+                        </p>
+                    </div>
+                </button>
+            </li>
+        </ul>
     </div>
 </template>
 
 <script setup>
+import { useNuxtApp } from '#app'
+
 // Props: array of skills, grid class, optional expanded skill index
-const props = defineProps({
+defineProps({
     skills: { type: Array, required: true },
     gridClass: { type: String, required: true },
     expandedSkill: { type: Number, default: undefined }
 })
+
+const { $lang } = useNuxtApp()
 
 // Emit function to notify parent of skill toggle
 const emit = defineEmits(['toggleExpand'])
@@ -40,21 +51,31 @@ const toggleExpand = i => emit('toggleExpand', i) // Emit index when a skill is 
     gap: 0.5rem;
     position: relative;
     transition: 0.3s ease;
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .skills-item {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
     aspect-ratio: 1;
     background: var(--first-color);
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    cursor: pointer;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     z-index: 1;
     will-change: transform;
+}
+
+.skills-item__button {
+    all: unset;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
 }
 
 .skills-item.expanded {
@@ -71,15 +92,18 @@ const toggleExpand = i => emit('toggleExpand', i) // Emit index when a skill is 
 }
 
 .skills-item.expanded .skills-item__icon {
-    opacity: 0.2;
+    opacity: 0.15;
 }
 
 .skills-item__title {
     max-width: 100%;
     color: var(--text-color-dark);
-    white-space: wrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow-wrap: anywhere;
+}
+
+.skills-item__description {
+    margin: 0.5rem 0 0;
+    color: var(--text-color-dark);
 }
 
 .skills-item__content {
@@ -91,10 +115,16 @@ const toggleExpand = i => emit('toggleExpand', i) // Emit index when a skill is 
     opacity: 0;
     transition: opacity 0.3s ease;
     z-index: 3;
+    width: 85%;
 }
 
 .skills-item.expanded .skills-item__content {
     opacity: 1;
+}
+
+.skills-item__button:focus-visible {
+    outline: 2px solid var(--fourth-color);
+    outline-offset: -2px;
 }
 
 .skills-grid--dev,
@@ -153,5 +183,11 @@ const toggleExpand = i => emit('toggleExpand', i) // Emit index when a skill is 
 .skills-grid--dev .skills-item:nth-child(10),
 .skills-grid--video .skills-item:nth-child(10) {
     grid-area: item-10;
+}
+
+@media (max-width: 768px) {
+    .skills-item__description {
+        display: none;
+    }
 }
 </style>

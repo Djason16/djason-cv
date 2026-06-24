@@ -1,20 +1,24 @@
 <template>
     <!-- Carousel container with track, pagination, and controls -->
-    <div v-if="validItems.length" class="carousel">
-        <CarouselTrack :slides="slides" :trackStyle="trackStyle" :transitionEnabled="transitionEnabled" />
+    <section v-if="validItems.length" class="carousel" role="region" :aria-label="$lang.getTranslation('lastProjects')">
+        <CarouselTrack :slides="slides" :trackStyle="trackStyle" :transitionEnabled="transitionEnabled"
+            :activeIndex="activePaginationIndex" :itemsLength="validItems.length" />
 
         <CarouselPagination v-if="validItems.length > 1" :itemsLength="validItems.length"
             :activeIndex="activePaginationIndex" @goToSlide="goToSlide" />
 
         <CarouselControls v-if="validItems.length > 1" :prevSlide="prevSlide" :nextSlide="nextSlide" />
-    </div>
+    </section>
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import CarouselTrack from './CarouselWithPagination/CarouselTrack.vue'
-import CarouselPagination from './CarouselWithPagination/CarouselPagination.vue'
+import { useNuxtApp } from '#app'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import CarouselControls from './CarouselWithPagination/CarouselControls.vue'
+import CarouselPagination from './CarouselWithPagination/CarouselPagination.vue'
+import CarouselTrack from './CarouselWithPagination/CarouselTrack.vue'
+
+const { $lang } = useNuxtApp()
 
 // Props: array of items to display
 const props = defineProps({ items: { type: Array, required: true, default: () => [] } })
@@ -52,6 +56,7 @@ const trackStyle = computed(() => {
     const width = screenWidth.value <= 1024 ? SLIDE_WIDTH_MOBILE : SLIDE_WIDTH_DESKTOP
     const offset = width / 2
     const index = validItems.value.length === 1 ? 0 : currentSlide.value
+
     return {
         transform: `translateX(calc(-${index} * (${width}rem + ${SLIDE_GAP}rem) + 50% - ${offset}rem))`,
         transition: transitionEnabled.value ? 'transform 0.8s cubic-bezier(0.25,0.1,0.25,1)' : 'none'
@@ -88,8 +93,7 @@ watch(currentSlide, newVal => {
             currentSlide.value = validItems.value.length
             transitionEnabled.value = true
         })
-    }
-    else if (newVal === maxIndex) {
+    } else if (newVal === maxIndex) {
         transitionEnabled.value = false
         requestAnimationFrame(() => {
             currentSlide.value = 1
@@ -99,7 +103,7 @@ watch(currentSlide, newVal => {
 })
 
 // Reset to first slide if items change and current index is out of bounds
-watch(() => validItems.value.length, (newLength) => {
+watch(() => validItems.value.length, newLength => {
     if (newLength && currentSlide.value > newLength) currentSlide.value = 1
 })
 </script>

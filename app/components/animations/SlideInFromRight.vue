@@ -12,6 +12,8 @@ import { onMounted, ref } from 'vue'
 const container = ref(null)
 
 onMounted(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
     const children = container.value.children
 
     // Set initial hidden + offset state on GPU

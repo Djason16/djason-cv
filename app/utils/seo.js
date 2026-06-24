@@ -13,65 +13,151 @@ const seoConfig = {
     index: {
         url: "",
         image: "/images/profile.jpg",
-        keywords: `développeur web full stack Paris, développeur web Lyon, développeur web Marseille, développeur web Toulouse, développeur web Bordeaux, full stack developer France, création site web sur mesure Paris Île-de-France, custom website development, développeur full-stack freelance Grenoble Nice Montpellier, freelance full stack developer Nantes Strasbourg Lille, développement web professionnel Rennes Reims Toulon, professional web development, monteur truquiste VFX Paris, VFX editor compositing, video editing services France, post-production audiovisuelle Cannes Nîmes Perpignan, audiovisual post-production, montage vidéo professionnel Saint-Étienne Villeurbanne Limoges, professional video editing Poitiers Angoulême, VFX compositing France, services IT Boulogne-Billancourt Saint-Denis Versailles, IT consulting, réparation informatique Paris Lyon Marseille, computer repair France, Djason Chery, expert technique développement web, technical expert, solutions créatives numériques, creative digital solutions, développeur web Paris Île-de-France Auvergne-Rhône-Alpes, web developer France PACA Occitanie, freelance developer Nouvelle-Aquitaine, agence création site web toutes régions France, web agency, développement application web React Vue Angular, web application development Node.js, site web responsive mobile-first, responsive website design, e-commerce development Shopify WooCommerce, développement e-commerce PrestaShop, portfolio professionnel développeur, professional developer portfolio, services numériques transformation digitale, digital services, développeur JavaScript TypeScript, développeur Python PHP, solutions web innovantes ${YEAR}`
+        keywords: `Djason Chery, développeur web full-stack, développeur web freelance, création site web sur mesure, développement web, SEO, AEO, post-production audiovisuelle, effets visuels, compositing, montage vidéo, services informatiques, réparation informatique, full-stack web developer, custom website development, video editing, visual effects, IT support, ${YEAR}`
     },
     privacy: {
         url: "/privacy",
         image: "/images/privacy.jpg",
-        keywords: `politique de confidentialité développeur web France, privacy policy web developer, protection des données RGPD ${YEAR}, data protection GDPR compliance, RGPD conformité site web, GDPR compliance France, confidentialité site web sécurisé, website privacy security, données personnelles clients, personal data protection, sécurité données chiffrement, data security encryption, politique confidentialité développeur web freelance Paris, web developer privacy policy France, protection informations clients projets web, client information protection, conformité RGPD développement web, GDPR compliance web development, données sensibles sécurisées, sensitive data security, confidentialité services audiovisuels montage vidéo, audiovisual services privacy, protection données clients montage vidéo VFX, video editing client data protection, sécurité données IT réparation informatique, IT data security, certificat SSL sécurité web, SSL certificate, protection vie privée utilisateurs, user privacy protection`
+        keywords: `politique de confidentialité, protection des données, RGPD, confidentialité site web, privacy policy, personal data protection, GDPR, website privacy, ${YEAR}`
     },
     terms: {
         url: "/terms",
         image: "/images/terms.jpg",
-        keywords: "conditions générales utilisation développeur web, terms and conditions web developer France, conditions d'utilisation site web, terms of use website, CGU site web professionnel, website terms service, contrat services web développement, web services contract development, droits d'auteur propriété intellectuelle, copyright intellectual property, responsabilité prestataire développeur, service provider liability developer, modalités paiement services web, payment terms web services, conditions générales vente prestations web, general terms of sale, termes services développement web application, web development service terms, accord utilisateur conditions contractuelles, user agreement, conditions services audiovisuels production vidéo, audiovisual services terms, contrat montage vidéo post-production, video editing contract, conditions services IT maintenance informatique, IT services terms, droits d'auteur contenu vidéo créatif, video content copyright, licence utilisation code source, source code license, garanties services numériques, digital services warranties"
+        keywords: `conditions générales de vente, conditions d’utilisation, prestations web, prestations audiovisuelles, terms and conditions, web services terms, audiovisual services terms, ${YEAR}`
     },
     legal: {
         url: "/legal",
         image: "/images/legal.jpg",
-        keywords: "mentions légales développeur web France, legal notices web developer, informations légales site web professionnel, website legal information, éditeur site responsable publication, website publisher, hébergeur web serveur, web hosting provider, propriété intellectuelle droits auteur, intellectual property rights, responsable publication Djason Chery, publication manager, coordonnées entreprise freelance, company contact information, informations prestataire auto-entrepreneur, service provider information, données légales développeur freelance, developer legal information, SIRET numéro entreprise, SIRET number business, mentions légales services audiovisuels VFX, audiovisual services legal notices, informations légales montage vidéo production, video editing legal information, données légales services IT réparation, IT services legal information, RCS registre commerce, business registration, TVA intracommunautaire, VAT number, statut juridique micro-entreprise, legal status"
+        keywords: `mentions légales, informations légales, éditeur du site, hébergeur, propriété intellectuelle, legal notice, website legal information, hosting provider, intellectual property, ${YEAR}`
     },
     refundPolicy: {
         url: "/refund-policy",
         image: "/images/refund.jpg",
-        keywords: "politique remboursement services web, refund policy web services France, remboursement développement web, web development refund, garantie satisfaction client développeur, satisfaction guarantee developer, annulation service prestation web, service cancellation web, délai remboursement 14 jours, refund deadline consumer rights, conditions remboursement projet web, refund conditions website project, droits consommateur services numériques, consumer rights digital services, remboursement développement web application, web application development refund, garantie projet web site internet, website project guarantee, politique retour annulation commande, return cancellation policy, remboursement services audiovisuels vidéo, audiovisual services refund, garantie montage vidéo post-production, video editing guarantee, remboursement services IT dépannage, IT services refund, annulation prestation développement, development service cancellation, remboursement acompte versé, deposit refund, politique satisfait ou remboursé, money-back guarantee"
+        keywords: `politique de remboursement, remboursement prestations web, remboursement prestations audiovisuelles, refund policy, web services refund, audiovisual services refund, ${YEAR}`
     },
     payMe: {
         url: "/pay-me",
         image: "/images/pay.jpg",
-        keywords: "paiement en ligne sécurisé développeur web, online payment web developer, paiement sécurisé Stripe, secure payment Stripe France, Stripe paiement carte bancaire, credit card payment Stripe, facturation services web développement, web services invoicing, devis création site web sur mesure, website creation quote, tarifs développement web freelance, web development rates freelance, paiement freelance développeur, freelance developer payment, règlement prestation services numériques, digital service settlement, transaction sécurisée SSL, secure transaction encryption, paiement services audiovisuels montage, audiovisual services payment, facturation montage vidéo VFX, video editing invoicing, tarifs services IT dépannage informatique, IT services rates, devis réparation informatique maintenance, computer repair quote, paiement montage truquiste post-production, video editing payment, paiement sécurisé 3D Secure, secure 3D payment, facture électronique automatique, electronic invoice, paiement échelonné plusieurs fois, installment payment, devis gratuit personnalisé, free custom quote"
+        keywords: `paiement sécurisé, Stripe, règlement prestation, paiement en ligne, secure payment, online payment, Stripe payment, ${YEAR}`
     },
     login: {
         url: "/login",
         image: "/images/login.jpg",
-        keywords: "connexion client espace personnel, client login area, authentification sécurisée 2FA, secure authentication, espace client suivi projet, client area project tracking, accès sécurisé tableau bord, secure dashboard access, gestion compte client développeur web, account management web developer, tableau de bord client projets, client dashboard projects, suivi projet web développement, website project tracking, espace personnel sécurisé, secure personal area, gestion projets audiovisuels vidéo, audiovisual projects management, suivi montage vidéo production, video editing tracking, connexion sécurisée chiffrée, encrypted secure login, portail client services web, client portal web services, authentification double facteur, two-factor authentication",
+        keywords: `connexion administration, espace administrateur, authentification sécurisée, admin login, secure authentication, dashboard access, ${YEAR}`,
         noIndex: true
     },
     admin: {
         url: "/admin",
         image: "/images/admin.jpg",
-        keywords: "administration site gestion, site administration management, tableau de bord admin développeur, admin dashboard developer, gestion projets web clients, web projects client management, gestion clients CRM, client management CRM, facturation automatique devis, automated invoicing quotes, devis contrats projets web, quotes contracts web projects, contrats services numériques, digital services contracts, statistiques analytics site, website statistics analytics, espace administration backend, administration backend area, gestion projets audiovisuels production, audiovisual projects production management, gestion montage vidéo pipeline, video editing pipeline management, gestion services IT tickets, IT services ticket management, rapports performance projets, project performance reports, analytics données clients, client data analytics, dashboard métriques KPI, metrics KPI dashboard",
+        keywords: `administration site, tableau de bord, gestion de contenu, site administration, admin dashboard, content management, ${YEAR}`,
         noIndex: true
-    },
+    }
 }
 
 // Generate SEO metadata for a page
 export const seoMetaData = (pageKey, $lang) => {
-    const { name, contactEmail: email, contactPhone: phone, legalTva: tvaNumber, frontendDomain: baseUrl, linkedin, github, malt, instagram } = useRuntimeConfig().public
+    const {
+        name,
+        contactEmail: email,
+        contactPhone: phone,
+        legalTva: tvaNumber,
+        frontendDomain: baseUrl,
+        linkedin,
+        github,
+        malt,
+        instagram
+    } = useRuntimeConfig().public
 
     const {
         url = "",
         image = "/favicon_dc.jpg",
-        keywords = $lang.locale.value === 'en'
-            ? `full stack developer France, web development Paris Lyon Marseille, video editing VFX compositing, IT services computer repair, freelance developer, custom website development, professional web services, digital solutions ${YEAR}`
-            : `développeur full-stack France, développement web Paris Lyon Marseille Toulouse Bordeaux, montage vidéo VFX compositing, services IT réparation informatique, développeur freelance, création site web sur mesure, services web professionnels, solutions numériques ${YEAR}`,
+        keywords = $lang.locale.value === "en"
+            ? `Djason Chery, full-stack web developer, freelance developer, custom website development, SEO, AEO, audiovisual post-production, visual effects, compositing, video editing, IT support, ${YEAR}`
+            : `Djason Chery, développeur web full-stack, développeur freelance, création site web sur mesure, SEO, AEO, post-production audiovisuelle, effets visuels, compositing, montage vidéo, assistance informatique, ${YEAR}`,
         noIndex = false
     } = seoConfig[pageKey] || {}
 
-    const fullUrl = withTrailingSlash(`${baseUrl}${url}`)
-    const robotsContent = noIndex ? "noindex, nofollow" : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    const locale = $lang.locale.value
     const keyCap = pageKey.charAt(0).toUpperCase() + pageKey.slice(1)
-    const title = $lang.getTranslation(pageKey === "index" ? "seoIndexTitle" : `seo${keyCap}Title`, { name })
-    const description = $lang.getTranslation(pageKey === "index" ? "seoIndexDescription" : `seo${keyCap}Description`, { name })
+    const title = $lang.getTranslation(
+        pageKey === "index" ? "seoIndexTitle" : `seo${keyCap}Title`,
+        { name }
+    )
+    const description = $lang.getTranslation(
+        pageKey === "index" ? "seoIndexDescription" : `seo${keyCap}Description`,
+        { name }
+    )
+
+    const localizedUrl = withTrailingSlash(
+        `${baseUrl}${locale === "en" ? "/en" : ""}${url}`
+    )
+    const frUrl = withTrailingSlash(`${baseUrl}${url}`)
+    const enUrl = withTrailingSlash(`${baseUrl}/en${url}`)
+
+    const robotsContent = noIndex
+        ? "noindex, nofollow"
+        : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+
+    const socialImage = `${baseUrl}${image}`
+
+    const professionalServiceSchema = {
+        "@context": "https://schema.org",
+        "@type": "ProfessionalService",
+        "@id": `${baseUrl}/#professional-service`,
+        name,
+        url: baseUrl,
+        image: socialImage,
+        description,
+        telephone: phone,
+        email,
+        priceRange: "€€",
+        areaServed: {
+            "@type": "Country",
+            name: "France"
+        },
+        address: {
+            "@type": "PostalAddress",
+            addressLocality: "Thourotte",
+            addressRegion: "Hauts-de-France",
+            addressCountry: "FR"
+        },
+        sameAs: [linkedin, github, malt, instagram].filter(Boolean),
+        serviceType: [
+            "Web Development",
+            "SEO",
+            "AEO",
+            "Video Editing",
+            "Visual Effects",
+            "Audiovisual Post-Production",
+            "IT Support"
+        ],
+        contactPoint: {
+            "@type": "ContactPoint",
+            telephone: phone,
+            email,
+            contactType: "customer service",
+            availableLanguage: ["fr", "en"]
+        }
+    }
+
+    if (tvaNumber) {
+        professionalServiceSchema.taxID = tvaNumber
+        professionalServiceSchema.vatID = tvaNumber
+    }
+
+    const webPageSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        name: title,
+        url: localizedUrl,
+        description,
+        inLanguage: locale,
+        isPartOf: {
+            "@type": "WebSite",
+            name,
+            url: baseUrl
+        }
+    }
 
     const meta = {
         title,
@@ -80,22 +166,22 @@ export const seoMetaData = (pageKey, $lang) => {
         publisher: name,
         keywords,
         robots: robotsContent,
-        htmlAttrs: { lang: $lang.locale.value },
+        htmlAttrs: { lang: locale },
         "og:title": title,
         "og:description": description,
         "og:type": "website",
-        "og:url": fullUrl,
-        "og:image": `${baseUrl}${image}`,
-        "og:image:width": "400",
-        "og:image:height": "400",
+        "og:url": localizedUrl,
+        "og:image": socialImage,
+        "og:image:width": "1200",
+        "og:image:height": "630",
         "og:image:alt": title,
         "og:site_name": name,
-        "og:locale": $lang.locale.value === 'en' ? "en_US" : "fr_FR",
-        "og:locale:alternate": $lang.locale.value === 'en' ? "fr_FR" : "en_US",
+        "og:locale": locale === "en" ? "en_US" : "fr_FR",
+        "og:locale:alternate": locale === "en" ? "fr_FR" : "en_US",
         "twitter:card": "summary_large_image",
         "twitter:title": title,
         "twitter:description": description,
-        "twitter:image": `${baseUrl}${image}`,
+        "twitter:image": socialImage,
         "twitter:image:alt": title,
         charset: "utf-8",
         viewport: "width=device-width, initial-scale=1",
@@ -106,53 +192,23 @@ export const seoMetaData = (pageKey, $lang) => {
 
     useHead({
         link: [
-            { rel: "canonical", href: fullUrl },
-            { rel: "alternate", hreflang: "fr", href: fullUrl.replace(/\/en\//g, '/fr/').replace(/\/en$/g, '/fr') },
-            { rel: "alternate", hreflang: "en", href: fullUrl.replace(/\/fr\//g, '/en/').replace(/\/fr$/g, '/en') },
-            { rel: "alternate", hreflang: "x-default", href: fullUrl.replace(/\/(fr|en)\//g, '/fr/').replace(/\/(fr|en)$/g, '/fr') }
+            { rel: "canonical", href: localizedUrl },
+            { rel: "alternate", hreflang: "fr", href: frUrl },
+            { rel: "alternate", hreflang: "en", href: enUrl },
+            { rel: "alternate", hreflang: "x-default", href: frUrl }
         ],
-        script: [{
-            type: "application/ld+json",
-            children: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "ProfessionalService",
-                "name": name,
-                "image": `${baseUrl}${image}`,
-                "description": description,
-                "url": fullUrl,
-                "telephone": phone,
-                "email": email,
-                "address": {
-                    "@type": "PostalAddress",
-                    "streetAddress": "Thourotte",
-                    "addressCountry": "FR",
-                    "addressRegion": "Hauts-de-France"
-                },
-                "taxID": tvaNumber,
-                "vatID": tvaNumber,
-                "areaServed": [
-                    "Paris", "Lyon", "Marseille", "Toulouse", "Bordeaux", "Nice", "Nantes",
-                    "Strasbourg", "Montpellier", "Lille", "Rennes", "Reims", "Grenoble",
-                    "Saint-Étienne", "Toulon", "Cannes", "Nîmes", "Perpignan", "Limoges",
-                    "Poitiers", "Angoulême", "Villeurbanne", "Boulogne-Billancourt",
-                    "Saint-Denis", "Versailles", "France"
-                ].map(name => ({ "@type": name === "France" ? "Country" : "City", "name": name })),
-                "serviceType": [
-                    "Web Development", "Full Stack Development", "Video Editing",
-                    "VFX Compositing", "IT Services", "Computer Repair",
-                    "E-commerce Development", "Mobile Development"
-                ],
-                "priceRange": "€€",
-                "sameAs": [linkedin, github, malt, instagram],
-                "contactPoint": {
-                    "@type": "ContactPoint",
-                    "telephone": phone,
-                    "email": email,
-                    "contactType": "customer service",
-                    "availableLanguage": ["French", "English"]
+        script: [
+            {
+                type: "application/ld+json",
+                children: JSON.stringify(professionalServiceSchema)
+            },
+            !noIndex
+                ? {
+                    type: "application/ld+json",
+                    children: JSON.stringify(webPageSchema)
                 }
-            })
-        }]
+                : null
+        ].filter(Boolean)
     })
 
     // Return meta only — useSeoMeta is called from the page

@@ -1,10 +1,11 @@
 <template>
-    <section id="projects" class="projects-section">
+    <section id="projects" class="projects-section" aria-labelledby="projects-section__title">
         <!-- Section header -->
         <div class="projects-section__content">
-            <h2 class="projects-section__title text-tall text-uppercase">
+            <h2 id="projects-section__title" class="projects-section__title text-tall text-uppercase">
                 {{ $lang.getTranslation('lastProjects') }}
             </h2>
+
             <div class="projects-section__description text-normal">
                 {{ $lang.getTranslation('projectDescription') }}
             </div>
