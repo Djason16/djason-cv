@@ -23,10 +23,12 @@ export default defineEventHandler(async event => {
     }
 
     // Constant-time comparison to prevent timing attacks
-    const valid = crypto.timingSafeEqual(
-        Buffer.from(otp.code),
-        Buffer.from(code.trim())
-    )
+    const storedBuffer = Buffer.from(otp.code)
+    const inputBuffer = Buffer.from(code.trim())
+
+    const valid = storedBuffer.length === inputBuffer.length
+        && crypto.timingSafeEqual(storedBuffer, inputBuffer)
+
     if (!valid)
         throw createError({ statusCode: 401, message: 'invalidOtp' })
 

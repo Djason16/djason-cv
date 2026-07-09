@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_NO_WARNINGS=1 nuxt dev",
     "build": "cross-env NODE_ENV=production nuxt build && npm run copy-wasm",
-    "start": "node .output/server/index.mjs",
+    "start": "node --env-file=.env.production .output/server/index.mjs",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -25,7 +25,7 @@
     "entities": "^8.0.0",
     "gsap": "^3.15.0",
     "html2pdf.js": "^0.14.0",
-    "nodemailer": "^8.0.11",
+    "nodemailer": "^9.0.3",
     "nuxt": "^4.4.8",
     "pinia": "^3.0.4",
     "sql.js": "^1.14.1",
