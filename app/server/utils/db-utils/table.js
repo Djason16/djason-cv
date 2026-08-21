@@ -43,6 +43,7 @@ export const createClientsTable = async db => db.sql`
     city TEXT,
     siret TEXT,
     type TEXT CHECK(type IN ('individual', 'company', 'freelance', 'association')) NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `

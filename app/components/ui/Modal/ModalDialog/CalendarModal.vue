@@ -4,7 +4,12 @@
             <!-- Editable table showing timezone and daily schedule -->
             <EditableTable :items="formattedItems" :columns="columns" :show-actions="false" :item-key="'_rowId'"
                 :empty-message="$lang.getTranslation('noSchedule')" @update="handleUpdate" />
+
+            <MessageBox :message="translatedMessage" margin="0" />
+
             <div class="modal-footer">
+                <HeroButton :label="sending ? $lang.getTranslation('sending') : $lang.getTranslation('sendAgenda')"
+                    iconClass="fas fa-paper-plane" :disabled="sending" @click="handleSendAgenda" />
                 <HeroButton :label="$lang.getTranslation('close')" iconClass="fas fa-times" @click="close" />
             </div>
         </div>
@@ -12,18 +17,22 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import HeroButton from '~/components/ui/Button/HeroButton.vue'
+import MessageBox from '~/components/ui/Message/MessageBox.vue'
 import EditableTable from '~/components/ui/Table/EditableTable.vue'
 import { getGMTOffset, useCalendar } from '~/composables/useCalendar'
+import { useMessage } from '~/composables/useMessage'
 import timezones from '~/utils/timezones.js'
 import ModalDialog from '../ModalDialog.vue'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
-const { $lang, settings, fetchSettings, updateSettings } = useCalendar()
+const { $lang, settings, fetchSettings, updateSettings, sendAgenda } = useCalendar()
+const { translatedMessage, showMessage, clearMessage } = useMessage()
 
 const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+const sending = ref(false)
 
 // Format timezone label with translation and GMT offset
 const formatTimezoneLabel = tz => `${$lang.getTranslation(tz)} (${getGMTOffset(tz)})`
@@ -107,9 +116,36 @@ const handleUpdate = async ({ item, field, value }) => {
     try { await updateSettings(item.id, payload) } catch (err) { console.error('Update failed:', err) }
 }
 
+// Pick the right confirmation message key depending on override status vs. dated unavailability
+const resolveSentMessageKey = res => {
+    if (res.hasOverride && res.availabilityStatus === 'unavailable') return 'agendaSentOverrideUnavailable'
+    if (res.hasOverride && res.availabilityStatus === 'busy') return 'agendaSentOverrideBusy'
+    if (res.isCurrentlyUnavailable) return 'agendaSentUnavailable'
+    return 'agendaSent'
+}
+
+// Send the current agenda to all active clients
+const handleSendAgenda = async () => {
+    clearMessage()
+    sending.value = true
+    try {
+        const res = await sendAgenda($lang.current.value === 'french' ? 'fr' : 'en')
+        if (res.sent === 0 && res.total === 0)
+            showMessage('error', 'noActiveClients', 0)
+        else {
+            const key = resolveSentMessageKey(res)
+            showMessage('success', $lang.getTranslation(key, { count: res.sent }), 3000)
+        }
+    } catch (err) {
+        showMessage('error', err.data?.message || err.message || 'errorSendingAgenda', 0)
+    } finally {
+        sending.value = false
+    }
+}
+
 // Fetch settings when modal opens
 watch(() => props.show, val => val && fetchSettings())
-const close = () => emit('close')
+const close = () => { clearMessage(); emit('close') }
 </script>
 
 <style scoped>

@@ -27,6 +27,16 @@
                 </select>
             </div>
 
+            <!-- Active status selector -->
+            <div class="form-group">
+                <label for="active">{{ $lang.getTranslation('status') }}</label>
+                <select id="active" v-model="refsMap.active" required :title="$lang.getTranslation('status')"
+                    :aria-label="$lang.getTranslation('status')">
+                    <option :value="true">{{ $lang.getTranslation('active') }}</option>
+                    <option :value="false">{{ $lang.getTranslation('inactive') }}</option>
+                </select>
+            </div>
+
             <MessageBox :message="translatedMessage" />
 
             <!-- Modal actions -->
@@ -64,7 +74,7 @@ const hasScroll = ref(false)
 const clientTypeOptions = getClientTypeOptions()
 
 // Reactive form data
-const refsMap = reactive({ firstname: '', lastname: '', company_name: '', email: '', phone: '', address: '', postal_code: '', city: '', siret: '', type: 'individual' })
+const refsMap = reactive({ firstname: '', lastname: '', company_name: '', email: '', phone: '', address: '', postal_code: '', city: '', siret: '', type: 'individual', active: true })
 
 // Compute visible fields and group them by layout
 const visibleFields = computed(() => getVisibleFields(refsMap.type))
@@ -91,7 +101,11 @@ watch(() => refsMap.type, () => setTimeout(checkScroll, 50))
 
 // Reset form and close modal
 const close = () => {
-    Object.keys(refsMap).forEach(k => refsMap[k] = k === 'type' ? 'individual' : '')
+    Object.keys(refsMap).forEach(k => {
+        if (k === 'type') refsMap[k] = 'individual'
+        else if (k === 'active') refsMap[k] = true
+        else refsMap[k] = ''
+    })
     clearMessage()
     formLoading.value = false
     emit('close')

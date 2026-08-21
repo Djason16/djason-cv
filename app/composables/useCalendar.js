@@ -58,5 +58,14 @@ export const useCalendar = () => {
         return res
     })
 
-    return { $lang, settings, loading, error, fetchSettings, updateSettings }
+    // Send current agenda/schedule to all active clients
+    const sendAgenda = locale => run(async () => {
+        const res = await $fetch('/api/calendar/send-agenda', {
+            method: 'POST',
+            body: { locale }
+        })
+        return res
+    })
+
+    return { $lang, settings, loading, error, fetchSettings, updateSettings, sendAgenda }
 }

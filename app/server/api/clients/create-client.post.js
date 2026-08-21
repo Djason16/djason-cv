@@ -2,18 +2,18 @@ import crypto from 'crypto'
 import { readBody } from 'h3'
 
 export default defineEventHandler(async event => {
-    const db = event.context.db
+  const db = event.context.db
 
-    // Parse request body
-    const body = await readBody(event)
+  // Parse request body
+  const body = await readBody(event)
 
-    // Generate a unique client ID
-    const id = crypto.randomUUID()
+  // Generate a unique client ID
+  const id = crypto.randomUUID()
 
-    // Insert client into database, using null for optional fields
-    await db.sql`
+  // Insert client into database, using null for optional fields
+  await db.sql`
     INSERT INTO dc_clients (
-      id, firstname, lastname, company_name, email, phone, address, postal_code, city, siret, type
+      id, firstname, lastname, company_name, email, phone, address, postal_code, city, siret, type, active
     ) VALUES (
       ${id},
       ${body.firstname || null},
@@ -25,10 +25,11 @@ export default defineEventHandler(async event => {
       ${body.postal_code || null},
       ${body.city || null},
       ${body.siret || null},
-      ${body.type}
+      ${body.type},
+      ${body.active === false ? 0 : 1}
     )
   `
 
-    // Return success with the new client ID
-    return { success: true, id }
+  // Return success with the new client ID
+  return { success: true, id }
 })

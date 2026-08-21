@@ -1,4 +1,4 @@
-import { calculateStripeFees } from '~/utils/stripe-fees.js'
+import { calculateStripeFees } from '~/utils/stripeFees.js'
 
 // Create a Stripe checkout session for a one-time payment
 export const createStripeSession = async ({ amount, currency, email, cardType = 'european', successUrl, cancelUrl }) => {

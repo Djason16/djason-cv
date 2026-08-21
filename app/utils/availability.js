@@ -41,35 +41,11 @@ export const getAvailability = (periodsData, overrideData, settingsData) => {
     return time >= slot.start && time <= slot.end ? 'available' : 'unavailable'
 }
 
-// Generate human-readable schedule string including timezone and unavailability
-export const getWorkingHours = (translate, periodsData, overrideData, settingsData, locale = 'fr-FR') => {
-    const rawPeriods = periodsData ? toRaw(periodsData) : []
-    const rawOverride = overrideData ? toRaw(overrideData) : null
-    const rawSettings = settingsData ? toRaw(settingsData) : null
-    if (!rawSettings?.timezone) return translate('noSchedule')
-
-    const now = new Date()
-    const localNow = new Date(now.toLocaleString('en-US', { timeZone: rawSettings.timezone }))
-
-    // Show active unavailability period
-    const activePeriod = rawPeriods.find(p => {
-        const start = new Date(`${p.startDate}T00:00:00`)
-        const end = new Date(`${p.endDate}T23:59:59`)
-        return localNow >= start && localNow <= end
-    })
-    if (activePeriod) {
-        const formatted = new Date(activePeriod.endDate).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
-        return translate('unavailableUntil', { date: formatted })
-    }
-
-    // Show manual override if active
-    if (rawOverride?.enabled) return translate(rawOverride.status === 'busy' ? 'notAvailable' : rawOverride.status)
-
-    // Format schedule
-    const schedule = rawSettings.schedule
+// Format the weekly schedule into a human-readable string (used both for the normal case and the "busy" override case)
+const formatScheduleText = (translate, schedule, timezone) => {
     if (!schedule) return translate('noSchedule')
 
-    const offset = `UTC${getUTCOffsetHours(rawSettings.timezone) >= 0 ? '+' : ''}${getUTCOffsetHours(rawSettings.timezone)}`
+    const offset = `UTC${getUTCOffsetHours(timezone) >= 0 ? '+' : ''}${getUTCOffsetHours(timezone)}`
     const dayKeys = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
     const days = Object.keys(schedule).map(Number).sort((a, b) => a - b)
     if (!days.length) return translate('noSchedule')
@@ -99,4 +75,36 @@ export const getWorkingHours = (translate, periodsData, overrideData, settingsDa
             : translate('dayRange', { start: translate(dayKeys[r.start]), end: translate(dayKeys[r.end]) })
         return `${label} ${r.slot.start}-${r.slot.end} (${offset})`
     }).join(', ')
+}
+
+// Generate human-readable schedule string including timezone and unavailability
+export const getWorkingHours = (translate, periodsData, overrideData, settingsData, locale = 'fr-FR') => {
+    const rawPeriods = periodsData ? toRaw(periodsData) : []
+    const rawOverride = overrideData ? toRaw(overrideData) : null
+    const rawSettings = settingsData ? toRaw(settingsData) : null
+    if (!rawSettings?.timezone) return translate('noSchedule')
+
+    const now = new Date()
+    const localNow = new Date(now.toLocaleString('en-US', { timeZone: rawSettings.timezone }))
+
+    // Show active unavailability period
+    const activePeriod = rawPeriods.find(p => {
+        const start = new Date(`${p.startDate}T00:00:00`)
+        const end = new Date(`${p.endDate}T23:59:59`)
+        return localNow >= start && localNow <= end
+    })
+    if (activePeriod) {
+        const formatted = new Date(activePeriod.endDate).toLocaleDateString(locale, { day: 'numeric', month: 'long', year: 'numeric' })
+        return translate('unavailableUntil', { date: formatted })
+    }
+
+    // Manual override: "busy" still shows the regular schedule (you're not away, just slower to respond),
+    // while "available"/"unavailable" keep showing just the plain status label
+    if (rawOverride?.enabled) {
+        if (rawOverride.status === 'busy') return formatScheduleText(translate, rawSettings.schedule, rawSettings.timezone)
+        return translate(rawOverride.status)
+    }
+
+    // Format schedule
+    return formatScheduleText(translate, rawSettings.schedule, rawSettings.timezone)
 }

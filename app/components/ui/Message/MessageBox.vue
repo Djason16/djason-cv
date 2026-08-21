@@ -1,22 +1,22 @@
 <template>
     <!-- Display message if present -->
     <div v-if="message" class="message-box text-large">
-        <p :class="message.type">{{ $lang.getTranslation(message.key) }}</p>
+        <p :class="message.type" :style="{ margin: margin }">{{ $lang.getTranslation(message.key) }}</p>
     </div>
 </template>
 
 <script setup>
 const { $lang } = useNuxtApp()
 
-// Props: optional message object with type (success/error) and translation key
+// Props: optional message object with type (success/error) and translation key, plus optional margin value for the message
 const props = defineProps({
-    message: { type: Object, default: null }
+    message: { type: Object, default: null },
+    margin: { type: String, default: '3rem 0 0' }
 })
 </script>
 
 <style scoped>
 .message-box p {
-    margin: 3rem 0 0;
     text-align: center;
     padding: 1rem;
     border-radius: 4px;

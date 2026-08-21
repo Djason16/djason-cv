@@ -13,6 +13,7 @@ export function useClients() {
     // Return client name or fallback
     const displayClientName = c => c.company_name || [c.firstname, c.lastname].filter(Boolean).join(' ') || '-'
     const displayValue = v => v ?? '-'
+    const displayActive = c => !(c.active === 0 || c.active === false)
 
     // Fetch clients from API
     const fetchClients = async () => {
@@ -101,6 +102,7 @@ export function useClients() {
         filteredClients,
         displayClientName,
         displayValue,
+        displayActive,
         updateNameField,
         updateClientType,
         clientFields,

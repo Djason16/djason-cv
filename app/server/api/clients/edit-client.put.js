@@ -21,7 +21,8 @@ export default defineEventHandler(async event => {
         postal_code = ${body.postal_code || null},
         city = ${body.city || null},
         siret = ${body.siret || null},
-        type = ${body.type || null}
+        type = ${body.type || null},
+        active = ${body.active === false || body.active === 0 ? 0 : 1}
       WHERE id = ${body.id}
     `
 

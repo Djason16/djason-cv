@@ -4,7 +4,6 @@
             <!-- Availability status + optional message -->
             <div class="availability-wrapper">
                 <AvailabilityButton :status="currentAvailability" />
-
                 <p v-if="showAvailabilityMessage" class="availability-schedule text-normal" role="status"
                     aria-live="polite">
                     {{ availabilityMessage }}
@@ -67,8 +66,12 @@ const currentAvailability = ref('unavailable')
 const availabilityMessage = ref('')
 const dataLoaded = ref(false)
 
+// The schedule message is shown normally (no override), and also when the override status is "busy" —
+// since "busy" still displays the regular schedule (you're not away, just slower to respond).
+// "available"/"unavailable" overrides keep showing just the plain status badge, no extra text.
 const showAvailabilityMessage = computed(() => {
-    return !override.value?.enabled && Boolean(availabilityMessage.value)
+    const isBusyOverride = override.value?.enabled && override.value?.status === 'busy'
+    return (!override.value?.enabled || isBusyOverride) && Boolean(availabilityMessage.value)
 })
 
 // Update availability & generate message based on periods, override, and settings
@@ -109,7 +112,6 @@ onMounted(() => {
             console.error('Failed to fetch initial data:', err)
         }
     }
-
     fetchData()
 })
 

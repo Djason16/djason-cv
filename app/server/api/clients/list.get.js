@@ -4,7 +4,7 @@ export default defineEventHandler(async event => {
     try {
         // Fetch all clients with basic info
         const clients = await db.sql`
-            SELECT id, firstname, lastname, company_name, email, phone, address, postal_code, city, type, siret
+            SELECT id, firstname, lastname, company_name, email, phone, address, postal_code, city, type, siret, active
             FROM dc_clients
             ORDER BY created_at DESC NULLS LAST, company_name ASC
         `

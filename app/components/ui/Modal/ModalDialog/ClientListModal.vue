@@ -34,7 +34,7 @@ const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 
 // Composable for client state and helpers
-const { $lang, clients, search, fetchClients, filteredClients, displayClientName, displayValue, updateNameField, updateClientType } = useClients()
+const { $lang, clients, search, fetchClients, filteredClients, displayClientName, displayValue, displayActive, updateNameField, updateClientType } = useClients()
 
 // Build select options from utility (auto-includes association)
 const typeOptions = getClientTypeOptions().map(opt => ({ value: opt.value, label: $lang.getTranslation(opt.labelKey) }))
@@ -53,7 +53,16 @@ const columns = computed(() => [
         editValue: c => c.type,
         options: typeOptions
     },
-    { key: 'siret', label: $lang.getTranslation('siret'), formatter: c => displayValue(c.siret) }
+    { key: 'siret', label: $lang.getTranslation('siret'), formatter: c => displayValue(c.siret) },
+    {
+        key: 'active', label: $lang.getTranslation('active'), type: 'select',
+        formatter: c => $lang.getTranslation(displayActive(c) ? 'active' : 'inactive'),
+        editValue: c => displayActive(c) ? '1' : '0',
+        options: [
+            { value: '1', label: $lang.getTranslation('active') },
+            { value: '0', label: $lang.getTranslation('inactive') }
+        ]
+    }
 ])
 
 // Fetch clients when modal opens
@@ -63,6 +72,7 @@ watch(() => props.show, val => val && fetchClients())
 const handleUpdate = async ({ item, field, value }) => {
     if (field === 'name') updateNameField(item, value)
     else if (field === 'type') updateClientType(item, value)
+    else if (field === 'active') item.active = value === '1' ? 1 : 0
     else item[field] = value === '' ? null : value
 
     try {
