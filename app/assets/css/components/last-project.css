@@ -5,6 +5,7 @@
     align-items: flex-start;
     gap: 5rem;
     max-width: 80%;
+    margin: auto;
 }
 
 .projects-section .projects-section__content {
@@ -34,7 +35,10 @@
     }
 
     .projects-section .projects-section__content,
-    .projects-section .projects-section__carousel,
+    .projects-section .projects-section__carousel {
+        max-width: 100%;
+    }
+
     .projects-section .projects-section__carousel {
         clip-path: none;
     }
