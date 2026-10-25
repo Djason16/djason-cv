@@ -1,17 +1,18 @@
 <!-- ContentContainer.vue -->
 <template>
+    <!-- Layout of the text pages (legal, login, admin, pay-me, error): title, subtitle, sections, custom content, footer -->
     <div class="content-container">
         <!-- Header with dynamic title and subtitle processed for links -->
         <div class="header">
             <h1 :class="headerClass">
-                <span v-html="processText($lang.getTranslation(pageTitleKey, dynamicData), dynamicData)"></span>
+                <span v-html="processText(t(pageTitleKey, dynamicData), dynamicData)"></span>
             </h1>
             <p :class="subtitleClass">
-                <span v-html="processText($lang.getTranslation(pageSubtitleKey, dynamicData), dynamicData)"></span>
+                <span v-html="processText(t(pageSubtitleKey, dynamicData), dynamicData)"></span>
             </p>
         </div>
 
-        <!-- Render custom list with styling and dynamic content -->
+        <!-- Renders custom list with styling and dynamic content -->
         <CustomList :items="sections" :titleTag="titleTag" :titleClass="titleClass" :titleColor="titleColor"
             :contentClass="contentClass" :contentColor="contentColor" :dynamicData="dynamicData" />
 
@@ -24,13 +25,17 @@
 </template>
 
 <script setup>
-import FooterTop from "~/components/layout/Footer/sections/FooterTop.vue"
-import { useTextEscape } from '~/composables/useTextEscape'
+import FooterTop from "@/components/layout/Footer/FooterTop.vue"
+import { useLang } from '@/composables/useLang.js'
+import { linkify } from '@/utils/text.js'
 import CustomList from "../List/CustomList.vue"
 
-const { processText } = useTextEscape()
+const lang = useLang()
+const { getTranslation: t } = lang
 
-// Props for dynamic content, styling, and list configuration
+// Texts with clickable emails, phone numbers and links (utils/text.js)
+const processText = (txt, vars) => linkify(txt, vars, lang.getTranslation)
+
 defineProps({
     pageTitleKey: { type: String, required: true },
     pageSubtitleKey: { type: String, required: true },

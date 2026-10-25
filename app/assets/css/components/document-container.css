@@ -1,0 +1,24 @@
+/* Quote or invoice printed to PDF (utils/pdf.js): header, client, lines, totals, payment, signature (DocumentContainer) */
+.document-container {
+    max-width: 210mm;
+    height: auto;
+    margin: auto;
+    background: var(--zero-color);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.document-container .content {
+    padding: 40px 50px;
+}
+
+@media print {
+    body {
+        background: var(--zero-color);
+        padding: 0;
+    }
+
+    .document-container {
+        box-shadow: none;
+        margin: 0;
+    }
+}

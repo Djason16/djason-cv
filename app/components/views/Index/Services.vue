@@ -1,13 +1,13 @@
 <template>
-    <!-- Services section wrapper -->
+    <!-- Home page: services section (tabs in ServiceCard) -->
     <section id="services" class="services-section" aria-labelledby="services-section__title">
         <div class="services-section__content">
             <h2 id="services-section__title" class="services-section__title text-tall text-uppercase">
-                {{ $lang.getTranslation('servicesTitle') }}
+                {{ t('servicesTitle') }}
             </h2>
 
             <div class="services-section__description text-normal">
-                {{ $lang.getTranslation('servicesDescription') }}
+                {{ t('servicesDescription') }}
             </div>
         </div>
 
@@ -17,7 +17,10 @@
 </template>
 
 <script setup>
-import SectionCard from '~/components/ui/Tab/ServiceCard.vue'; // Card for individual service
+import { useLang } from '@/composables/useLang.js'
+import SectionCard from '@/components/views/Index/ServiceCard.vue'
+
+const { getTranslation: t } = useLang()
 </script>
 
 <style scoped>

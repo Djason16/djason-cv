@@ -1,0 +1,17 @@
+/* Link of the header that scrolls to a section of the home page (NavLink) */
+.header-top__link {
+    text-decoration: none;
+    color: var(--text-color-light);
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.header-top__link:hover {
+    color: var(--fourth-color);
+}
+
+@media (max-width:1024px) {
+    .header-top__link:hover {
+        color: inherit;
+    }
+}

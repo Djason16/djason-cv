@@ -1,4 +1,5 @@
 <template>
+    <!-- Home page: first section, availability of the moment and contact buttons -->
     <section id="hero-banner" class="hero-banner" aria-labelledby="hero-banner__title">
         <div class="hero-banner__content">
             <!-- Availability status + optional message -->
@@ -12,51 +13,53 @@
 
             <!-- Main hero title -->
             <h1 id="hero-banner__title" class="hero-banner__title text-uppercase text-bold">
-                {{ $lang.getTranslation('welcomeToMyWebsite') }}
+                {{ t('welcomeToMyWebsite') }}
             </h1>
 
             <!-- Primary contact buttons -->
             <div class="hero-banner__actions">
-                <HeroButton v-for="(action, i) in heroActions" :key="i" :label="$lang.getTranslation(action.labelKey)"
+                <HeroButton v-for="(action, i) in heroActions" :key="i" :label="t(action.labelKey)"
                     :href="action.href" :iconClass="action.icon"
-                    :ariaLabel="$lang.getTranslation(action.ariaKey, contactArgs)"
-                    :title="$lang.getTranslation(action.ariaKey, contactArgs)" />
+                    :ariaLabel="t(action.ariaKey, contactArgs)"
+                    :title="t(action.ariaKey, contactArgs)" />
             </div>
         </div>
     </section>
 </template>
 
 <script setup>
-import { useNuxtApp, useRuntimeConfig } from '#app'
+import { useSite } from '@/composables/useSite.js'
+import { useLang } from '@/composables/useLang.js'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import AvailabilityButton from '~/components/ui/Button/AvailabilityButton.vue'
-import HeroButton from '~/components/ui/Button/HeroButton.vue'
-import { useCalendar } from '~/composables/useCalendar'
-import { useUnavailability } from '~/composables/useUnavailability'
-import { getAvailability, getWorkingHours } from '~/utils/availability'
+import AvailabilityButton from '@/components/ui/Button/AvailabilityButton.vue'
+import HeroButton from '@/components/ui/Button/HeroButton.vue'
+import { useCalendar } from '@/composables/useCalendar.js'
+import { useUnavailability } from '@/composables/useUnavailability.js'
+import { getAvailability, getWorkingHours } from '@/utils/availability.js'
 
-const { $lang } = useNuxtApp()
-const config = useRuntimeConfig()
+const lang = useLang()
+const { getTranslation: t } = lang
+const site = useSite()
 
 // Composables
 const { periods, override, fetchAll: fetchAvailability } = useUnavailability()
 const { settings, fetchSettings } = useCalendar()
 
 // Contact placeholders for ARIA and labels
-const contactArgs = { email: config.public.contactEmail, phone: config.public.contactPhone }
+const contactArgs = { email: site.email, phone: site.phone }
 
 // Hero actions (email & phone)
 const heroActions = [
     {
         labelKey: 'sendEmailButton',
         ariaKey: 'sendEmail',
-        href: `mailto:${config.public.contactEmail}`,
+        href: `mailto:${site.email}`,
         icon: 'fas fa-envelope'
     },
     {
         labelKey: 'callPhoneButton',
         ariaKey: 'callPhone',
-        href: `tel:${config.public.contactPhone.replace(/\s+/g, '')}`,
+        href: `tel:${site.phone.replace(/\s+/g, '')}`,
         icon: 'fas fa-phone'
     }
 ]
@@ -74,31 +77,22 @@ const showAvailabilityMessage = computed(() => {
     return (!override.value?.enabled || isBusyOverride) && Boolean(availabilityMessage.value)
 })
 
-// Update availability & generate message based on periods, override, and settings
+// Updates availability & generates message based on periods, override, and settings
 const updateAvailability = () => {
     if (!dataLoaded.value) return
 
-    const locale = $lang.current.value === 'french' ? 'fr-FR' : 'en-US'
+    const locale = lang.current.value === 'fr' ? 'fr-FR' : 'en-US'
     currentAvailability.value = getAvailability(periods.value, override.value, settings.value)
     availabilityMessage.value = getWorkingHours(
-        $lang.getTranslation,
+        lang.getTranslation,
         periods.value,
         override.value,
         settings.value,
         locale
     )
-
-    console.log('Availability Update:', {
-        status: currentAvailability.value,
-        message: availabilityMessage.value,
-        periods: periods.value,
-        override: override.value,
-        settings: settings.value,
-        locale
-    })
 }
 
-// Fetch data on mount and refresh every minute
+// Fetches data on mount and refreshes every minute
 let intervalId
 
 onMounted(() => {
@@ -120,43 +114,5 @@ onUnmounted(() => {
 })
 
 // React to changes in unavailability periods, overrides, settings, or language
-watch([periods, override, settings, () => $lang.current.value], updateAvailability, { deep: true })
+watch([periods, override, settings, () => lang.current.value], updateAvailability, { deep: true })
 </script>
-
-<style scoped>
-.hero-banner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    min-height: 60vh;
-    position: relative;
-}
-
-.hero-banner__content {
-    z-index: 2;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    max-width: 80%;
-}
-
-.hero-banner__actions {
-    display: flex;
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.availability-wrapper {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: .5rem;
-    margin-bottom: 1rem;
-}
-
-.availability-schedule {
-    color: var(--text-color-light);
-}
-</style>

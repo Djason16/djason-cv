@@ -1,0 +1,202 @@
+/* Editable table of the admin modals (components/ui/Table/EditableTable) */
+.editable-table-wrapper {
+    overflow: auto;
+    max-height: 60vh;
+    transition: all .3s ease
+}
+
+.editable-table-wrapper.has-scroll {
+    padding-right: 1rem
+}
+
+.editable-table-wrapper .editable-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    background: var(--first-color)
+}
+
+.editable-table-wrapper .editable-table thead {
+    background: var(--third-color);
+    color: var(--text-color-light);
+    letter-spacing: .05em;
+    position: sticky;
+    top: 0;
+    z-index: 2
+}
+
+.editable-table-wrapper .editable-table th,
+.editable-table-wrapper .editable-table td {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 1px solid var(--second-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 125px;
+}
+
+.editable-table-wrapper .editable-table td {
+    cursor: default
+}
+
+.editable-table-wrapper .editable-table td:not(.non-editable):not(:last-child) {
+    cursor: pointer
+}
+
+.editable-table-wrapper .editable-table td a {
+    color: var(--text-color-dark);
+    position: relative
+}
+
+.editable-table-wrapper .editable-table td a::after {
+    background-color: var(--text-color-dark)
+}
+
+.editable-table-wrapper .editable-table td input,
+.editable-table-wrapper .editable-table td select {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+.editable-table-wrapper .delete-btn,
+.editable-table-wrapper .download-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: .5rem;
+    color: var(--text-color-grey);
+    transition: all .2s ease;
+    border-radius: 4px
+}
+
+.editable-table-wrapper .delete-btn:hover {
+    color: var(--accent-red);
+    background-color: rgba(231, 76, 60, .1)
+}
+
+.editable-table-wrapper .download-btn:hover {
+    color: var(--accent-green);
+    background-color: rgba(52, 152, 219, .1)
+}
+
+.editable-table-wrapper .empty {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-color-grey)
+}
+
+.editable-table-wrapper .select-multiple-container {
+    width: 100%;
+}
+
+.editable-table-wrapper .select-multiple-container select {
+    min-height: 25px;
+}
+
+@media(max-width:1440px) {
+    .editable-table-wrapper .editable-table {
+        min-width: 100%;
+        display: block;
+        border: none;
+        background: transparent
+    }
+
+    .editable-table-wrapper .editable-table thead {
+        display: none
+    }
+
+    .editable-table-wrapper .editable-table th,
+    .editable-table-wrapper .editable-table td {
+        max-width: none;
+    }
+
+    .editable-table-wrapper .editable-table tbody {
+        display: block
+    }
+
+    .editable-table-wrapper .editable-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid var(--second-color);
+        background: var(--first-color);
+        padding: 1rem 1rem 0
+    }
+
+    .editable-table-wrapper .editable-table tr:has(.empty) {
+        padding: 1rem
+    }
+
+    .editable-table-wrapper .editable-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: .75rem 0;
+        border-bottom: 1px solid rgba(0, 0, 0, .05);
+        white-space: normal;
+        text-align: right
+    }
+
+    .editable-table-wrapper .editable-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: .85em;
+        color: var(--text-color-grey);
+        flex: 0 0 40%;
+        text-align: left;
+        padding-right: 1rem
+    }
+
+    .editable-table-wrapper .editable-table td input,
+    .editable-table-wrapper .editable-table td select {
+        max-width: 80%;
+    }
+
+    .editable-table-wrapper .delete-btn,
+    .editable-table-wrapper .download-btn {
+        padding: .5rem 0;
+    }
+
+    .editable-table-wrapper .delete-btn:hover,
+    .editable-table-wrapper .download-btn:hover {
+        color: var(--text-color-grey);
+        background: transparent
+    }
+
+    .editable-table-wrapper .empty {
+        display: block;
+        border: none
+    }
+}
+
+@media(max-width:768px) {
+    .editable-table-wrapper {
+        max-height: 50vh
+    }
+
+    .editable-table-wrapper .editable-table td {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .5rem;
+        text-align: left;
+    }
+
+    .editable-table-wrapper .editable-table td::before {
+        flex: none;
+        padding-right: 0
+    }
+
+    .editable-table-wrapper .editable-table td input,
+    .editable-table-wrapper .editable-table td select,
+    .editable-table-wrapper .select-multiple-container select {
+        max-width: 100%;
+        width: 100%
+    }
+
+    .editable-table-wrapper .delete-btn,
+    .editable-table-wrapper .download-btn {
+        padding: .5rem .5rem .5rem 0
+    }
+}

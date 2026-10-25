@@ -1,11 +1,13 @@
-import { useNuxtApp } from '#app'
+import { useLang } from './useLang.js'
 import { computed, ref } from 'vue'
-import { isIndividualType, isProfessionalType } from '~/utils/clientTypes'
-import { getDurationOptions } from '~/utils/durationOptions'
-import { getServiceTranslationKey, serviceTranslations } from '~/utils/serviceTranslations'
+import { api } from '@/utils/api.js'
+import { isIndividualType, isProfessionalType } from '@/utils/clientTypes.js'
+import { getDurationOptions } from '@/utils/durationOptions.js'
+import { translateServiceName } from '@/utils/serviceTranslations.js'
 
+// Missions of the clients with their clients and services: list, create / update / delete (/api/missions)
 export function useMissions() {
-    const { $lang } = useNuxtApp()
+    const lang = useLang()
 
     // Reactive state
     const missions = ref([])
@@ -15,33 +17,26 @@ export function useMissions() {
     const search = ref('')
     const durationOptions = computed(() => getDurationOptions())
 
-    // Check if client is individual
+    // Checks if client is individual
     const isIndividualClient = id => isIndividualType(clients.value.find(c => c.id === id)?.type)
 
     // Return value or fallback placeholder
     const displayValue = v => v ?? '-'
 
-    // Translate service name using predefined key or dynamic mapping
-    const displayServiceName = s => {
-        const key = serviceTranslations[s.name] || getServiceTranslationKey(s.name)
-        return $lang.getTranslation(key)
-    }
+    // Service name in the current language
+    const displayServiceName = s => translateServiceName(s.name, lang.getTranslation)
 
-    // Fetch missions, clients, and services
+    // Fetches missions, clients, and services
     const fetchData = async () => {
         loading.value = true
         try {
-            const [mR, cR, sR] = await Promise.all([
-                $fetch('/api/missions/list'),
-                $fetch('/api/clients/list'),
-                $fetch('/api/services/list')
-            ])
+            const [mR, cR, sR] = await Promise.all([api.get('/missions'), api.get('/clients'), api.get('/services')])
 
             // tjm = null → old mission, infer from unit_price/duration/quantity (fallback)
             // tjm = 0    → explicit manual pricing mode
             // tjm > 0    → explicit TJM mode with hourly rate
             if (mR.success) missions.value = mR.missions.map(m => {
-                const client = (cR.clients?.rows || []).find(c => c.id === m.client_id)
+                const client = (cR.clients || []).find(c => c.id === m.client_id)
                 return {
                     ...m,
                     tjm: (m.tjm !== null && m.tjm !== undefined)
@@ -52,8 +47,8 @@ export function useMissions() {
                 }
             })
 
-            if (cR.success) clients.value = cR.clients.rows
-            if (sR.success) services.value = sR.services.rows
+            if (cR.success) clients.value = cR.clients
+            if (sR.success) services.value = sR.services
         } catch (e) {
             console.error(e)
         } finally {
@@ -61,8 +56,31 @@ export function useMissions() {
         }
     }
 
+    // Creates a mission — resolves to the API result ({ success, id } or { success: false, error })
+    const createMission = data => api.post('/missions', data)
+
+    // Saves a mission row of the table (overrides replace some of its values)
+    const saveMission = (item, overrides = {}) => api.put(`/missions/${item.id}`, {
+        clientId: item.client_id,
+        serviceId: item.service_id,
+        title: item.title,
+        date: item.date,
+        duration: item.duration,
+        quantity: item.quantity,
+        unitPrice: item.unit_price,
+        tjm: item.tjm,
+        tvaApplicable: item.vat_applicable,
+        ...overrides
+    })
+
+    // Deletes a mission and removes it from the local list
+    const deleteMission = async id => {
+        const res = await api.delete(`/missions/${id}`)
+        if (res.success) missions.value = missions.value.filter(m => m.id !== id)
+        return res
+    }
+
     return {
-        $lang,
         missions,
         clients,
         services,
@@ -72,6 +90,9 @@ export function useMissions() {
         isIndividualClient,
         displayValue,
         displayServiceName,
-        fetchData
+        fetchData,
+        createMission,
+        saveMission,
+        deleteMission
     }
 }

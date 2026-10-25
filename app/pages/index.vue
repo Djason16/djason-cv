@@ -1,31 +1,20 @@
 <template>
-    <!-- Render home page sections dynamically in SectionLayout slots -->
-    <SectionLayout>
-        <template v-for="(section, i) in sections" :key="i" v-slot:[`section-${i}`]>
-            <component :is="section" />
-        </template>
-    </SectionLayout>
+    <!-- Home page: sections rendered in order by SectionLayout -->
+    <SectionLayout :sections="sections" />
 </template>
 
 <script setup>
-import SectionLayout from '~/components/ui/SectionLayout/SectionLayout.vue'
-import AboutMe from '~/components/views/Index/AboutMe.vue'
-import Hero from '~/components/views/Index/Hero.vue'
-import LastProject from '~/components/views/Index/LastProject.vue'
-import Services from '~/components/views/Index/Services.vue'
-import Skills from '~/components/views/Index/Skills.vue'
-import { seoMetaData } from '~/utils/seo.js'
+import SectionLayout from '@/components/ui/SectionLayout/SectionLayout.vue'
+import AboutMe from '@/components/views/Index/AboutMe.vue'
+import Hero from '@/components/views/Index/Hero.vue'
+import LastProject from '@/components/views/Index/LastProject.vue'
+import Services from '@/components/views/Index/Services.vue'
+import Skills from '@/components/views/Index/Skills.vue'
+import { useSeo } from '@/composables/useSeo.js'
 
-// Language context and SEO key
-const { $lang } = useNuxtApp()
-
-// Ordered list of home page sections
+// Ordered list of the home page sections (components/views/Index)
 const sections = [Hero, LastProject, AboutMe, Skills, Services]
 
-// Setup SEO and refresh on language changes
-const pageKey = 'index'
-useSeoMeta(seoMetaData(pageKey, $lang))
-watch(() => $lang.current.value, () => useSeoMeta(seoMetaData(pageKey, $lang)))
+// Title, description, Open Graph... updated when the language changes (utils/seo.js)
+useSeo('index')
 </script>
-
-<style scoped></style>

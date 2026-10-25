@@ -1,0 +1,23 @@
+/* Bank details of the quote or invoice: IBAN and BIC (BankInfo) */
+.bank-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.bank-table th {
+    background: var(--third-color);
+    color: var(--text-color-light);
+    letter-spacing: .05em;
+    padding: 8px 12px;
+    border: 1px solid var(--second-color);
+    text-align: center;
+}
+
+.bank-table td {
+    background: var(--zero-color);
+    color: var(--text-color-dark);
+    padding: 8px 12px;
+    border: 1px solid var(--second-color);
+    text-align: center;
+}

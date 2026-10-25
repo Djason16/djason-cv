@@ -1,4 +1,5 @@
 <template>
+    <!-- Table of the admin modals: a click on a cell edits it, optional delete / download buttons (style: assets/css/components/editable-table.css) -->
     <div ref="tableWrapper" :class="{ 'has-scroll': hasScroll }" class="editable-table-wrapper">
         <table class="editable-table">
             <thead>
@@ -94,7 +95,7 @@ const isFieldDisabled = (item, col) => typeof col.disabled === 'function' ? col.
 const getCellValue = (item, col) => col.formatter ? col.formatter(item) : item[col.key] ?? '-'
 const getCellTitle = (item, col) => col.tooltip ? (typeof col.tooltip === 'function' ? col.tooltip(item) : col.tooltip) : (col.processHtml ? null : getCellValue(item, col))
 
-// Start inline edit
+// Starts inline edit
 const startEdit = (item, col) => {
     if (isFieldDisabled(item, col)) return
     editingItem.value = item
@@ -105,14 +106,13 @@ const startEdit = (item, col) => {
     setTimeout(() => {
         justStartedEditing.value = false
     }, 100)
-    console.log('Edit started:', { itemId: item?.id, column: col.key, itemType: item?._type, dayIndex: item?._dayIndex, storedInEditingItem: editingItem.value })
     nextTick(() => {
         const input = Array.isArray(editInput.value) ? editInput.value[0] : editInput.value
         input?.focus?.()
     })
 }
 
-// Check if cell is being edited
+// Checks if cell is being edited
 const isEditing = (item, field) => {
     if (!editingItem.value) return false
     const isSameItem = editingItem.value[props.itemKey] === item[props.itemKey]
@@ -120,7 +120,7 @@ const isEditing = (item, field) => {
     return isSameItem && isSameField
 }
 
-// Cancel editing
+// Cancels editing
 const cancelEdit = () => {
     editingItem.value = null
     editingField.value = ''
@@ -129,7 +129,7 @@ const cancelEdit = () => {
     justStartedEditing.value = false
 }
 
-// Save edit, using full item from editingItem
+// Saves edit, using full item from editingItem
 const saveEdit = col => {
     if (!editingItem.value) return
     const fullItem = editingItem.value
@@ -151,7 +151,6 @@ const handleClickOutside = e => {
         if (isInsideSelect) return
         const col = props.columns.find(c => c.key === editingField.value)
         if (col) {
-            console.log('Saving from click outside (multiple select)')
             saveEdit(col)
         }
     } else {
@@ -193,212 +192,8 @@ onBeforeUnmount(() => {
     destroyObserver()
 })
 
-// Watch for items to trigger scroll observer
+// Watches for items to trigger scroll observer
 watch(() => props.items.length, len => len > 0 ? setTimeout(createObserver, 100) : (destroyObserver(), hasScroll.value = false), { immediate: true })
 
 defineExpose({ cancelEdit })
 </script>
-
-<style scoped>
-.editable-table-wrapper {
-    overflow: auto;
-    max-height: 60vh;
-    transition: all .3s ease
-}
-
-.editable-table-wrapper.has-scroll {
-    padding-right: 1rem
-}
-
-.editable-table {
-    width: 100%;
-    min-width: 700px;
-    border-collapse: collapse;
-    background: var(--first-color)
-}
-
-.editable-table thead {
-    background: var(--third-color);
-    color: var(--text-color-light);
-    letter-spacing: .05em;
-    position: sticky;
-    top: 0;
-    z-index: 2
-}
-
-.editable-table th,
-.editable-table td {
-    text-align: left;
-    padding: 1rem;
-    border-bottom: 1px solid var(--second-color);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 125px;
-}
-
-.editable-table td {
-    cursor: default
-}
-
-.editable-table td:not(.non-editable):not(:last-child) {
-    cursor: pointer
-}
-
-.editable-table td ::v-deep(a) {
-    color: var(--text-color-dark);
-    position: relative
-}
-
-.editable-table td ::v-deep(a)::after {
-    background-color: var(--text-color-dark)
-}
-
-.editable-table td input,
-.editable-table td select {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-}
-
-.delete-btn,
-.download-btn {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: .5rem;
-    color: var(--text-color-grey);
-    transition: all .2s ease;
-    border-radius: 4px
-}
-
-.delete-btn:hover {
-    color: var(--accent-red);
-    background-color: rgba(231, 76, 60, .1)
-}
-
-.download-btn:hover {
-    color: var(--accent-green);
-    background-color: rgba(52, 152, 219, .1)
-}
-
-.empty {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-color-grey)
-}
-
-.select-multiple-container {
-    width: 100%;
-}
-
-.select-multiple-container select {
-    min-height: 25px;
-}
-
-@media(max-width:1440px) {
-    .editable-table {
-        min-width: 100%;
-        display: block;
-        border: none;
-        background: transparent
-    }
-
-    .editable-table thead {
-        display: none
-    }
-
-    .editable-table th,
-    .editable-table td {
-        max-width: none;
-    }
-
-    .editable-table tbody {
-        display: block
-    }
-
-    .editable-table tr {
-        display: block;
-        margin-bottom: 1rem;
-        border: 1px solid var(--second-color);
-        background: var(--first-color);
-        padding: 1rem 1rem 0
-    }
-
-    .editable-table tr:has(.empty) {
-        padding: 1rem
-    }
-
-    .editable-table td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: .75rem 0;
-        border-bottom: 1px solid rgba(0, 0, 0, .05);
-        white-space: normal;
-        text-align: right
-    }
-
-    .editable-table td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: .85em;
-        color: var(--text-color-grey);
-        flex: 0 0 40%;
-        text-align: left;
-        padding-right: 1rem
-    }
-
-    .editable-table td input,
-    .editable-table td select {
-        max-width: 80%;
-    }
-
-    .delete-btn,
-    .download-btn {
-        padding: .5rem 0;
-    }
-
-    .delete-btn:hover,
-    .download-btn:hover {
-        color: var(--text-color-grey);
-        background: transparent
-    }
-
-    .empty {
-        display: block;
-        border: none
-    }
-}
-
-@media(max-width:768px) {
-    .editable-table-wrapper {
-        max-height: 50vh
-    }
-
-    .editable-table td {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: .5rem;
-        text-align: left;
-    }
-
-    .editable-table td::before {
-        flex: none;
-        padding-right: 0
-    }
-
-    .editable-table td input,
-    .editable-table td select,
-    .select-multiple-container select {
-        max-width: 100%;
-        width: 100%
-    }
-
-    .delete-btn,
-    .download-btn {
-        padding: .5rem .5rem .5rem 0
-    }
-}
-</style>

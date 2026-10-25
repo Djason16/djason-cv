@@ -1,0 +1,26 @@
+/* Previous / next buttons of the carousel (CarouselControls) */
+.carousel-controls {
+    display: flex;
+    gap: 0.75rem;
+    position: absolute;
+    bottom: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.carousel-controls .floating-btn {
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--text-color-dark);
+    opacity: 1;
+}
+
+.carousel-controls .floating-btn:hover {
+    background: rgba(255, 255, 255, 0.8);
+    opacity: 1;
+}
+
+@media (max-width: 1024px) {
+    .carousel-controls .floating-btn:hover {
+        background: rgba(255, 255, 255, 0.5);
+    }
+}

@@ -1,0 +1,5 @@
+/* Payment method and due date of the quote or invoice, installments for non-company clients (PaymentConditions) */
+.payment-conditions {
+    margin-bottom: 30px;
+    color: var(--text-color-dark);
+}

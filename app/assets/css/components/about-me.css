@@ -1,0 +1,40 @@
+/* Home page: "About me" section (age, location, photos) (AboutMe) */
+.about-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 5rem;
+    max-width: 80%;
+    flex-wrap: wrap;
+    margin: auto;
+}
+
+.about-section .about-section__content {
+    flex: 1;
+    max-width: 30%;
+    text-align: right;
+}
+
+.about-section .about-section__title {
+    margin: 0 0 1rem;
+}
+
+.about-section .about-section__description {
+    margin: 0;
+    line-height: 1.5;
+}
+
+@media (max-width: 1024px) {
+    .about-section {
+        flex-direction: column-reverse;
+        gap: 2rem;
+    }
+
+    .about-section .about-section__content {
+        max-width: 100%;
+    }
+
+    .about-section .about-section__title {
+        margin: 0;
+    }
+}

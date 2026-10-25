@@ -1,14 +1,13 @@
+/* Global styles: page, links, modal backdrop */
 @import "../utils/variables.css";
 
-/* Global styles */
 html {
     visibility: hidden;
-    /* hide page until fonts are loaded */
+    /* Hidden until the fonts are loaded (data-fonts-loaded set by AppShell) */
 }
 
 html[data-fonts-loaded] {
     visibility: visible;
-    /* show page once fonts are ready */
 }
 
 body {

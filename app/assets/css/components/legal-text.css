@@ -1,0 +1,7 @@
+/* Legal notices of the quote or invoice: late payment text depends on the client type (LegalText) */
+.legal-text {
+    line-height: 1.6;
+    text-align: justify;
+    margin-bottom: 30px;
+    color: var(--text-color-dark);
+}

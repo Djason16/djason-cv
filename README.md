@@ -41,11 +41,13 @@
   <li><a href="#introduction">Introduction</a></li>
   <li><a href="#features">Features</a></li>
   <li><a href="#tech-stack">Tech Stack</a></li>
+  <li><a href="#architecture">Architecture</a></li>
   <li><a href="#prerequisites">Prerequisites</a></li>
   <li><a href="#quick-start">Quick Start</a></li>
   <li><a href="#installation">Installation</a></li>
   <li><a href="#deployment">Deployment</a></li>
   <li><a href="#api-routes">API Routes</a></li>
+  <li><a href="#security">Security</a></li>
   <li><a href="#scripts">Available Scripts</a></li>
   <li><a href="#contact">Contact</a></li>
   <li><a href="#license">License</a></li>
@@ -80,16 +82,14 @@
 
 <h3>Backend (API Routes)</h3>
 <ul>
-  <li><strong>Nitro</strong> server (built into Nuxt 4)</li>
+  <li><strong>Nitro</strong> server (built into Nuxt 4), organized like a <a href="https://github.com/Djason16/dc-scaffold"><strong>DC Scaffold</strong></a> back end: controllers, <code>ResponseHelper</code>, <code>RequestHelper</code>, <code>DatabaseHelper</code>, automatic REST routes</li>
   <li><strong>Stripe API v22</strong> integration for secure payment processing</li>
   <li><strong>Complete Client Management System</strong> - CRUD operations for client data</li>
   <li><strong>Mission Management</strong> - Track and manage missions with client associations</li>
   <li><strong>Service Management</strong> - Organize and categorize services</li>
-  <li><strong>Automatic Document Generation</strong> - Generate quotes, invoices, and contracts</li>
-  <li>RESTful API routes in <code>server/api/</code></li>
-  <li>Server utilities and middleware</li>
-  <li>Environment-based configuration</li>
-  <li><strong>SQLite Database</strong> via <strong>sql.js v1.14</strong> for data persistence</li>
+  <li><strong>Automatic Document Generation</strong> - Generate quotes, invoices, and contracts (PDF in the browser)</li>
+  <li>Admin login with email + one-time code, attempts limited server-side</li>
+  <li><strong>SQLite Database</strong> through <strong>Nitro Database</strong> (<code>node:sqlite</code>, built into Node.js) for data persistence</li>
 </ul>
 
 <h3>Deployment</h3>
@@ -141,13 +141,13 @@
   </tr>
   <tr>
     <td><strong>Database</strong></td>
-    <td>SQLite (sql.js)</td>
-    <td>1.14.1</td>
+    <td>SQLite (Nitro Database, node:sqlite)</td>
+    <td>built-in</td>
   </tr>
   <tr>
     <td><strong>Email</strong></td>
     <td>Nodemailer</td>
-    <td>8.0.11</td>
+    <td>9.0.3</td>
   </tr>
   <tr>
     <td><strong>Deployment</strong></td>
@@ -163,13 +163,109 @@
 
 <hr>
 
+<h2 id="architecture">Architecture</h2>
+
+<p>One Nuxt 4 project in <code>app/</code>: the site (Vue) and the API (Nitro) are built and deployed together. The responsibilities follow the <a href="https://github.com/Djason16/dc-scaffold">DC Scaffold</a> conventions.</p>
+
+<pre><code>app/
+├── assets/css/          main.css imports base/ (global, typography), utils/ (variables) and
+│                        components/ (one <kebab-name>.css per component, e.g. hero-button.css for HeroButton.vue)
+├── components/
+│   ├── layout/          AppShell (loader, header, footer, cookie banner, language), Header (+ HeaderTop), Footer
+│   ├── ui/              reusable UI: Button, Modal (ModalDialog), Table (EditableTable), SectionLayout, Loader,
+│   │                    PreferencesBanner (cookies), Animation, Carousel, List, Message, Nav
+│   └── views/           content of each page (pages/*.vue only display their view and call useSeo)
+│       ├── Index/       sections of the home page
+│       ├── Admin/       admin page and its modals (DocumentsModal = quotes, invoices and contracts)
+│       ├── Documents/   PDF templates: DocumentContainer (quote / invoice), ContractContainer (contract)
+│       └── Legal/, Privacy/, Terms/, RefundPolicy/, Login/, PayMe/, NotFound/ (error page)
+├── composables/         reactive state and API calls: useAuth, useClients, useMissions, useInterestRates, useProjects,
+│                        useCalendar, useUnavailability, useEnv, useDocuments, useMessage, useLang, useSeo
+├── middleware/          page guards: auth (admin) and guest (login), trailing slash redirect
+├── pages/               one file per page
+├── plugins/             lang.js (read with useLang()) + translations/ (common/ and pages/, French and English)
+├── stores/              Pinia: userPreferences (cookie banner) + actions/
+├── utils/               plain functions: api.js (API client), documents.js (quote / invoice / contract rules),
+│                        pdf.js (PDF export), seo.js, text.js (links in the texts), availability.js, clientTypes.js...
+├── data/                static projects, services and skills of the home page
+├── server/
+│   ├── api/[...path].js       router of every controller (session check included)
+│   ├── api/index.get.js       GET /api
+│   ├── api/upload/            GET /api/upload/images/... (uploaded images)
+│   ├── controllers/           one *Controller.js per resource = the API routes
+│   ├── plugins/               init-database.js (tables, default rows, admin account)
+│   ├── helpers/               ResponseHelper, RequestHelper, DatabaseHelper, Controller, RouteDiscovery,
+│   │                          DatabaseSchema, SessionHelper, RateLimitHelper, MailHelper, StripeHelper,
+│   │                          EnvHelper, UploadHelper (imported automatically in server/)
+│   └── templates/             MailLayout, MailTemplates (emails), StripePages (payment result pages)
+└── nuxt.config.ts
+</code></pre>
+
+<h3>Translations</h3>
+<p>Same system as <a href="https://github.com/Djason16/dc-scaffold">DC Scaffold</a>. Texts are in <code>plugins/translations/</code>: <code>common/</code> (whole site, cookie banner, SEO) and <code>pages/</code> (one file per page, <code>pages/admin/</code> for the admin features). Each file has an <code>fr</code> and an <code>en</code> block with the same keys; a key exists in one file only. A new file is imported in <code>translations.js</code> and added to <code>TRANSLATIONS</code>.</p>
+<pre><code>const { getTranslation: t } = useLang()   // in &lt;script setup&gt;
+{{ t('legal') }}                          // template
+t('footerText', { year, name })           // script, with values
+useLang().current.value                   // 'fr' or 'en'</code></pre>
+<p>Every key exists in both languages (timezone names included: <code>pages/admin/timezonesAfricaAmericas.js</code> and <code>timezonesAsiaEuropeOceania.js</code>).</p>
+<p>The language chosen with the FR / EN buttons is remembered only when the visitor accepted functional cookies.</p>
+
+<h3>Quotes, invoices and contracts</h3>
+<ul>
+  <li><strong>Screen</strong>: <code>components/views/Admin/DocumentsModal.vue</code> (one modal, <code>kind</code> = quote, invoice or contract)</li>
+  <li><strong>Data, questions to the admin, filling the template</strong>: <code>composables/useDocuments.js</code> (missions, clients and services from the API, grouped per document)</li>
+  <li><strong>Rules and amounts</strong>: <code>utils/documents.js</code> (payment rules per service, totals, schedules, prices)</li>
+  <li><strong>Checks before generating</strong>: <code>utils/documentChecks.js</code>. Nothing is generated when something is missing (your SIRET / address in <code>.env</code>, client address, mission price, IBAN / BIC, interest rate active today for a contract): an alert lists what to fix.</li>
+  <li><strong>Templates</strong>: <code>components/views/Documents/</code> (keep their CSS classes: the page breaks rely on them)</li>
+  <li><strong>PDF</strong>: <code>utils/pdf.js</code> (html2pdf.js, in the browser). Nothing is stored on the server: the PDF is downloaded.</li>
+</ul>
+
+<h3>API response format</h3>
+<pre><code>{ "success": true, ...data }                                     // e.g. { "success": true, "clients": [...] }
+{ "success": false, "error": "message", "type": "NOT_FOUND" }    // with the right HTTP status (400, 401, 404, 429, 500...)</code></pre>
+<p>On the front, every call goes through <code>utils/api.js</code> (<code>api.get('/clients')</code>, <code>api.post(...)</code>...), which never throws and always resolves to this format. Error messages shown to the visitor are translation keys (e.g. <code>invalidCredentials</code>).</p>
+
+<h3>Add an API route</h3>
+<p>Create <code>server/controllers/ProductsController.js</code>; its methods become routes automatically (restart <code>npm run dev</code> if the file is new):</p>
+<table>
+  <tr><th>Method</th><th>Route</th></tr>
+  <tr><td><code>getAll</code></td><td><code>GET /api/products</code></td></tr>
+  <tr><td><code>getOne</code></td><td><code>GET /api/products/{id}</code></td></tr>
+  <tr><td><code>create</code></td><td><code>POST /api/products</code></td></tr>
+  <tr><td><code>update</code></td><td><code>PUT</code> / <code>PATCH /api/products/{id}</code></td></tr>
+  <tr><td><code>delete</code></td><td><code>DELETE /api/products/{id}</code></td></tr>
+</table>
+<pre><code>export default class ProductsController extends Controller {
+    static publicActions = ['getAll']                            // every other route needs the admin session
+    static routes = { markShipped: ['POST', '/{id}/mark-shipped'] } // routes the REST naming cannot guess
+
+    async getAll(event) {
+        return ResponseHelper.success(event, { products: await this.fetchAll('SELECT * FROM products') })
+    }
+
+    async create(event) {
+        const data = await this.body(event)
+        const missing = RequestHelper.missing(data, ['name'])
+        if (missing.length) return ResponseHelper.validationError(event, `Missing fields: ${missing.join(', ')}`)
+        const id = DatabaseHelper.uuid()
+        await this.insert('INSERT INTO products (id, name) VALUES (?, ?)', [id, data.name])
+        return ResponseHelper.success(event, { id }, 201)
+    }
+}</code></pre>
+<p>New tables go in <code>server/helpers/DatabaseSchema.js</code> (<code>CREATE TABLE IF NOT EXISTS</code>, safe on an existing database). A change to an existing table needs its own <code>ALTER TABLE</code>: never drop or recreate a table that holds data.</p>
+
+<h3>Add a page</h3>
+<p>Create <code>components/views/About/About.vue</code> (the content) and <code>pages/about.vue</code> that only displays it and calls <code>useSeo('about')</code>, add its entry in <code>utils/seo.js</code>, its texts in <code>plugins/translations/pages/about.js</code> (imported in <code>translations.js</code>) and <code>seoAboutTitle</code> / <code>seoAboutDescription</code> in <code>common/seo.js</code>, and its address in <code>publicRoutes</code> of <code>nuxt.config.ts</code> (sitemap).</p>
+
+<hr>
+
 <h2 id="prerequisites">Prerequisites</h2>
 <ul>
-  <li><strong>Node.js</strong> version 20.x or higher (recommended: 22.x LTS)</li>
+  <li><strong>Node.js</strong> 22.16 or higher (recommended: 24.x LTS) — required by <code>node:sqlite</code></li>
   <li><strong>npm</strong> version 10.x or higher</li>
 </ul>
 <p>Ensure Node.js is installed before proceeding:</p>
-<pre><code>node -v  # Should be >= 20.0.0
+<pre><code>node -v  # Should be >= 22.16.0
 npm -v   # Should be >= 10.0.0</code></pre>
 
 <hr>
@@ -197,18 +293,18 @@ npm -v   # Should be >= 10.0.0</code></pre>
     <td>Start coding and see live changes</td>
   </tr>
   <tr>
-    <td><strong>G</strong></td>
-    <td>Generate Static Site</td>
-    <td>Create a static version for hosting</td>
+    <td><strong>I</strong></td>
+    <td>Install</td>
+    <td>Install / update the npm dependencies of <code>app/</code></td>
   </tr>
   <tr>
     <td><strong>B</strong></td>
-    <td>Build for Production</td>
-    <td>Optimize for deployment with SSR</td>
+    <td>Build front</td>
+    <td><code>npm run build</code>: production build (SSR + API)</td>
   </tr>
 </table>
 
-<p>The script will open a new terminal window for the selected command.</p>
+<p>Same launcher as <a href="https://github.com/Djason16/dc-scaffold">DC Scaffold</a> (<code>start.bat</code>, <code>start.ps1</code>, <code>scripts/common.ps1</code>). Development installs the missing dependencies first, then opens a new terminal window. Direct choice: <code>.\start.ps1 -Action D</code>.</p>
 
 <h3>For Mac/Linux Users</h3>
 
@@ -227,10 +323,10 @@ npm run dev
 <h3>First-Time Setup Checklist</h3>
 
 <ul>
-  <li>✅ Install Node.js 20+ (<code>node -v</code> to check)</li>
+  <li>✅ Install Node.js 22.16+ (<code>node -v</code> to check)</li>
   <li>✅ Clone the repository</li>
-  <li>✅ Run <code>npm install</code></li>
-  <li>✅ Create <code>.env.development</code> file with your environment variables</li>
+  <li>✅ Run <code>npm install</code> in <code>app/</code></li>
+  <li>✅ Create the <code>app/.env</code> file with your environment variables</li>
   <li>✅ Add your Stripe test keys</li>
   <li>✅ Run <code>npm run dev</code> or use <code>start.bat</code></li>
 </ul>
@@ -250,11 +346,11 @@ cd djason-cv</code></pre>
 
 <h3>3. Set up environment variables</h3>
 
-<p>Copy the example file to create your own <code>.env</code>:</p>
+<p>Copy the example file to create your own <code>.env</code> (in <code>app/</code>):</p>
 
-<pre><code>cp .env.example .env.development</code></pre>
+<pre><code>cp .env.example .env</code></pre>
 
-<p>Edit <code>.env.development</code> for development:</p>
+<p>Edit <code>.env</code> for development (an existing <code>.env.development</code> is still read when there is no <code>.env</code>):</p>
 
 <pre><code>
 # --------------------------------------------------
@@ -331,18 +427,20 @@ NUXT_PUBLIC_WHATSAPP=https://wa.me/33123456789
 # Database Management
 # --------------------------------------------------
 DB_REPLACE_TRIGGER=0
+# Optional: SQLite file, relative to the folder the server starts from
+# DB_FILE=.data/db.sqlite
 </code></pre>
 
 <p>For production, create <code>.env.production</code> with the same structure and replace values accordingly (domain, Stripe live keys, real SMTP, etc.).</p>
 
-<p><strong>⚠️ Important:</strong> Never commit <code>.env.development</code> or <code>.env.production</code> to Git. Add them to <code>.gitignore</code>.</p>
+<p><strong>⚠️ Important:</strong> Never commit <code>.env</code>, <code>.env.development</code> or <code>.env.production</code> to Git (they are already in <code>.gitignore</code>). Server values (Stripe secret key, SMTP, bank details, admin account) are read when the site is built: rebuild after changing them.</p>
 
 <h3>First-Time Setup Checklist</h3>
 <ul>
-  <li>✅ Install Node.js 20+ (<code>node -v</code> to check)</li>
+  <li>✅ Install Node.js 22.16+ (<code>node -v</code> to check)</li>
   <li>✅ Clone the repository</li>
-  <li>✅ Run <code>npm install</code></li>
-  <li>✅ Copy <code>.env.example</code> to <code>.env.development</code> and update values</li>
+  <li>✅ Run <code>npm install</code> in <code>app/</code></li>
+  <li>✅ Copy <code>.env.example</code> to <code>.env</code> and update values</li>
   <li>✅ Add your Stripe test keys</li>
   <li>✅ Run <code>npm run dev</code> (Windows users can also use <code>start.bat</code>)</li>
 </ul>
@@ -377,6 +475,8 @@ package-lock.json   # Lock file
 .env.production     # Environment variables
 </code></pre>
 
+<p>Keep the <code>.data/</code> folder (SQLite database) and <code>.output/public/upload/</code> (uploaded images) of the server when you deploy a new build: download a backup from the admin page first.</p>
+
 <h4>2. Node.js Settings</h4>
 
 <ul>
@@ -396,125 +496,34 @@ package-lock.json   # Lock file
 
 <h2 id="api-routes">API Routes</h2>
 
-<p>The application provides a comprehensive RESTful API with the following main endpoints:</p>
+<p>Every route is served by a controller of <code>server/controllers/</code>. 🔓 = public, every other route needs the admin session (401 otherwise).</p>
 
 <table>
-    <tr>
-        <th>Method</th>
-        <th>Endpoint</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td>GET</td>
-        <td><code>/api/</code></td>
-        <td>API health check</td>
-    </tr>
+  <tr><th>Resource</th><th>Routes</th></tr>
+  <tr><td>API</td><td>🔓 <code>GET /api</code></td></tr>
+  <tr><td>Auth</td><td>🔓 <code>GET /api/auth/check-session</code>, 🔓 <code>POST /api/auth/login</code>, 🔓 <code>POST /api/auth/verify-otp</code>, 🔓 <code>POST /api/auth/logout</code>, 🔓 <code>POST /api/auth/send-temp-password</code>, <code>POST /api/auth/update-password</code></td></tr>
+  <tr><td>Clients</td><td><code>GET /api/clients</code>, <code>POST /api/clients</code>, <code>PUT /api/clients/{id}</code>, <code>DELETE /api/clients/{id}</code></td></tr>
+  <tr><td>Missions</td><td><code>GET /api/missions</code>, <code>POST /api/missions</code>, <code>PUT /api/missions/{id}</code>, <code>DELETE /api/missions/{id}</code></td></tr>
+  <tr><td>Services</td><td><code>GET /api/services</code></td></tr>
+  <tr><td>Interest rates</td><td><code>GET /api/interest-rates</code>, <code>POST /api/interest-rates</code>, <code>PUT /api/interest-rates/{id}</code>, <code>DELETE /api/interest-rates/{id}</code></td></tr>
+  <tr><td>Projects</td><td>🔓 <code>GET /api/projects</code>, <code>POST /api/projects</code> (multipart), <code>PUT /api/projects/{id}</code>, <code>POST /api/projects/{id}/image</code>, <code>DELETE /api/projects/{id}</code></td></tr>
+  <tr><td>Calendar</td><td>🔓 <code>GET /api/calendar</code>, <code>PUT</code>/<code>PATCH /api/calendar/{id}</code>, <code>POST /api/calendar/send-agenda</code></td></tr>
+  <tr><td>Unavailability</td><td>🔓 <code>GET /api/unavailability</code>, <code>POST /api/unavailability</code>, <code>PUT /api/unavailability/{id}</code>, <code>DELETE /api/unavailability/{id}</code></td></tr>
+  <tr><td>Availability</td><td>🔓 <code>GET /api/availability</code>, <code>PUT /api/availability/toggle</code></td></tr>
+  <tr><td>Bank</td><td><code>GET /api/bank</code></td></tr>
+  <tr><td>Environment</td><td><code>GET /api/env</code>, <code>PUT /api/env</code></td></tr>
+  <tr><td>Database</td><td>🔓 <code>GET /api/database/setup</code> (state only), <code>GET /api/database/download-db</code>, <code>GET /api/database/export-sql</code>, <code>POST /api/database/replace-db</code></td></tr>
+  <tr><td>Stripe</td><td>🔓 <code>POST /api/stripe/create-checkout</code>, 🔓 <code>POST /api/stripe/create-subscription</code>, 🔓 <code>GET /api/stripe/check-payment</code>, 🔓 <code>GET /api/stripe/check-subscription</code>, 🔓 <code>GET /api/stripe/payment-result</code>, 🔓 <code>GET /api/stripe/subscription-result</code></td></tr>
+  <tr><td>Uploads</td><td>🔓 <code>GET /api/upload/images/{file}</code></td></tr>
 </table>
 
-<h3>Stripe Payment</h3>
-<table>
-    <tr>
-        <th>Method</th>
-        <th>Endpoint</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td>POST</td>
-        <td><code>/api/stripe/create-checkout-session</code></td>
-        <td>Create Stripe payment session</td>
-    </tr>
-    <tr>
-        <td>GET</td>
-        <td><code>/api/stripe/payment-result</code></td>
-        <td>Payment success/cancel page</td>
-    </tr>
-    <tr>
-        <td>GET</td>
-        <td><code>/api/stripe/check-payment-status</code></td>
-        <td>Verify payment status</td>
-    </tr>
-</table>
+<hr>
 
-<h3>Client Management</h3>
-<table>
-    <tr>
-        <th>Method</th>
-        <th>Endpoint</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td>GET</td>
-        <td><code>/api/clients/list</code></td>
-        <td>List all clients</td>
-    </tr>
-    <tr>
-        <td>POST</td>
-        <td><code>/api/clients/create-client</code></td>
-        <td>Create a new client</td>
-    </tr>
-    <tr>
-        <td>PUT</td>
-        <td><code>/api/clients/edit-client</code></td>
-        <td>Update an existing client</td>
-    </tr>
-    <tr>
-        <td>DELETE</td>
-        <td><code>/api/clients/delete-client</code></td>
-        <td>Delete a client</td>
-    </tr>
-</table>
-
-<h3>Mission Management</h3>
-<table>
-    <tr>
-        <th>Method</th>
-        <th>Endpoint</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td>GET</td>
-        <td><code>/api/missions/list</code></td>
-        <td>List all missions</td>
-    </tr>
-    <tr>
-        <td>POST</td>
-        <td><code>/api/missions/create-mission</code></td>
-        <td>Create a new mission</td>
-    </tr>
-    <tr>
-        <td>PUT</td>
-        <td><code>/api/missions/edit-mission</code></td>
-        <td>Update an existing mission</td>
-    </tr>
-    <tr>
-        <td>DELETE</td>
-        <td><code>/api/missions/delete-mission</code></td>
-        <td>Delete a mission</td>
-    </tr>
-</table>
-
-<h3>Service Management</h3>
-<table>
-    <tr>
-        <th>Method</th>
-        <th>Endpoint</th>
-        <th>Description</th>
-    </tr>
-    <tr>
-        <td>GET</td>
-        <td><code>/api/services/list</code></td>
-        <td>List all services</td>
-    </tr>
-</table>
-
-<p><strong>And many more...</strong> The API includes additional endpoints for:</p>
+<h2 id="security">Security</h2>
 <ul>
-  <li>Document generation (quotes, invoices, contracts)</li>
-  <li>Authentication and session management</li>
-  <li>User profile management</li>
-  <li>Email notifications</li>
-  <li>Data analytics and reporting</li>
-  <li>File uploads and media management</li>
+  <li>The session is checked by the API router on the route that was matched: <code>/api/env</code>, <code>/api/env/</code> and <code>/api//env</code> are the same protected route. <code>robots.txt</code> and <code>.htaccess</code> are not a protection.</li>
+  <li>Failed attempts are stored in the database (<code>dc_rate_limits</code>), per account and per IP: 5 wrong passwords or 5 wrong codes lock for 15 minutes, 3 wrong security answers lock the reset for 1 hour.</li>
+  <li>Only JPG, PNG, GIF, WEBP and AVIF images can be uploaded; a database replacement must be a valid SQLite file of this site.</li>
 </ul>
 
 <hr>

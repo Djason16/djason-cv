@@ -1,7 +1,7 @@
 import { toRaw } from 'vue'
 
-// Convert a timezone string to UTC offset in hours
-export const getUTCOffsetHours = tz => {
+// Converts a timezone string to UTC offset in hours
+const getUTCOffsetHours = tz => {
     try {
         const now = new Date()
         const utc = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }))
@@ -12,7 +12,7 @@ export const getUTCOffsetHours = tz => {
     }
 }
 
-// Determine current availability based on periods, manual override, and schedule
+// Determines current availability based on periods, manual override, and schedule
 export const getAvailability = (periodsData, overrideData, settingsData) => {
     const rawPeriods = periodsData ? toRaw(periodsData) : []
     const rawOverride = overrideData ? toRaw(overrideData) : null
@@ -23,7 +23,7 @@ export const getAvailability = (periodsData, overrideData, settingsData) => {
     const localNow = new Date(now.toLocaleString('en-US', { timeZone: rawSettings.timezone }))
     const todayStr = localNow.toISOString().split('T')[0]
 
-    // Check if currently in an unavailability period
+    // Checks if currently in an unavailability period
     if (rawPeriods.find(p => {
         const start = new Date(`${p.startDate}T00:00:00`)
         const end = new Date(`${p.endDate}T23:59:59`)
@@ -33,7 +33,7 @@ export const getAvailability = (periodsData, overrideData, settingsData) => {
     // Manual override takes precedence
     if (rawOverride?.enabled) return rawOverride.status
 
-    // Check regular schedule
+    // Checks regular schedule
     const day = localNow.getDay()
     const time = `${String(localNow.getHours()).padStart(2, '0')}:${String(localNow.getMinutes()).padStart(2, '0')}`
     const slot = rawSettings.schedule?.[day]
@@ -41,7 +41,7 @@ export const getAvailability = (periodsData, overrideData, settingsData) => {
     return time >= slot.start && time <= slot.end ? 'available' : 'unavailable'
 }
 
-// Format the weekly schedule into a human-readable string (used both for the normal case and the "busy" override case)
+// Formats the weekly schedule into a human-readable string (used both for the normal case and the "busy" override case)
 const formatScheduleText = (translate, schedule, timezone) => {
     if (!schedule) return translate('noSchedule')
 
@@ -55,7 +55,7 @@ const formatScheduleText = (translate, schedule, timezone) => {
     if (days.length === 7 && days.every(d => schedule[d].start === firstSlot.start && schedule[d].end === firstSlot.end))
         return `${translate('allDays')} ${firstSlot.start}-${firstSlot.end} (${offset})`
 
-    // Build readable day ranges
+    // Builds readable day ranges
     const ranges = []
     let start = days[0], end = days[0]
     for (let i = 1; i <= days.length; i++) {
@@ -77,7 +77,7 @@ const formatScheduleText = (translate, schedule, timezone) => {
     }).join(', ')
 }
 
-// Generate human-readable schedule string including timezone and unavailability
+// Generates human-readable schedule string including timezone and unavailability
 export const getWorkingHours = (translate, periodsData, overrideData, settingsData, locale = 'fr-FR') => {
     const rawPeriods = periodsData ? toRaw(periodsData) : []
     const rawOverride = overrideData ? toRaw(overrideData) : null
@@ -87,7 +87,7 @@ export const getWorkingHours = (translate, periodsData, overrideData, settingsDa
     const now = new Date()
     const localNow = new Date(now.toLocaleString('en-US', { timeZone: rawSettings.timezone }))
 
-    // Show active unavailability period
+    // Shows active unavailability period
     const activePeriod = rawPeriods.find(p => {
         const start = new Date(`${p.startDate}T00:00:00`)
         const end = new Date(`${p.endDate}T23:59:59`)
@@ -105,6 +105,6 @@ export const getWorkingHours = (translate, periodsData, overrideData, settingsDa
         return translate(rawOverride.status)
     }
 
-    // Format schedule
+    // Formats schedule
     return formatScheduleText(translate, rawSettings.schedule, rawSettings.timezone)
 }

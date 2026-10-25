@@ -1,28 +1,13 @@
-import { createError, getRouterParam, setHeader } from 'h3'
-import { serveUploadFile } from '~/server/utils/projects-utils/upload-path'
-
+// Uploaded project images: /api/upload/images/<file> (public, see server/helpers/UploadHelper.js)
 export default defineEventHandler(async event => {
-    try {
-        const path = getRouterParam(event, 'path') || ''
-        const { file, mimeType } = await serveUploadFile(path)
+    const result = await UploadHelper.read(getRouterParam(event, 'path') || '')
+    if (result?.forbidden) return ResponseHelper.forbidden(event)
+    if (!result) return ResponseHelper.notFound(event, 'File not found')
 
-        // Set proper headers for static-like file delivery
-        setHeader(event, 'Content-Type', mimeType)
-        setHeader(event, 'Cache-Control', 'public, max-age=604800')
-        setHeader(event, 'X-Content-Type-Options', 'nosniff')
-
-        return file
-    } catch (err) {
-        // Map known errors to HTTP status codes
-        if (err?.message === 'Forbidden path') {
-            throw createError({ statusCode: 403 })
-        }
-
-        if (err?.message === 'File not found') {
-            throw createError({ statusCode: 404 })
-        }
-
-        // Fallback for unexpected failures
-        throw createError({ statusCode: 500 })
-    }
+    setResponseHeader(event, 'Content-Type', result.mimeType)
+    setResponseHeader(event, 'Cache-Control', 'public, max-age=604800')
+    setResponseHeader(event, 'X-Content-Type-Options', 'nosniff')
+    // A file opened directly cannot run scripts on the site
+    setResponseHeader(event, 'Content-Security-Policy', "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; sandbox")
+    return result.file
 })

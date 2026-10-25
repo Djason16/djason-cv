@@ -1,22 +1,36 @@
 import { config as loadEnv } from 'dotenv';
+import { existsSync, readdirSync, watch } from 'node:fs';
+import { resolve } from 'node:path';
 import { defineNuxtConfig } from 'nuxt/config';
-import { resolve } from 'path';
+import { DEFAULT_DB_FILE, envFilePath } from './server/helpers/EnvHelper.js';
 import { TRAILING_SLASH_ENABLED } from './utils/pathHelpers.js';
 
-// Define prerender and sitemap routes
-const routes: string[] = ['/', '/legal', '/pay-me', '/privacy', '/refund-policy', '/terms', '/login', '/admin']
+// Public pages: prerendered by "nuxt generate" and listed in sitemap.xml (admin and login stay out)
+const publicRoutes: string[] = ['/', '/legal', '/pay-me', '/privacy', '/refund-policy', '/terms']
+const privateRoutes: string[] = ['/admin', '/login']
 
-// Load environment variables if not loaded
+// Environment file of the mode: .env (or the former .env.development) in development, .env.production in production
 if (!process.env.CONFIG_LOADED) {
-  const envPath = `.env.${process.env.NODE_ENV || 'development'}`
-  loadEnv({ path: resolve(process.cwd(), envPath) })
+  const envPath = envFilePath(process.env.NODE_ENV || 'development')
+  loadEnv({ path: envPath, quiet: true })
   process.env.CONFIG_LOADED = 'true'
   console.log(`⚡ Loaded ${envPath}`)
-  console.log('🔍 NUXT_PUBLIC_FRONTEND_DOMAIN:', process.env.NUXT_PUBLIC_FRONTEND_DOMAIN)
 }
 
 // Detection mode
 const isDev = process.env.NODE_ENV !== 'production'
+
+// SQLite file of Nitro Database (DB_FILE, relative to the folder the server is started from)
+const dbFile = process.env.DB_FILE || DEFAULT_DB_FILE
+
+// "#controllers" = every server/controllers/*Controller.js file, so API routes never have to be declared by hand (DC Scaffold (https://github.com/Djason16/dc-scaffold))
+const controllersDir = resolve('./server/controllers')
+const controllersModule = () => {
+  const files = existsSync(controllersDir) ? readdirSync(controllersDir).filter(file => /Controller\.js$/.test(file)) : []
+  const imports = files.map((file, i) => `import c${i} from '${controllersDir.replace(/\\/g, '/')}/${file}'`)
+  const entries = files.map((file, i) => `{ name: '${file.replace(/\.js$/, '')}', controller: c${i} }`)
+  return `${imports.join('\n')}\nexport default [${entries.join(', ')}]`
+}
 
 export default defineNuxtConfig({
   // @ts-ignore — site is injected by @nuxtjs/sitemap
@@ -75,7 +89,7 @@ export default defineNuxtConfig({
         '@vue/devtools-core',
         '@vue/devtools-kit',
       ],
-      exclude: ['sql.js', '@vue/devtools-api'],
+      exclude: ['@vue/devtools-api'],
       esbuildOptions: {
         target: 'es2022',
         supported: { 'top-level-await': true, bigint: true }
@@ -90,7 +104,21 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    experimental: { wasm: true, database: true },
+    experimental: { database: true },
+    // Helpers (ResponseHelper, DatabaseHelper...) and templates (emails, Stripe pages) imported automatically in server/
+    imports: { dirs: [resolve('./server/helpers'), resolve('./server/templates')] },
+    virtual: { '#controllers': controllersModule },
+    modules: [
+      // Dev only: rebuild when a controller file is added or removed
+      (nitro: any) => {
+        if (!nitro.options.dev || !existsSync(controllersDir)) return
+        let timer: ReturnType<typeof setTimeout> | undefined
+        watch(controllersDir, () => {
+          clearTimeout(timer)
+          timer = setTimeout(() => nitro.hooks.callHook('rollup:reload'), 200)
+        })
+      },
+    ],
     compressPublicAssets: { gzip: true, brotli: true },
     externals: {
       inline: ['entities'],
@@ -100,13 +128,13 @@ export default defineNuxtConfig({
       'entities/decode': 'entities/dist/commonjs/decode.js',
     },
     database: {
-      default: { connector: 'sqlite', options: { filename: resolve('./.data/db.sqlite') } }
+      default: { connector: 'sqlite', options: { path: dbFile } }
     },
     prerender: {
       crawlLinks: true,
-      routes,
+      routes: publicRoutes,
       failOnError: true,
-      ignore: [''],
+      ignore: privateRoutes,
       autoSubfolderIndex: true,
       concurrency: 4,
       retry: 2,
@@ -118,6 +146,8 @@ export default defineNuxtConfig({
       '/images/**': { headers: { 'Cache-Control': 'public, max-age=7200', 'X-Content-Type-Options': 'nosniff' } },
       '/fonts/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' } },
       '/admin/**': { ssr: true, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate', 'X-Robots-Tag': 'noindex, nofollow' } },
+      '/login/**': { ssr: true, headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate', 'X-Robots-Tag': 'noindex, nofollow' } },
+      '/api/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
       '/': { ssr: true, headers: { 'Cache-Control': 'public, max-age=600, s-maxage=3600' } },
       '/pay-me': { ssr: true, headers: { 'Cache-Control': 'public, max-age=600, s-maxage=3600' } },
       '/legal/**': { ssr: true, headers: { 'Cache-Control': 'public, max-age=3600, s-maxage=7200' } }
@@ -130,11 +160,12 @@ export default defineNuxtConfig({
       gzip: true,
       excludeAppSources: ['nuxt:pages', 'nuxt:prerender'],
       autoLastmod: true,
-      urls: routes.map(route => ({ loc: route, lastmod: new Date().toISOString(), changefreq: 'daily' }))
+      exclude: privateRoutes.map(route => `${route}/**`),
+      urls: publicRoutes.map(route => ({ loc: route, lastmod: new Date().toISOString(), changefreq: 'daily' }))
     }],
+    // Outside production robots.txt blocks every crawler automatically; it hides pages, it does not protect them
     ['@nuxtjs/robots', {
-      rules: [{ UserAgent: '*', Disallow: isDev ? '/' : '', Allow: isDev ? '' : '/' }],
-      Sitemap: `${process.env.NUXT_PUBLIC_FRONTEND_DOMAIN}/sitemap.xml`
+      disallow: privateRoutes,
     }],
     '@nuxt/image',
     '@pinia/nuxt'
@@ -165,6 +196,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
+    dbFile,
     stripeSecretKey: process.env.STRIPE_SECRET_KEY,
     adminEmail: process.env.ADMIN_EMAIL,
     adminPassword: process.env.ADMIN_PASSWORD,

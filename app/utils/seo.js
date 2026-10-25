@@ -1,11 +1,18 @@
 import { useHead, useRuntimeConfig } from "#imports";
-import { withTrailingSlash } from "./pathHelpers";
+import { withTrailingSlash } from './pathHelpers.js';
+
+// SEO of every page: seoConfig below, seoMetaData() builds the <head> of one page (composables/useSeo.js)
 
 const YEAR = new Date().getFullYear()
 
-// SEO configuration per page - BILINGUAL (FR/EN)
+// <head> of each page: address, image, indexing (titles and descriptions in plugins/translations/common/seo.js)
 const seoConfig = {
     notFound: {
+        url: "",
+        image: "/images/error.jpg",
+        noIndex: true
+    },
+    serverError: {
         url: "",
         image: "/images/error.jpg",
         noIndex: true
@@ -54,36 +61,27 @@ const seoConfig = {
     }
 }
 
-// Generate SEO metadata for a page
-export const seoMetaData = (pageKey, $lang) => {
-    const {
-        name,
-        contactEmail: email,
-        contactPhone: phone,
-        legalTva: tvaNumber,
-        frontendDomain: baseUrl,
-        linkedin,
-        github,
-        malt,
-        instagram
-    } = useRuntimeConfig().public
+// Generates SEO metadata for a page ("site" = useSite(), like the buildSeo of DC Scaffold (https://github.com/Djason16/dc-scaffold))
+export const seoMetaData = (pageKey, lang, site) => {
+    const { name, url: baseUrl, email, phone } = site
+    const { legalTva: tvaNumber, linkedin, github, malt, instagram } = useRuntimeConfig().public
 
     const {
         url = "",
         image = "/favicon_dc.jpg",
-        keywords = $lang.locale.value === "en"
+        keywords = lang.current.value === "en"
             ? `Djason Chery, full-stack web developer, freelance developer, custom website development, SEO, AEO, audiovisual post-production, visual effects, compositing, video editing, IT support, ${YEAR}`
             : `Djason Chery, développeur web full-stack, développeur freelance, création site web sur mesure, SEO, AEO, post-production audiovisuelle, effets visuels, compositing, montage vidéo, assistance informatique, ${YEAR}`,
         noIndex = false
     } = seoConfig[pageKey] || {}
 
-    const locale = $lang.locale.value
+    const locale = lang.current.value
     const keyCap = pageKey.charAt(0).toUpperCase() + pageKey.slice(1)
-    const title = $lang.getTranslation(
+    const title = lang.getTranslation(
         pageKey === "index" ? "seoIndexTitle" : `seo${keyCap}Title`,
         { name }
     )
-    const description = $lang.getTranslation(
+    const description = lang.getTranslation(
         pageKey === "index" ? "seoIndexDescription" : `seo${keyCap}Description`,
         { name }
     )
@@ -211,6 +209,6 @@ export const seoMetaData = (pageKey, $lang) => {
         ].filter(Boolean)
     })
 
-    // Return meta only — useSeoMeta is called from the page
+    // Returns meta only — useSeoMeta is called from the page
     return meta
 }

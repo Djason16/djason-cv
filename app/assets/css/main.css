@@ -1,11 +1,48 @@
-/* Importing variables from the utils/variables.css file, which likely contains global CSS variables for the project (e.g., colors, spacing, etc.) */
+/* Colors, fonts and sizes used everywhere: change the look of the whole site in utils/variables.css */
 @import "utils/variables.css";
 
-/* Importing global styles from base/global.css to apply general styling (e.g., reset, body styles, layout) to the entire project */
+/* Resets and page layout applied to the whole site */
 @import "base/global.css";
 
-/* Importing typography styles from base/typography.css to define font settings, sizes, and line heights for text elements across the site */
+/* Titles, paragraphs and links */
 @import "base/typography.css";
 
-/* Importing hero typography styles from components/hero-typography.css to apply specific font styles or typography rules for hero section text */
+/* One file per component, same name as the component */
 @import "components/hero-typography.css";
+@import "components/section-layout.css";
+@import "components/editable-table.css";
+@import "components/footer-top.css";
+@import "components/header-top.css";
+@import "components/slide-in-from-right.css";
+@import "components/floating-button.css";
+@import "components/hero-button.css";
+@import "components/round-button.css";
+@import "components/carousel-controls.css";
+@import "components/carousel-pagination.css";
+@import "components/carousel-track.css";
+@import "components/custom-list.css";
+@import "components/loader.css";
+@import "components/message-box.css";
+@import "components/modal-dialog.css";
+@import "components/nav-link.css";
+@import "components/preferences-banner.css";
+@import "components/contract-container.css";
+@import "components/stripe-fees-list.css";
+@import "components/document-container.css";
+@import "components/bank-info.css";
+@import "components/client-info.css";
+@import "components/company-signature.css";
+@import "components/delivery-address.css";
+@import "components/document-meta.css";
+@import "components/items-table.css";
+@import "components/legal-text.css";
+@import "components/payment-conditions.css";
+@import "components/payment-options.css";
+@import "components/quote-signature.css";
+@import "components/totals-section.css";
+@import "components/about-images.css";
+@import "components/about-me.css";
+@import "components/hero.css";
+@import "components/last-project.css";
+@import "components/skills.css";
+@import "components/skills-grid.css";

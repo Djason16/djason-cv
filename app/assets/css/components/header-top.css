@@ -1,0 +1,90 @@
+/* Logo and navigation links of the header (HeaderTop) */
+.header-top a::after,
+.header-top .nav-link::after,
+.header-top .nav-text::after,
+.header-top .nav-icon::after {
+    display: none;
+}
+
+.header-top {
+    padding: 0 1.75rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 6rem;
+    position: relative;
+}
+
+.header-top .header-top__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.header-top .header-top__title,
+.header-top .header-top__logo-link {
+    display: flex;
+    align-items: center;
+    position: relative;
+    left: 0;
+    transform: none;
+}
+
+.header-top .header-top__logo {
+    height: 2rem;
+    width: auto;
+    object-fit: contain;
+}
+
+.header-top .header-top__nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.header-top .header-top__nav .nav-link {
+    text-decoration: none;
+    color: var(--text-color-light);
+    transition: color 0.3s ease;
+    cursor: pointer;
+    will-change: color;
+}
+
+.header-top .header-top__nav .nav-link:hover {
+    color: var(--fourth-color);
+}
+
+.header-top .nav-text {
+    display: inline-block;
+}
+
+.header-top .nav-icon {
+    display: none;
+    color: var(--text-color-light);
+    will-change: transform, opacity;
+}
+
+@media (max-width: 1024px) {
+    .header-top .header-top__nav .nav-link:hover {
+        color: inherit;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-top .nav-text {
+        display: none;
+    }
+
+    .header-top .nav-icon {
+        display: inline-block;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-top {
+        padding: 0 1rem;
+    }
+}

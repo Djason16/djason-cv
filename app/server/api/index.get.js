@@ -1,12 +1,9 @@
-export default defineEventHandler(event => {
-    // Access runtime configuration
-    const { public: { frontendDomain } = {} } = useRuntimeConfig(event)
-
-    // Return environment info and server metadata
-    return {
+// Base route of the API (DC Scaffold convention: https://github.com/Djason16/dc-scaffold): GET /api
+export default defineEventHandler(event =>
+    ResponseHelper.success(event, {
+        message: 'API ready',
         environment: process.env.NODE_ENV || 'development',
-        message: 'Welcome to the API!',
-        serverTimeUTC: new Date().toISOString(),
-        domain: frontendDomain || 'not set'
-    }
-})
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        current_time: new Date().toISOString(),
+    }),
+)

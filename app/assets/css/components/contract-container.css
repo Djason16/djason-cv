@@ -1,0 +1,24 @@
+/* Contract printed to PDF (utils/pdf.js): one component per article, in order (ContractContainer) */
+.contract-container {
+    max-width: 210mm;
+    margin: auto;
+    background: var(--zero-color);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.contract-container .content {
+    padding: 40px 50px;
+    color: var(--text-color-dark);
+}
+
+@media print {
+    body {
+        background: var(--zero-color);
+        padding: 0;
+    }
+
+    .contract-container {
+        box-shadow: none;
+        margin: 0;
+    }
+}

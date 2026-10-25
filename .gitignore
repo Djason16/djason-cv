@@ -27,4 +27,3 @@ env/
 .env
 .env.*
 !.env.example
-!app/server/api/env/

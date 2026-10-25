@@ -1,0 +1,19 @@
+/* Success or error message of a form, nothing when there is no message (MessageBox) */
+.message-box p {
+    text-align: center;
+    padding: 1rem;
+    border-radius: 4px;
+    max-width: 30rem;
+}
+
+.message-box /* Success message styling */
+.message-box p.success {
+    color: var(--accent-green);
+    background-color: rgba(30, 255, 0, 0.1);
+}
+
+.message-box /* Error message styling */
+.message-box p.error {
+    color: var(--accent-red);
+    background-color: rgba(255, 0, 0, 0.1);
+}

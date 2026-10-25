@@ -1,19 +1,23 @@
-import { ref } from 'vue'
-import { useTranslatedMessage } from '~/composables/useTranslatedMessage'
+import { computed, ref } from 'vue'
+import { useLang } from './useLang.js'
 
+// Feedback message of a form (MessageBox): showMessage('error', 'invalidOtp'), translated in the current language
 export const useMessage = () => {
-    const errorMessage = ref(null)
-    const { translatedMessage } = useTranslatedMessage(errorMessage)
+    const lang = useLang()
+    const message = ref(null)
 
-    // Display a message; auto-clear success messages after a delay
+    // { type, key } for MessageBox, the key already translated (and translated again on language change)
+    const translatedMessage = computed(() =>
+        message.value ? { type: message.value.type, key: lang.getTranslation(message.value.key) } : null
+    )
+
+    // Displays a message; success messages disappear after autoClearDelay milliseconds (0 = stay)
     const showMessage = (type, key, autoClearDelay = 5000) => {
-        errorMessage.value = { type, key: typeof key === 'string' ? key : 'unknownMessage' }
-        if (type === 'success' && autoClearDelay > 0)
-            setTimeout(() => errorMessage.value = null, autoClearDelay)
+        message.value = { type, key: typeof key === 'string' ? key : 'unknownMessage' }
+        if (type === 'success' && autoClearDelay > 0) setTimeout(() => { message.value = null }, autoClearDelay)
     }
 
-    // Clear the current message
-    const clearMessage = () => { errorMessage.value = null }
+    const clearMessage = () => { message.value = null }
 
-    return { errorMessage, translatedMessage, showMessage, clearMessage }
+    return { translatedMessage, showMessage, clearMessage }
 }

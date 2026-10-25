@@ -1,0 +1,54 @@
+/* Home page: skills section, one grid per group of skills (Skills) */
+.skills-section {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    max-width: 80%;
+    margin: auto;
+}
+
+.skills-section .skills-section__content {
+    flex: 1;
+    max-width: 100%;
+    text-align: center;
+}
+
+.skills-section .skills-section__title {
+    margin: 0 0 1rem;
+}
+
+.skills-section .skills-section__description {
+    margin: 0;
+    line-height: 1.5;
+}
+
+.skills-section .skills-section__grid {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+    .skills-section {
+        flex-direction: column;
+    }
+
+    .skills-section .skills-section__content,
+    .skills-section .skills-section__grid {
+        max-width: 100%;
+    }
+
+    .skills-section .skills-section__grid {
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .skills-section .skills-section__title {
+        margin: 0;
+    }
+}

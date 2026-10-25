@@ -1,34 +1,50 @@
-import { useNuxtApp } from '#app'
+import { useLang } from './useLang.js'
 import { computed, ref } from 'vue'
-import { isIndividualLike, isProfessionalType } from '~/utils/clientTypes'
+import { api } from '@/utils/api.js'
+import { isIndividualType, isProfessionalType } from '@/utils/clientTypes.js'
 
+// Clients of the admin page: list, search, create / update / delete (GET / POST /api/clients, PUT / DELETE /api/clients/{id}) and form fields
 export function useClients() {
-    const { $lang } = useNuxtApp()
+    const lang = useLang()
 
     // Reactive state
     const clients = ref([])
     const loading = ref(false)
     const search = ref('')
 
-    // Return client name or fallback
+    // Returns client name or fallback
     const displayClientName = c => c.company_name || [c.firstname, c.lastname].filter(Boolean).join(' ') || '-'
     const displayValue = v => v ?? '-'
     const displayActive = c => !(c.active === 0 || c.active === false)
 
-    // Fetch clients from API
+    // Fetches clients from API
     const fetchClients = async () => {
         loading.value = true
-        try {
-            const res = await $fetch('/api/clients/list')
-            if (res.success) clients.value = res.clients.rows
-        } catch (e) {
-            console.error(e)
-        } finally {
-            loading.value = false
-        }
+        const res = await api.get('/clients')
+        if (res.success) clients.value = res.clients
+        loading.value = false
     }
 
-    // Filter clients by search query
+    // Creates a client — resolves to the API result ({ success, id } or { success: false, error })
+    const createClient = data => api.post('/clients', data)
+
+    // Saves every field of a client — empty optional fields are stored as null
+    const updateClient = item => api.put(`/clients/${item.id}`, {
+        ...item,
+        firstname: item.firstname || null,
+        lastname: item.lastname || null,
+        company_name: item.company_name || null,
+        siret: item.siret || null
+    })
+
+    // Deletes a client and removes it from the local list
+    const deleteClient = async id => {
+        const res = await api.delete(`/clients/${id}`)
+        if (res.success) clients.value = clients.value.filter(c => c.id !== id)
+        return res
+    }
+
+    // Filters clients by search query
     const filteredClients = computed(() => {
         const q = search.value.toLowerCase()
         return clients.value.filter(c =>
@@ -38,21 +54,21 @@ export function useClients() {
         )
     })
 
-    // Update name fields dynamically
+    // Updates name fields dynamically
     const updateNameField = (item, value) => {
         if (!item.firstname && !item.lastname) item.company_name = value
         else { const [first, ...rest] = value.split(' '); item.firstname = first; item.lastname = rest.join(' ') }
     }
 
-    // Handle client type change with field migration
+    // Handles client type change with field migration
     const updateClientType = (item, newType) => {
         const oldType = item.type
         item.type = newType
 
-        if (isProfessionalType(oldType) && isIndividualLike(newType)) {
+        if (isProfessionalType(oldType) && isIndividualType(newType)) {
             if (item.company_name) { const [first, ...rest] = item.company_name.split(' '); item.firstname = first; item.lastname = rest.join(' ') }
             item.company_name = null
-        } else if (isIndividualLike(oldType) && isProfessionalType(newType)) {
+        } else if (isIndividualType(oldType) && isProfessionalType(newType)) {
             item.company_name = [item.firstname, item.lastname].filter(Boolean).join(' ') || null
             item.firstname = item.lastname = null
         }
@@ -94,11 +110,13 @@ export function useClients() {
     }
 
     return {
-        $lang,
         clients,
         loading,
         search,
         fetchClients,
+        createClient,
+        updateClient,
+        deleteClient,
         filteredClients,
         displayClientName,
         displayValue,

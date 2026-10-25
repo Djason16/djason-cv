@@ -1,0 +1,22 @@
+/* Totals table: month concerned for companies, deposit/installments for all others (TotalsSection) */
+.totals-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.totals-section .totals-table {
+    width: 380px;
+    border-collapse: collapse;
+}
+
+.totals-section .totals-table td {
+    padding: 8px 12px;
+    border: 1px solid var(--second-color);
+    color: var(--text-color-dark);
+}
+
+.totals-section .totals-table td:first-child {
+    background: #f7f9fb;
+    font-weight: 600;
+}

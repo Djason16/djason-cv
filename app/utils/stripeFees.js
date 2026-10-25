@@ -18,7 +18,7 @@ export const calculateStripeFees = (amount, cardType = 'european') => {
     // Stripe always rounds up to the nearest cent
     const totalCents = Math.ceil(rawTotal * 100)
 
-    // Convert back to euros — this is the exact amount Stripe will charge
+    // Converts back to euros — this is the exact amount Stripe will charge
     const total = totalCents / 100
 
     // Fees = difference between what the customer pays and the net amount received

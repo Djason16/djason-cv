@@ -1,40 +1,25 @@
 <template>
-    <!-- Language switcher buttons stacked using FloatingButton -->
-    <div class="language-switcher">
-        <FloatingButton v-for="lang in availableLanguages" :key="lang.code"
-            :class="{ active: currentLanguage === lang.code }"
-            :aria-label="$lang.getTranslation('switchToLang', { lang: lang.label })" @click="switchLanguage(lang.code)">
-            {{ lang.short }}
+    <!-- One button per language of plugins/translations/translations.js (nothing when the site has one language) -->
+    <div v-if="lang.availableLanguages.length > 1" class="language-switcher">
+        <FloatingButton v-for="code in lang.availableLanguages" :key="code"
+            :class="{ active: lang.current.value === code }"
+            :aria-label="lang.getTranslation('switchToLang', { lang: lang.getTranslation(code) })"
+            @click="switchLanguage(code)">
+            {{ code.toUpperCase() }}
         </FloatingButton>
     </div>
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
-import { computed } from 'vue'
-import FloatingButton from '~/components/ui/Button/FloatingButton.vue'
-import { useCookieConsentStore } from '~/stores/cookieConsentStore'
+import FloatingButton from '@/components/ui/Button/FloatingButton.vue'
+import { useLang } from '@/composables/useLang.js'
+import { useUserPreferencesStore } from '@/stores/userPreferences.js'
 
-const { $lang } = useNuxtApp()
-const cookieStore = useCookieConsentStore()
-const currentLanguage = $lang.current
+const lang = useLang()
+const userPreferences = useUserPreferencesStore()
 
-// Prepare language options with short codes and labels
-const availableLanguages = computed(() =>
-    $lang.availableLanguages.map(code => ({
-        code,
-        short: code.slice(0, 2).toUpperCase(), // Short display: FR, EN
-        label: $lang.getTranslation(code) || code
-    }))
-)
-
-// Change language and persist only if functional cookies are accepted
-const switchLanguage = lang => {
-    $lang.setLang(lang)
-    if (cookieStore.preferences.functional) {
-        localStorage.setItem('selectedLanguage', lang)
-    }
-}
+// The choice is remembered for the next visit only when functional cookies are accepted
+const switchLanguage = (code) => lang.setLang(code, userPreferences.preferences.functional)
 </script>
 
 <style scoped>

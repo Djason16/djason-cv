@@ -1,6 +1,6 @@
+/* Title of the home page hero (Hero) */
 @import "../utils/variables.css";
 
-/* Hero <h1> styles */
 .hero-banner__title {
     font-size: 4rem;
     line-height: 1.2;

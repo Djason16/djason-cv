@@ -1,0 +1,10 @@
+/* Client of the quote or invoice: name, address, SIRET when given, phone and email (ClientInfo) */
+.client-section {
+    color: var(--text-color-dark);
+    margin-bottom: 30px;
+    text-align: end;
+}
+
+.client-section .client-name {
+    font-weight: bold;
+}

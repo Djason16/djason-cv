@@ -1,14 +1,16 @@
-import { useNuxtApp } from '#app'
+import { useLang } from './useLang.js'
 import { computed, ref } from 'vue'
-import { projects as rawProjects } from '~/src/data/projectsData'
+import { projects as rawProjects } from '@/data/projects.js'
+import { api } from '@/utils/api.js'
 
+// Projects of the home page: static ones (data/projects.js) and the ones added from the admin page (/api/projects)
 export const useProjects = () => {
-    const { $lang } = useNuxtApp()
+    const lang = useLang()
     const projects = ref([])
     const loading = ref(false)
     const search = ref('')
 
-    // Normalize a project object
+    // Normalizes a project object
     const normalizeProject = p => {
         if (!p) return null
 
@@ -29,57 +31,32 @@ export const useProjects = () => {
 
             get short() {
                 if (this.short_fr && this.short_en) {
-                    return $lang.current.value === 'english' ? this.short_en : this.short_fr
+                    return lang.current.value === 'en' ? this.short_en : this.short_fr
                 }
-                return $lang.getTranslation(this.shortKey)
+                return lang.getTranslation(this.shortKey)
             },
         }
     }
 
-    // Determine display description based on language
+    // Determines display description based on language
     const displayProjectShort = p =>
         p?.short_fr && p?.short_en
-            ? $lang.current.value === 'english'
+            ? lang.current.value === 'en'
                 ? p.short_en
                 : p.short_fr
-            : $lang.getTranslation(p?.shortDescriptionKey)
+            : lang.getTranslation(p?.shortDescriptionKey)
 
-    // Fetch projects from raw data and API
+    // Fetches projects from raw data and API
     const fetchProjects = async () => {
         loading.value = true
         try {
             const combined = rawProjects.map(normalizeProject).filter(Boolean)
 
-            console.log('📦 Raw projects:', combined.map(p => ({ name: p.name, link: p.link, hasId: !!p.id })))
+            // Projects added from the admin page; local data only when the API is unreachable
+            const res = await api.get('/projects')
+            if (res.success) combined.push(...res.projects.map(normalizeProject).filter(Boolean))
+            else console.warn('API unreachable, using local data only', res.error)
 
-            try {
-                const res = await $fetch('/api/projects')
-                console.log('🌐 API response:', res)
-
-                if (res?.projects?.length) {
-                    const apiProjects = res.projects
-                        .map(p => {
-                            const proj = normalizeProject(p)
-
-                            if (!proj) return null
-                            if (typeof p.skills === 'string') {
-                                try {
-                                    proj.skills = JSON.parse(p.skills)
-                                } catch {
-                                    proj.skills = []
-                                }
-                            }
-                            return proj
-                        })
-                        .filter(Boolean)
-
-                    combined.push(...apiProjects)
-                }
-            } catch (e) {
-                console.warn('API unreachable, using local data only', e)
-            }
-
-            console.log('🎯 Final combined projects:', combined.map(p => ({ name: p.name, link: p.link, id: p.id })))
             projects.value = combined.sort((a, b) => new Date(b.date) - new Date(a.date))
         } catch (e) {
             console.error('Project loading failed', e)
@@ -92,7 +69,7 @@ export const useProjects = () => {
         }
     }
 
-    // Filter projects by search query
+    // Filters projects by search query
     const filteredProjects = computed(() => {
         const q = search.value.toLowerCase().trim()
         if (!q) return projects.value
@@ -106,7 +83,7 @@ export const useProjects = () => {
     const displayProjectName = p => p?.name || '-'
     const displayValue = v => v ?? '-'
 
-    // Convert project object to FormData
+    // Converts project object to FormData
     const createFormData = (project, imageFile = null) => {
         const fd = new FormData()
             ;['id', 'name', 'short_fr', 'short_en', 'link', 'date'].forEach(
@@ -119,85 +96,59 @@ export const useProjects = () => {
         return fd
     }
 
-    // Add new project (API projects only)
+    // Adds new project (API projects only)
     const addProject = async (project, imageFile = null) => {
-        try {
-            const res = await $fetch('/api/projects/add-project', {
-                method: 'POST',
-                body: createFormData(project, imageFile),
+        const res = await api.post('/projects', createFormData(project, imageFile))
+
+        if (res.success) {
+            const normalized = normalizeProject({
+                ...project,
+                id: res.id,
+                img: res.imagePath || project.img,
             })
+            if (normalized) projects.value.unshift(normalized)
+        } else console.error('Project creation failed', res.error)
 
-            if (res.success) {
-                const normalized = normalizeProject({
-                    ...project,
-                    id: res.projectId,
-                    img: res.imagePath || project.img,
-                })
-                if (normalized) projects.value.unshift(normalized)
-            }
-
-            return res
-        } catch (e) {
-            console.error('Project creation failed', e)
-            return { success: false, error: e.message }
-        }
+        return res
     }
 
-    // Update existing project
+    // Updates existing project
     const updateProject = async (id, updates = {}, imageFile = null) => {
-        try {
-            let res
+        let res
 
-            if (imageFile) {
-                res = await $fetch('/api/projects/update-project', {
-                    method: 'POST',
-                    body: createFormData({ id }, imageFile),
-                })
-                if (res.success) {
-                    const newImg = `api${res.imagePath}`
-                    const i = projects.value.findIndex(p => p.id === id)
-                    if (i !== -1) {
-                        projects.value[i] = {
-                            ...projects.value[i],
-                            img: newImg,
-                            image: newImg,
-                        }
+        if (imageFile) {
+            res = await api.post(`/projects/${id}/image`, createFormData({}, imageFile))
+            if (res.success) {
+                const newImg = `api${res.imagePath}`
+                const i = projects.value.findIndex(p => p.id === id)
+                if (i !== -1) {
+                    projects.value[i] = {
+                        ...projects.value[i],
+                        img: newImg,
+                        image: newImg,
                     }
                 }
             }
-
-            if (Object.keys(updates).length) {
-                res = await $fetch('/api/projects/update-project', {
-                    method: 'PUT',
-                    body: JSON.stringify({ id, ...updates }),
-                    headers: { 'Content-Type': 'application/json' },
-                })
-                if (res.success) {
-                    const i = projects.value.findIndex(p => p.id === id)
-                    if (i !== -1) projects.value[i] = { ...projects.value[i], ...updates }
-                }
-            }
-
-            return res || { success: false, error: 'Nothing to update' }
-        } catch (e) {
-            console.error('Project update failed', e)
-            return { success: false, error: e.message }
         }
+
+        if (Object.keys(updates).length) {
+            res = await api.put(`/projects/${id}`, updates)
+            if (res.success) {
+                const i = projects.value.findIndex(p => p.id === id)
+                if (i !== -1) projects.value[i] = { ...projects.value[i], ...updates }
+            }
+        }
+
+        if (res && !res.success) console.error('Project update failed', res.error)
+        return res || { success: false, error: 'Nothing to update' }
     }
 
-    // Delete a project
+    // Deletes a project
     const removeProject = async id => {
-        try {
-            const res = await $fetch('/api/projects/remove-project', {
-                method: 'DELETE',
-                body: { id },
-            })
-            if (res.success) projects.value = projects.value.filter(p => p.id !== id)
-            return res
-        } catch (e) {
-            console.error('Project deletion failed', e)
-            return { success: false, error: e.message }
-        }
+        const res = await api.delete(`/projects/${id}`)
+        if (res.success) projects.value = projects.value.filter(p => p.id !== id)
+        else console.error('Project deletion failed', res.error)
+        return res
     }
 
     // Project form configuration
@@ -205,14 +156,13 @@ export const useProjects = () => {
         { id: 'name', labelKey: 'projectName', placeholderKey: 'enterProjectName', type: 'text', required: true },
         { id: 'short_fr', labelKey: 'projectShortFr', placeholderKey: 'enterShortDescriptionFr', type: 'text', required: true },
         { id: 'short_en', labelKey: 'projectShortEn', placeholderKey: 'enterShortDescriptionEn', type: 'text', required: true },
-        { id: 'img', labelKey: 'projectImage', placeholderKey: 'selectImage', type: 'file', accept: 'image/*' },
+        { id: 'img', labelKey: 'projectImage', placeholderKey: 'selectImage', type: 'file', accept: '.jpg,.jpeg,.png,.gif,.webp,.avif' },
         { id: 'link', labelKey: 'projectLink', placeholderKey: 'enterLink', type: 'text' },
         { id: 'skills', labelKey: 'projectSkills', placeholderKey: 'enterSkills', type: 'text' },
         { id: 'date', labelKey: 'projectDate', placeholderKey: 'enterDate', type: 'date' },
     ]
 
     return {
-        $lang,
         projects,
         loading,
         search,

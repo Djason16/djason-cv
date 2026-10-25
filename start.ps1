@@ -1,72 +1,145 @@
-Clear-Host
+﻿# Launcher for my-cv-project (Nuxt  ·  Nitro  ·  SQLite)
+# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A
+# Every option adapts to what the project contains (docker-compose.yml, backend/, frontend/).
+param([string]$Action)
 
-# Display mode selection menu
-Write-Host "Select mode:"
-Write-Host "D - Development (Nuxt 4)"
-Write-Host "G - Generate site (static)"
-Write-Host "B - Build site"
+$Root = $PSScriptRoot
+. (Join-Path $Root 'scripts\common.ps1')
 
-# Read user input and convert to uppercase
-$key = Read-Host "Select mode (D=Dev, G=Generate, B=Build)" | ForEach-Object { $_.ToUpper() }
+$Shell = if (Test-Command 'pwsh') { 'pwsh' } else { 'powershell' }
+$ApiDir = Join-Path $Root 'backend'
+$AppDir = Join-Path $Root 'app'
+$HasDocker = Test-Path (Join-Path $Root 'docker-compose.yml')
 
-# Function to start a server in a new PowerShell window
-function Start-Server {
-    param (
-        [string]$Path,      # Project path
-        [string]$Name,      # Server name for display
-        [string]$Command    # Command to run
-    )
+# ---------------------------------------------------------------------------
+# Project detection
+# ---------------------------------------------------------------------------
 
-    # PowerShell script to execute in the new window
-    $scriptBlock = @"
-Set-Location '$Path'
-Write-Host '$Name starting...' -ForegroundColor Green
+# npm scripts of a folder (empty when it has no package.json)
+function Get-NpmScripts([string]$Path) {
+    $file = Join-Path $Path 'package.json'
+    if (-not (Test-Path $file)) { return @{} }
+    $scripts = (Get-Content $file -Raw | ConvertFrom-Json).scripts
+    $names = @{}
+    if ($scripts) { $scripts.PSObject.Properties | ForEach-Object { $names[$_.Name] = $_.Value } }
+    return $names
+}
 
-try {
-    Invoke-Expression '$Command'   # Run the command
-} catch {
-    Write-Host "Error: `$(`$_.Exception.Message)" -ForegroundColor Red
-} finally {
+$ApiScripts = Get-NpmScripts $ApiDir
+$AppScripts = Get-NpmScripts $AppDir
+$FrontBuild = if ($AppScripts.ContainsKey('build:prod')) { 'build:prod' } elseif ($AppScripts.ContainsKey('build')) { 'build' } else { $null }
+
+# ---------------------------------------------------------------------------
+# Actions
+# ---------------------------------------------------------------------------
+
+# Opens a new terminal window running the given command
+function Start-Window([string]$Path, [string]$Title, [string]$Command) {
+    $safePath = $Path.Replace("'", "''")
+    $script = @(
+        "`$Host.UI.RawUI.WindowTitle = '$Title'"
+        "Set-Location -LiteralPath '$safePath'"
+        "Write-Host '  $Title' -ForegroundColor Cyan"
+        "Write-Host ''"
+        $Command
+    ) -join "`n"
+    $encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($script))
+    Start-Process $Shell -ArgumentList '-NoExit', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-EncodedCommand', $encoded
+}
+
+function Test-Docker {
+    docker info *> $null
+    return $LASTEXITCODE -eq 0
+}
+
+# Installs vendor/ and node_modules/: only the missing ones, or every folder with -All (also applies package.json changes)
+function Install-Dependencies([switch]$All) {
+    $done = $false
+    $ok = $true
+    foreach ($dir in $ApiDir, $AppDir) {
+        $name = Split-Path $dir -Leaf
+
+        if ((Test-Path (Join-Path $dir 'composer.json')) -and ($All -or -not (Test-Path (Join-Path $dir 'vendor')))) {
+            Write-Title "Composer ($name)"
+            $installed = Invoke-Composer $dir @('install', '--no-interaction', '--no-progress')
+            if (-not $installed) {
+                # composer.lock out of date or resolved for another PHP: resolve again from composer.json
+                Write-Warn 'The composer.lock file does not match, running composer update...'
+                $installed = Invoke-Composer $dir @('update', '--no-interaction', '--no-progress')
+            }
+            if ($installed) { Write-Ok "Ready: $name/vendor" } else { Write-Fail "Installation failed in $name/ (Composer)"; $ok = $false }
+            $done = $true
+        }
+
+        if ((Test-Path (Join-Path $dir 'package.json')) -and ($All -or -not (Test-Path (Join-Path $dir 'node_modules')))) {
+            Write-Title "npm ($name)"
+            $installed = Invoke-In $dir { & $Npm install --no-fund --no-audit }
+            if (-not $installed) {
+                # Some npm 10 versions crash on recent packages ("edgesOut"): one more try with the latest npm
+                Write-Warn 'npm failed, trying again with the latest npm...'
+                $installed = Invoke-In $dir { & $Npx --yes npm@latest install --no-fund --no-audit }
+            }
+            if ($installed) { Write-Ok "Ready: $name/node_modules" } else { Write-Fail "Installation failed in $name/ (npm)"; $ok = $false }
+            $done = $true
+        }
+    }
+    if ($All -and -not $done) { Write-Info 'Nothing to install: no package.json or composer.json found.' }
+    return $ok
+}
+
+function Start-Dev {
+    if ($HasDocker -and -not (Test-Docker)) {
+        Write-Fail 'Docker is not running. Start Docker Desktop and retry.'
+        return
+    }
+    Install-Dependencies | Out-Null
+
+    if ($HasDocker) { Start-Window $Root 'Docker' 'docker compose up' }
+    if ($ApiScripts.ContainsKey('dev')) { Start-Window $ApiDir 'API' 'npm run dev' }
+    if ($AppScripts.ContainsKey('dev')) { Start-Window $AppDir 'Front' 'npm run dev' }
+
     Write-Host ''
-    Write-Host '$Name finished.' -ForegroundColor Yellow
-    `$choice = Read-Host 'Keep window open? (Y to keep, N to close)'
-    
-    if (`$choice -eq 'Y' -or `$choice -eq 'y' -or `$choice -eq '') {
-        Write-Host 'Window will remain open. You can run additional commands.'
-        # Keep the PowerShell session interactive
-    } else {
-        Write-Host 'Closing window...'
-        exit
-    }
-}
-"@
-
-    # Open a new PowerShell window and execute the script
-    Start-Process pwsh -ArgumentList "-NoExit", "-Command", $scriptBlock
+    Write-Ok 'Started in separate windows.'
+    Write-Host ''
+    Write-Box -Color Green @(
+        'Front       http://localhost:3000'
+        'API         http://localhost:3000/api'
+    )
 }
 
-$appPath = Join-Path $PSScriptRoot "app"
+# ---------------------------------------------------------------------------
+# Menu
+# ---------------------------------------------------------------------------
 
-# Handle user selection
-switch ($key) {
-    "D" {
-        Write-Host "`nStarting Nuxt 4 development server..." -ForegroundColor Cyan
-        Start-Server -Path $appPath -Name "Nuxt 4 Development" -Command "npm run dev -- --host"
-        Write-Host "`nNuxt 4 server started." -ForegroundColor Green
+if (-not $Action) {
+    Clear-Host
+    Write-Host ''
+    Write-Box @(
+        'my-cv-project'
+        'Nuxt  ·  Nitro  ·  SQLite'
+    )
+    Write-Host ''
+    Write-MenuItem 'D' 'Development' 'Start everything'
+    if ($HasDocker) {
+        Write-MenuItem 'S' 'Stop' 'docker compose down'
+        Write-MenuItem 'R' 'Rebuild' 'Rebuild Docker images (no cache)'
     }
+    Write-MenuItem 'I' 'Install' 'Install / update dependencies (Composer / npm)'
+    Write-Host ''
+    if ($AppScripts.ContainsKey('generate:prod')) { Write-MenuItem 'G' 'Generate' 'Static front with .env.production' }
+    if ($FrontBuild) { Write-MenuItem 'B' 'Build front' "npm run $FrontBuild" }
+    if ($ApiScripts.ContainsKey('build')) { Write-MenuItem 'A' 'Build API' 'npm run build (backend/)' }
+    if ($FrontBuild -or $ApiScripts.ContainsKey('build')) { Write-Host '' }
+    $Action = Read-Default 'Choice' ''
+}
 
-    "G" {
-        Write-Host "`nGenerating site..." -ForegroundColor Cyan
-        Start-Server -Path $appPath -Name "Site Generator" -Command "npm run generate"
-    }
-
-    "B" {
-        Write-Host "`nBuilding site..." -ForegroundColor Cyan
-        Start-Server -Path $appPath -Name "Site Builder" -Command "npm run build"
-    }
-
-    default {
-        Write-Host "`nInvalid selection. Exiting..." -ForegroundColor Red
-        Read-Host "Press Enter to exit"
-    }
+switch ($Action.ToUpper()) {
+    'D' { Start-Dev }
+    'S' { if ($HasDocker) { Invoke-In $Root { docker compose down } | Out-Null } }
+    'R' { if ($HasDocker) { Invoke-In $Root { docker compose build --no-cache } | Out-Null } }
+    'I' { if (Install-Dependencies -All) { exit 0 } else { exit 1 } }
+    'G' { Start-Window $AppDir 'Front generate (production)' 'npm run generate:prod' }
+    'B' { if ($FrontBuild) { Start-Window $AppDir 'Front build (production)' "npm run $FrontBuild" } }
+    'A' { Start-Window $ApiDir 'API build (production)' 'npm run build' }
+    default { Write-Fail 'Invalid choice.' }
 }

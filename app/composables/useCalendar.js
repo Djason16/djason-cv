@@ -1,7 +1,8 @@
-import { useNuxtApp } from '#app'
+import { useLang } from './useLang.js'
 import { ref } from 'vue'
+import { api } from '@/utils/api.js'
 
-// Compute GMT offset string for a given timezone
+// Computes GMT offset string for a given timezone
 export const getGMTOffset = (timezone) => {
     try {
         const now = new Date()
@@ -16,12 +17,12 @@ export const getGMTOffset = (timezone) => {
 
 // Hook to manage calendar settings with loading/error states
 export const useCalendar = () => {
-    const { $lang } = useNuxtApp()
+    const lang = useLang()
     const settings = ref(null)
     const loading = ref(false)
     const error = ref(null)
 
-    // Wrap async calls with unified loading/error handling
+    // Wraps async calls with unified loading/error handling
     const run = async (fn) => {
         loading.value = true
         error.value = null
@@ -36,20 +37,26 @@ export const useCalendar = () => {
         }
     }
 
-    // Fetch current calendar settings
-    const fetchSettings = () => run(async () => {
-        const res = await $fetch('/api/calendar')
-        settings.value = res
+    // API failure -> thrown error (handled by the callers like before)
+    const check = res => {
+        if (!res.success) throw new Error(res.error)
         return res
+    }
+
+    // Fetches current calendar settings
+    const fetchSettings = () => run(async () => {
+        const res = check(await api.get('/calendar'))
+        settings.value = res.settings
+        return res.settings
     })
 
-    // Update calendar settings partially (timezone or schedule)
+    // Updates calendar settings partially (timezone or schedule)
     const updateSettings = (id, updates) => run(async () => {
         const payload = {}
         if ('timezone' in updates) payload.timezone = updates.timezone
         if ('schedule' in updates) payload.schedule = updates.schedule
 
-        const res = await $fetch(`/api/calendar/${id}`, { method: 'PATCH', body: payload })
+        const res = check(await api.patch(`/calendar/${id}`, payload))
 
         if ('timezone' in payload) settings.value.timezone = payload.timezone
         if ('schedule' in payload) settings.value.schedule = payload.schedule
@@ -58,14 +65,10 @@ export const useCalendar = () => {
         return res
     })
 
-    // Send current agenda/schedule to all active clients
+    // Sends current agenda/schedule to all active clients
     const sendAgenda = locale => run(async () => {
-        const res = await $fetch('/api/calendar/send-agenda', {
-            method: 'POST',
-            body: { locale }
-        })
-        return res
+        return check(await api.post('/calendar/send-agenda', { locale }))
     })
 
-    return { $lang, settings, loading, error, fetchSettings, updateSettings, sendAgenda }
+    return { settings, loading, error, fetchSettings, updateSettings, sendAgenda }
 }

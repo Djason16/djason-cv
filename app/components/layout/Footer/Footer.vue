@@ -1,13 +1,10 @@
 <template>
-    <!-- Footer wrapper rendering the bottom section -->
+    <!-- Bottom of every page (content: FooterBottom) -->
     <footer>
         <FooterBottom />
     </footer>
 </template>
 
 <script setup>
-// Import the bottom part of the footer
-import FooterBottom from './sections/FooterBottom.vue';
+import FooterBottom from './FooterBottom.vue';
 </script>
-
-<style scoped></style>

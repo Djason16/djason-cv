@@ -1,0 +1,31 @@
+/* Stripe card fees of each card type, printed in the payment terms of a contract (StripeFeesList) */
+.stripe-fees-detail {
+    background: #e3f2fd;
+    border-left: 4px solid var(--accent-blue);
+    padding: 10px;
+    margin: 10px 0
+}
+
+.stripe-fees-detail .bullet-list {
+    list-style: none;
+    padding-left: 20px;
+    margin: 8px 0 0 0
+}
+
+.stripe-fees-detail .bullet-list li {
+    margin-bottom: 4px;
+    text-align: justify;
+    position: relative;
+    padding-left: 20px
+}
+
+.stripe-fees-detail .bullet-list li::before {
+    content: "• ";
+    position: absolute;
+    left: 0;
+    font-weight: bold
+}
+
+.stripe-fees-detail .amount-value {
+    font-weight: 700
+}

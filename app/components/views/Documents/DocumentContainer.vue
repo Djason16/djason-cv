@@ -1,0 +1,160 @@
+<template>
+    <!-- Quote or invoice printed to PDF (utils/pdf.js): header, client, lines, totals, payment, signature -->
+    <div class="document-container">
+        <div class="content">
+            <!-- Header with company & document info -->
+            <DocumentHeader :issueDate="issueDate" :documentNumber="documentNumber"
+                :quoteValidityDate="quoteValidityDate" :isQuoteType="isQuoteType" :companyLogo="companyLogo"
+                :companyWebsite="companyWebsite" :companyAddress="providerInfo.invoiceAddress"
+                :companySiret="providerInfo.siret" :hasTVA="hasTVA" :companyTvaNumber="providerInfo.tvaNumber"
+                :companyPhone="providerInfo.phone" :companyEmail="providerInfo.email" />
+
+            <!-- Client details -->
+            <ClientInfo :client="client" />
+
+            <!-- Delivery address for all professional clients (company, freelance, association) if different from client -->
+            <DeliveryAddress v-if="!sameAsClientAddress && deliveryAddress && isProfessionalType(client.type)"
+                :deliveryAddress="deliveryAddress" :clientType="client.type" />
+
+            <!-- Document metadata -->
+            <DocumentMeta :description="description" :documentType="documentType" :operationNature="operationNature"
+                :orderRef="orderRef" :translatedDocumentType="translatedDocumentType" />
+
+            <!-- Table of items -->
+            <ItemsTable :items="items" :clientType="client.type" :tvaRateLabel="tvaRateLabel" :hasTVA="hasTVA"
+                :calculateItemTTC="calculateItemTTC" />
+
+            <!-- Totals and financial summary -->
+            <TotalsSection :clientType="client.type" :totalHT="totalHT" :totalTVA="totalTVA" :totalTTC="totalTTC"
+                :finalTotal="finalTotal" :isQuoteType="isQuoteType" :deposit="deposit" :nbMensualites="nbMensualites"
+                :amountPaid="amountPaid" :remainingToPay="remainingToPay" :monthlyPayment="monthlyPayment"
+                :monthConcerned="monthConcerned" :currency="currency" />
+
+            <!-- Legal notices -->
+            <LegalText :showLegalText="showLegalText" :isQuoteType="isQuoteType" :quoteLegalText="quoteLegalText"
+                :clientType="client.type" />
+
+            <!-- Payment options for all non-company quotes (individual, freelance, association) -->
+            <PaymentOptions v-if="isQuoteType && !isCompanyType(client.type) && paymentOptions"
+                :paymentOptions="paymentOptions" />
+
+            <!-- Payment conditions for invoices -->
+            <PaymentConditions v-if="showPaymentConditions && !isQuoteType" :paymentMethod="paymentMethod"
+                :nbMensualites="nbMensualites" :monthlyPaymentInfo="monthlyPaymentInfo" :paymentDue="paymentDue"
+                :clientType="client.type" />
+
+            <!-- Bank info and signatures -->
+            <BankInfo v-if="providerInfo.bank.iban || providerInfo.bank.bic" :bankInfo="providerInfo.bank" />
+            <QuoteSignature v-if="isQuoteType" />
+            <CompanySignature :signerName="providerInfo.name" />
+        </div>
+    </div>
+</template>
+
+<script setup>
+import { useSite } from '@/composables/useSite.js'
+import { VAT_RATE, documentProvider } from '@/utils/documents.js'
+import { useLang } from '@/composables/useLang.js'
+import { computed } from 'vue'
+import { isCompanyType, isProfessionalType } from '@/utils/clientTypes.js'
+import BankInfo from './DocumentContainer/BankInfo.vue'
+import ClientInfo from './DocumentContainer/ClientInfo.vue'
+import CompanySignature from './DocumentContainer/CompanySignature.vue'
+import DeliveryAddress from './DocumentContainer/DeliveryAddress.vue'
+import DocumentHeader from './DocumentContainer/DocumentHeader.vue'
+import DocumentMeta from './DocumentContainer/DocumentMeta.vue'
+import ItemsTable from './DocumentContainer/ItemsTable.vue'
+import LegalText from './DocumentContainer/LegalText.vue'
+import PaymentConditions from './DocumentContainer/PaymentConditions.vue'
+import PaymentOptions from './DocumentContainer/PaymentOptions.vue'
+import QuoteSignature from './DocumentContainer/QuoteSignature.vue'
+import TotalsSection from './DocumentContainer/TotalsSection.vue'
+
+const props = defineProps({
+    client: Object, items: Array, issueDate: String,
+    description: String, deposit: Number, monthConcerned: String,
+    documentType: String, deliveryAddress: String, sameAsClientAddress: Boolean,
+    orderRef: String, customDocumentNumber: String, customPaymentDue: String,
+    nbMensualites: Number, monthlyPayment: Number, remainingToPay: Number,
+    amountPaid: Number, quoteValidityDays: Number, paymentOptions: Object,
+    bankInfo: { type: Object, default: () => ({ iban: null, bic: null }) }
+})
+
+const isQuoteType = computed(() => props.documentType === 'quote')
+
+// Nuxt app & config
+const lang = useLang()
+const config = useRuntimeConfig()
+const site = useSite()
+
+// Reactive provider info
+const providerInfo = documentProvider(config, props.bankInfo)
+
+// Static info
+const companyLogo = '/images/main_logo_dark.png'
+const companyWebsite = site.url
+const currency = computed(() => lang.current.value === 'fr' ? 'EUR' : 'USD')
+
+// TVA & financial calculations
+const tvaRateLabel = '20%'
+const hasTVA = computed(() => props.items.some(i => i.tvaApplicable))
+const calculateItemTTC = i => i.unitPrice * i.quantity * (i.tvaApplicable ? 1 + VAT_RATE : 1)
+const totalHT = computed(() => props.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0))
+const totalTVA = computed(() => props.items.reduce((s, i) => s + (i.tvaApplicable ? i.unitPrice * i.quantity * VAT_RATE : 0), 0))
+const totalTTC = computed(() => hasTVA.value ? totalHT.value + totalTVA.value : totalHT.value)
+const finalTotal = computed(() => hasTVA.value ? totalTTC.value : totalHT.value)
+
+// Document number — FA only for companies, CL for all others (individual, freelance, association)
+const documentNumber = computed(() => props.customDocumentNumber || (() => {
+    const y = new Date(props.issueDate).getFullYear()
+    return isQuoteType.value ? `DE-${y}-0001` : isCompanyType(props.client.type) ? `FA-${y}-0001` : `CL-${y}-0001`
+})())
+
+// Quote validity calculation
+const quoteValidityDate = computed(() => {
+    if (!isQuoteType.value) return ''
+    const d = new Date(props.issueDate)
+    d.setDate(d.getDate() + props.quoteValidityDays)
+    return d.toISOString()
+})
+
+// Static texts
+const operationNature = lang.getTranslation('serviceProvision')
+const quoteLegalText = computed(() => lang.getTranslation('quoteValidityNotice', { days: props.quoteValidityDays }))
+const paymentMethod = lang.getTranslation('bankTransfer')
+
+// Payment due formatting
+const paymentDue = computed(() => {
+    if (!props.customPaymentDue) return lang.getTranslation('seeContractConditions')
+    const parts = props.customPaymentDue.includes('/') ? props.customPaymentDue.split('/') : props.customPaymentDue.split('-')
+    let date = parts.length === 3
+        ? (props.customPaymentDue.includes('/')
+            ? new Date(+parts[2], parts[1] - 1, +parts[0])
+            : new Date(+parts[0], parts[1] - 1, +parts[2]))
+        : new Date(props.customPaymentDue)
+    const f = date.toLocaleDateString(lang.current.value === 'fr' ? 'fr-FR' : 'en-US', { day: '2-digit', month: 'long', year: 'numeric' })
+    return lang.getTranslation('paymentDueBy', { date: f })
+})
+
+const showLegalText = true, showPaymentConditions = true
+
+// Translate document type intelligently
+const translatedDocumentType = computed(() => {
+    if (!props.documentType) return ''
+    const k = props.documentType.toLowerCase()
+    const t = lang.getTranslation(k)
+    return (k === 'invoice' || k === 'quote') && (t !== k) ? t : props.documentType
+})
+
+// Monthly payment info for all non-company clients (individual, freelance, association)
+const monthlyPaymentInfo = computed(() => {
+    if (isCompanyType(props.client.type) || props.nbMensualites <= 0) return ''
+    const firstDateStr = props.customPaymentDue || new Date().toISOString().slice(0, 10)
+    const firstDate = new Date(firstDateStr.split('/').reverse().join('-')) || new Date(firstDateStr)
+    return lang.getTranslation('monthlyPaymentStartInfo', {
+        startDate: firstDate.toLocaleDateString(lang.current.value === 'fr' ? 'fr-FR' : 'en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        day: firstDate.getDate(),
+        months: props.nbMensualites
+    })
+})
+</script>

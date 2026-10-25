@@ -1,6 +1,6 @@
 <template>
-    <!-- Carousel container with track, pagination, and controls -->
-    <section v-if="validItems.length" class="carousel" role="region" :aria-label="$lang.getTranslation('lastProjects')">
+    <!-- Carousel of the projects: track, pagination dots and previous / next buttons -->
+    <section v-if="validItems.length" class="carousel" role="region" :aria-label="t('lastProjects')">
         <CarouselTrack :slides="slides" :trackStyle="trackStyle" :transitionEnabled="transitionEnabled"
             :activeIndex="activePaginationIndex" :itemsLength="validItems.length" />
 
@@ -12,18 +12,17 @@
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useLang } from '@/composables/useLang.js'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import CarouselControls from './CarouselWithPagination/CarouselControls.vue'
 import CarouselPagination from './CarouselWithPagination/CarouselPagination.vue'
 import CarouselTrack from './CarouselWithPagination/CarouselTrack.vue'
 
-const { $lang } = useNuxtApp()
+const { getTranslation: t } = useLang()
 
-// Props: array of items to display
 const props = defineProps({ items: { type: Array, required: true, default: () => [] } })
 
-// Filter out invalid items without a name
+// Filters out invalid items without a name
 const validItems = computed(() => props.items.filter(item => item?.name))
 
 // Reactive state
@@ -36,7 +35,7 @@ const SLIDE_WIDTH_DESKTOP = 40
 const SLIDE_WIDTH_MOBILE = 30
 const SLIDE_GAP = 1
 
-// Update screen width on client resize
+// Updates screen width on client resize
 const updateScreenWidth = () => process.client && (screenWidth.value = window.innerWidth)
 onMounted(() => {
     updateScreenWidth()
@@ -51,7 +50,7 @@ const slides = computed(() => {
     return [validItems.value[validItems.value.length - 1], ...validItems.value, validItems.value[0]]
 })
 
-// Compute transform style for track movement
+// Computes transform style for track movement
 const trackStyle = computed(() => {
     const width = screenWidth.value <= 1024 ? SLIDE_WIDTH_MOBILE : SLIDE_WIDTH_DESKTOP
     const offset = width / 2
@@ -102,7 +101,7 @@ watch(currentSlide, newVal => {
     }
 })
 
-// Reset to first slide if items change and current index is out of bounds
+// Resets to first slide if items change and current index is out of bounds
 watch(() => validItems.value.length, newLength => {
     if (newLength && currentSlide.value > newLength) currentSlide.value = 1
 })

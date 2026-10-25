@@ -1,0 +1,66 @@
+/* Main button of the site: a link when href is given, otherwise a button (HeroButton) */
+.custom-button::after,
+.custom-button .custom-button__icon::after,
+.custom-button .custom-button__text::after {
+    display: none;
+}
+
+.custom-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    width: fit-content;
+    padding: 0.5rem 1.5rem;
+    color: var(--text-color-light);
+    background-color: transparent;
+    border: 2px solid var(--text-color-light);
+    border-radius: 4px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    will-change: transform, opacity;
+}
+
+.custom-button:hover {
+    background-color: var(--second-color);
+    border-color: var(--third-color);
+    color: var(--third-color);
+}
+
+.custom-button .custom-button__text {
+    z-index: 1;
+}
+
+.custom-button .custom-button__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+    will-change: transform, color;
+}
+
+.custom-button:hover .custom-button__icon {
+    transform: scale(1.35);
+    color: var(--third-color);
+}
+
+@media (max-width: 1024px) {
+    .custom-button:hover {
+        background-color: transparent;
+        border: 2px solid var(--text-color-light);
+        color: var(--text-color-light);
+    }
+
+    .custom-button:hover .custom-button__icon {
+        transform: scale(1);
+        color: var(--text-color-light);
+    }
+}
+
+@media (max-width: 768px) {
+    .custom-button .custom-button__text {
+        display: none;
+    }
+}

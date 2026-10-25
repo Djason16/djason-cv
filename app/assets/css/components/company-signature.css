@@ -1,0 +1,6 @@
+/* Name of the signer of the provider, at the bottom of the quote or invoice (CompanySignature) */
+.signature-section {
+    color: var(--third-color);
+    margin-top: 20px;
+    text-align: center;
+}

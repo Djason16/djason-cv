@@ -1,29 +1,34 @@
 <template>
+    <!-- Home page: "About me" section (age, location, photos) -->
     <section id="about-me" class="about-section" aria-labelledby="about-me-title">
         <!-- Image gallery -->
         <AboutImages :images="images" />
 
         <div class="about-section__content">
             <h2 id="about-me-title" class="about-section__title text-tall text-uppercase">
-                {{ $lang.getTranslation('aboutMe') }}
+                {{ t('aboutMe') }}
             </h2>
 
             <div class="about-section__description text-normal">
-                {{ $lang.getTranslation('aboutDescription', variables) }}
+                {{ t('aboutDescription', variables) }}
             </div>
         </div>
     </section>
 </template>
 
 <script setup>
+import { useLang } from '@/composables/useLang.js'
+import { useSite } from '@/composables/useSite.js'
 import { useRuntimeConfig } from '#app'
 import { onMounted, ref } from 'vue'
-import AboutImages from '~/components/ui/Image/AboutImages.vue'
+import AboutImages from '@/components/views/Index/AboutImages.vue'
 
-// Runtime config
+const { getTranslation: t } = useLang()
+
 const config = useRuntimeConfig()
+const site = useSite()
 
-// Calculate age from birth date
+// Calculates age from birth date
 const calculateAge = d => {
     const today = new Date(), age = today.getFullYear() - d.getFullYear()
     return today.getMonth() < d.getMonth() || (today.getMonth() === d.getMonth() && today.getDate() < d.getDate())
@@ -44,12 +49,12 @@ const shuffleArray = arr => {
 const baseImages = [
     {
         src: '/images/me_1.jpg',
-        alt: `Selfie de ${config.public.name}.`,
+        alt: `Selfie de ${site.name}.`,
         eager: true,
     },
     {
         src: '/images/me_2.jpg',
-        alt: `${config.public.name} en costume, portrait professionnel.`,
+        alt: `${site.name} en costume, portrait professionnel.`,
         eager: false,
     }
 ]
@@ -62,50 +67,8 @@ onMounted(() => images.value = shuffleArray(images.value))
 // Variables for translation interpolation
 const birthDate = new Date(config.public.birthDate)
 const variables = {
-    name: config.public.name,
+    name: site.name,
     address: config.public.legalAddress,
     age: calculateAge(birthDate)
 }
 </script>
-
-<style scoped>
-.about-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 5rem;
-    max-width: 80%;
-    flex-wrap: wrap;
-    margin: auto;
-}
-
-.about-section__content {
-    flex: 1;
-    max-width: 30%;
-    text-align: right;
-}
-
-.about-section__title {
-    margin: 0 0 1rem;
-}
-
-.about-section__description {
-    margin: 0;
-    line-height: 1.5;
-}
-
-@media (max-width: 1024px) {
-    .about-section {
-        flex-direction: column-reverse;
-        gap: 2rem;
-    }
-
-    .about-section__content {
-        max-width: 100%;
-    }
-
-    .about-section__title {
-        margin: 0;
-    }
-}
-</style>

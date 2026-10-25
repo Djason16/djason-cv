@@ -1,26 +1,27 @@
 <template>
-    <!-- Render only on client-side to avoid SSR issues -->
+    <!-- Availability badge of the moment (available, busy, unavailable), shown in the browser only -->
     <div v-if="isMounted" :class="['availability-button', `is-${status}`]"
-        :aria-label="$lang.getTranslation(status) || status" :title="$lang.getTranslation(status) || status">
-        <span class="availability-button__dot" aria-hidden="true"></span> <!-- Colored dot showing status -->
+        :aria-label="t(status) || status" :title="t(status) || status">
+        <!-- Dot in the color of the status -->
+        <span class="availability-button__dot" aria-hidden="true"></span>
         <span class="availability-button__text text-normal text-uppercase text-bold">
-            {{ $lang.getTranslation(status) || status }}
+            {{ t(status) || status }}
         </span>
     </div>
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useLang } from '@/composables/useLang.js'
 import { onMounted, ref } from 'vue'
 
-const { $lang } = useNuxtApp() // Nuxt language plugin
+const { getTranslation: t } = useLang()
 
-// Props: restrict to valid statuses
 defineProps({
     status: { type: String, required: true, validator: v => ['available', 'busy', 'unavailable'].includes(v) }
 })
 
-const isMounted = ref(false) // only render on client
+// Rendered in the browser only: the status of the moment is not known while the server renders the page
+const isMounted = ref(false)
 onMounted(() => isMounted.value = true)
 </script>
 

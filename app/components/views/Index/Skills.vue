@@ -1,17 +1,17 @@
 <template>
-    <!-- Skills section wrapper -->
+    <!-- Home page: skills section, one grid per group of skills -->
     <section id="skills" class="skills-section" aria-labelledby="skills-section__title">
         <div class="skills-section__content">
             <h2 id="skills-section__title" class="skills-section__title text-tall text-uppercase">
-                {{ $lang.getTranslation('skillsTitle') }}
+                {{ t('skillsTitle') }}
             </h2>
 
             <div class="skills-section__description text-normal">
-                {{ $lang.getTranslation('skillsDescription') }}
+                {{ t('skillsDescription') }}
             </div>
         </div>
 
-        <!-- Render each skills group as a grid -->
+        <!-- Renders each skills group as a grid -->
         <div class="skills-section__grid">
             <SkillsGrid v-for="(group, i) in skillGroups" :key="i" :skills="group.data" :gridClass="group.class"
                 :expandedSkill="expandedSkill.group === i ? expandedSkill.index : null"
@@ -21,11 +21,12 @@
 </template>
 
 <script setup>
+import { useLang } from '@/composables/useLang.js'
 import { onMounted, onUnmounted, ref } from 'vue'
-import SkillsGrid from '~/components/ui/Grid/SkillsGrid.vue'
-import { useSkills } from '~/composables/useSkills.js'
+import SkillsGrid from '@/components/views/Index/SkillsGrid.vue'
+import { developerSkills, videoEditorSkills } from '@/data/skills.js'
 
-const { developerSkills, videoEditorSkills } = useSkills()
+const { getTranslation: t } = useLang()
 
 // Skill groups with data & style classes
 const skillGroups = [
@@ -33,10 +34,10 @@ const skillGroups = [
     { data: developerSkills, class: 'dev' }
 ]
 
-// Track expanded skill (group + index)
+// Tracks expanded skill (group + index)
 const expandedSkill = ref({ group: null, index: null })
 
-// Toggle expansion; collapse if same skill clicked
+// Toggles expansion; collapse if same skill clicked
 const handleToggleExpand = (groupIndex, skillIndex) =>
     expandedSkill.value =
     expandedSkill.value.group === groupIndex && expandedSkill.value.index === skillIndex
@@ -49,63 +50,7 @@ const handleOutsideClick = e => {
     if (el && !el.contains(e.target)) expandedSkill.value = { group: null, index: null }
 }
 
-// Add/remove global click listener
+// Adds/removes global click listener
 onMounted(() => document.addEventListener('click', handleOutsideClick))
 onUnmounted(() => document.removeEventListener('click', handleOutsideClick))
 </script>
-
-<style scoped>
-.skills-section {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    gap: 2rem;
-    max-width: 80%;
-    margin: auto;
-}
-
-.skills-section__content {
-    flex: 1;
-    max-width: 100%;
-    text-align: center;
-}
-
-.skills-section__title {
-    margin: 0 0 1rem;
-}
-
-.skills-section__description {
-    margin: 0;
-    line-height: 1.5;
-}
-
-.skills-section__grid {
-    flex: 1;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0;
-    transition: all 0.3s ease;
-}
-
-@media (max-width: 1024px) {
-    .skills-section {
-        flex-direction: column;
-    }
-
-    .skills-section__content,
-    .skills-section__grid {
-        max-width: 100%;
-    }
-
-    .skills-section__grid {
-        flex-direction: column;
-        gap: .5rem;
-    }
-
-    .skills-section__title {
-        margin: 0;
-    }
-}
-</style>

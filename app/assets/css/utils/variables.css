@@ -1,4 +1,4 @@
-/* Import Barlow Condensed font in WOFF and TTF formats */
+/* Imports Barlow Condensed font in WOFF and TTF formats */
 /* WOFF format is prioritized because it is optimized for the web, followed by TTF as a fallback */
 @font-face {
     font-family: 'Barlow Condensed';

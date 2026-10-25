@@ -1,0 +1,45 @@
+/* Home page: carousel of the projects (LastProject) */
+.projects-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 5rem;
+    max-width: 80%;
+}
+
+.projects-section .projects-section__content {
+    flex: 1;
+    max-width: 30%;
+    text-align: left;
+}
+
+.projects-section .projects-section__title {
+    margin-bottom: 1rem;
+}
+
+.projects-section .projects-section__description {
+    line-height: 1.5;
+}
+
+.projects-section .projects-section__carousel {
+    flex: 1;
+    max-width: 70%;
+    clip-path: polygon(10% 0, 100% 0, 90% 101%, 0 100%);
+}
+
+@media (max-width: 1024px) {
+    .projects-section {
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .projects-section .projects-section__content,
+    .projects-section .projects-section__carousel,
+    .projects-section .projects-section__carousel {
+        clip-path: none;
+    }
+
+    .projects-section .projects-section__title {
+        margin: 0;
+    }
+}

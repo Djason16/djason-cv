@@ -1,0 +1,10 @@
+/* Container whose children slide in from the right when they appear on screen (SlideInFromRight) */
+.slide-in-from-right {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.slide-in-from-right>* {
+    will-change: opacity, transform;
+}

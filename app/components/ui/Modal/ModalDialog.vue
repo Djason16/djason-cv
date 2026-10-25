@@ -1,19 +1,20 @@
 <template>
+    <!-- Modal that grows from the button that opened it; TableModal and FormModal are built on it -->
     <Teleport to="body">
         <transition name="morph" @before-enter="beforeEnter" @enter="enter" @after-enter="afterEnter" @leave="leave">
             <div v-if="show" ref="modalEl" class="morph-modal" tabindex="-1" @click.self="close">
                 <div class="modal-inner">
                     <header class="modal-header">
                         <h3 class="text-large text-bold">{{ title }}</h3>
-                        <button class="close-btn" @click="close" :title="$lang.getTranslation('close')"
-                            :aria-label="$lang.getTranslation('close')">
+                        <button class="close-btn" @click="close" :title="t('close')"
+                            :aria-label="t('close')">
                             <i class="fas fa-times"></i>
                         </button>
                     </header>
                     <div class="modal-body">
                         <slot />
                     </div>
-                    <footer v-if="$slots.footer" class="modal-footer">
+                    <footer v-if="$slots.footer" class="morph-modal__footer">
                         <slot name="footer" />
                     </footer>
                 </div>
@@ -23,7 +24,10 @@
 </template>
 
 <script setup>
+import { useLang } from '@/composables/useLang.js'
 import { ref, watch, nextTick, onMounted, onUnmounted } from 'vue'
+
+const { getTranslation: t } = useLang()
 
 const props = defineProps({
     show: Boolean,
@@ -35,19 +39,19 @@ const emit = defineEmits(['close'])
 const modalEl = ref(null)
 const close = () => emit('close')
 
-// Lock scroll & focus modal on open
+// Locks scroll & focuses modal on open
 watch(() => props.show, async v => {
     document.body.classList.toggle('modal-open', v)
     if (v) await nextTick(() => modalEl.value?.focus()), document.body.classList.remove('modal-closing')
     else document.body.classList.add('modal-closing'), setTimeout(() => document.body.classList.remove('modal-closing'), 400)
 })
 
-// Close on Escape
+// Closes on Escape
 const onKeyDown = e => e.key === 'Escape' && props.show && close()
 onMounted(() => window.addEventListener('keydown', onKeyDown))
 onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 
-// Animate from trigger or center
+// Animates from trigger or center
 const beforeEnter = el => {
     const { top = innerHeight / 2, left = innerWidth / 2, size = 0 } = props.position || {}
     Object.assign(el.style, {
@@ -67,7 +71,7 @@ const beforeEnter = el => {
     })
 }
 
-// Animate to final size
+// Animates to final size
 const enter = (el, done) => {
     el.offsetHeight
     const isMobile = innerWidth <= 1024
@@ -93,7 +97,7 @@ const enter = (el, done) => {
 }
 const afterEnter = el => el.style.transition = ''
 
-// Animate closing back to trigger
+// Animates closing back to trigger
 const leave = (el, done) => {
     if (!props.activeButton) return setTimeout(done, 0)
     const rect = props.activeButton.getBoundingClientRect()
@@ -109,63 +113,3 @@ const leave = (el, done) => {
     setTimeout(() => { el.style.willChange = 'auto'; done() }, 400)
 }
 </script>
-
-<style scoped>
-.morph-modal,
-.modal-inner,
-.modal-header,
-.modal-body {
-    display: flex
-}
-
-.morph-modal,
-.modal-inner {
-    will-change: transform, opacity
-}
-
-.morph-modal {
-    position: fixed;
-    inset: 0;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(180deg, var(--second-color), var(--third-color));
-    z-index: 999;
-    overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1)
-}
-
-.modal-inner,
-.modal-body {
-    box-sizing: border-box;
-    overflow: auto;
-    flex-direction: column;
-    justify-content: flex-start;
-    width: 100%;
-    height: 100%
-}
-
-.modal-body {
-    overflow-y: auto
-}
-
-.modal-header {
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    flex-shrink: 0
-}
-
-.modal-footer {
-    border-top: 1px solid var(--text-color-grey);
-    padding-top: 1rem;
-    margin-top: 1rem;
-    flex-shrink: 0
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--text-color-light)
-}
-</style>

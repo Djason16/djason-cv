@@ -1,6 +1,6 @@
+/* Text sizes, weights and transforms: text-tiny ... text-xxlarge, text-bold, text-uppercase */
 @import "../utils/variables.css";
 
-/* Typography styles */
 .text-tiny {
     font-size: var(--font-tiny) !important;
     transition: font-size 0.3s ease-in-out;

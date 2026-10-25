@@ -1,0 +1,5 @@
+/* Delivery address of the quote or invoice (DeliveryAddress) */
+.delivery-section {
+    color: var(--text-color-dark);
+    margin-bottom: 30px;
+}

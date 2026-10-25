@@ -1,0 +1,92 @@
+/* Sections of the home page (components/ui/SectionLayout): alternating colors, diagonal between two sections */
+.sections-container {
+    overflow: hidden;
+}
+
+.sections-container .section-wrapper {
+    position: relative;
+    /* Own stacking context: the next section is painted over this one, separator included */
+    z-index: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+    padding: 6rem;
+}
+
+/* The next section covers the last pixel row: no thin line of another color when the height is not a whole number of pixels */
+.sections-container .section-wrapper + .section-wrapper {
+    margin-top: -1px;
+}
+
+.sections-container .content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    color: var(--text-color-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 50vh;
+    margin-bottom: calc(6vh + 80px);
+}
+
+.sections-container .content:hover {
+    transform: translateY(-4px);
+}
+
+.sections-container .content-last {
+    margin-bottom: 0;
+}
+
+/* Dark text on the light sections (one section out of two) */
+.sections-container .section-wrapper:nth-child(2n) .content {
+    color: var(--text-color-dark);
+}
+
+.sections-container .diagonal-separator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    z-index: 1;
+}
+
+.sections-container .diagonal-separator svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.sections-container .diagonal-separator .separator-shadow {
+    top: 6px;
+}
+
+/* 2D flips (the same in every browser): the diagonal goes one way, then the other */
+.sections-container .diagonal-separator-normal svg {
+    transform: scale(-1, -1);
+}
+
+.sections-container .diagonal-separator-inverted svg {
+    transform: scaleY(-1);
+}
+
+@media (max-width: 1024px) {
+    .sections-container .section-wrapper {
+        padding: 5vh 1.5rem;
+    }
+
+    .sections-container .content {
+        margin-bottom: calc(5vh + 100px);
+    }
+
+    .sections-container .content-last {
+        margin-bottom: 0;
+    }
+}

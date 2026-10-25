@@ -1,0 +1,5 @@
+/* Object of the quote or invoice: description, type of operation, order reference when given (DocumentMeta) */
+.object-line {
+    color: var(--text-color-dark);
+    margin-bottom: 30px;
+}

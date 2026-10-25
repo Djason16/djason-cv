@@ -1,4 +1,5 @@
 <template>
+    <!-- Frame of every page (and of the error page): loader, header, page, footer, floating buttons, cookie banner -->
     <Loader v-if="showLoader" />
     <div v-show="!showLoader">
         <!-- Floating controls stacked bottom-right -->
@@ -9,31 +10,34 @@
         <Header />
         <slot />
         <Footer />
-        <CookieBanner />
+        <PreferencesBanner />
     </div>
 </template>
 
 <script setup>
-import { useNuxtApp } from '#app'
+import { useLang } from '@/composables/useLang.js'
 import { onMounted, ref } from 'vue'
-import Footer from '~/components/layout/Footer/Footer.vue'
-import Header from '~/components/layout/Header/Header.vue'
-import BackToTop from '~/components/ui/Button/BackToTop.vue'
-import ChangeLanguageButton from '~/components/ui/Button/ChangeLanguageButton.vue'
-import CookieBanner from '~/components/ui/Cookie/CookieBanner.vue'
-import Loader from '~/components/ui/Loader/Loader.vue'
-import { useCookieConsentStore } from '~/stores/cookieConsentStore'
+import Footer from '@/components/layout/Footer/Footer.vue'
+import Header from '@/components/layout/Header/Header.vue'
+import BackToTop from '@/components/ui/Button/BackToTop.vue'
+import ChangeLanguageButton from '@/components/ui/Button/ChangeLanguageButton.vue'
+import Loader from '@/components/ui/Loader/Loader.vue'
+import PreferencesBanner from '@/components/ui/PreferencesBanner/PreferencesBanner.vue'
+import { useUserPreferencesStore } from '@/stores/userPreferences.js'
 
-const { $lang } = useNuxtApp()
+const lang = useLang()
 const showLoader = ref(true)
 const fontsLoaded = ref(false)
-const cookieConsentStore = useCookieConsentStore()
+const userPreferences = useUserPreferencesStore()
 
 onMounted(async () => {
-    // Load cookie preferences on client mount
-    cookieConsentStore.loadPreferences()
+    // Choice saved during a previous visit (cookie)
+    userPreferences.loadPreferences()
 
-    // Load fonts and mark DOM when ready
+    // Language of a previous visit, only if the visitor accepted functional cookies
+    if (userPreferences.preferences.functional) lang.restore()
+
+    // Loads fonts and marks DOM when ready
     try {
         await Promise.all([
             document.fonts.load('400 16px "Barlow Condensed"'),
@@ -46,13 +50,10 @@ onMounted(async () => {
         fontsLoaded.value = true
     }
 
-    // Initialize language from localStorage
-    const storedLang = localStorage.getItem('selectedLanguage')
-    storedLang ? $lang.setLang(storedLang) : localStorage.setItem('selectedLanguage', $lang.current.value)
-
     // Control loader timing based on first visit and font load
     const alreadyVisited = localStorage.getItem('visited')
-    await new Promise(r => setTimeout(r, 200)) // Brief delay for smoother transition
+    // Short pause so the loader does not just flash
+    await new Promise(r => setTimeout(r, 200))
 
     if (alreadyVisited && fontsLoaded.value) showLoader.value = false
     else {

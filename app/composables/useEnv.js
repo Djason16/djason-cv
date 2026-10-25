@@ -1,11 +1,13 @@
 import { ref } from 'vue'
+import { api } from '@/utils/api.js'
 
+// Variables of the .env file in the admin page: read and update (GET / PUT /api/env), then reload once the server restarted
 export const useEnv = () => {
     const envVars = ref(null)
     const loading = ref(false)
     const error = ref(null)
 
-    // Wrap async calls with unified loading/error handling
+    // Wraps async calls with unified loading/error handling (failures are thrown for the modal)
     const run = async (fn) => {
         loading.value = true
         error.value = null
@@ -20,43 +22,27 @@ export const useEnv = () => {
         }
     }
 
-    // Fetch all environment variables
+    // Fetches all environment variables
     const fetchEnvVars = () => run(async () => {
-        const res = await $fetch('/api/env')
-        envVars.value = res
-        return res
+        const res = await api.get('/env')
+        if (!res.success) throw new Error(res.error)
+        envVars.value = res.env
+        return res.env
     })
 
-    // Update environment variables with server restart handling
+    // Updates environment variables, then reload once the server has restarted (development)
     const updateEnvVars = (updates) => run(async () => {
-        try {
-            const res = await $fetch('/api/env', {
-                method: 'PUT',
-                body: updates
-            })
+        const res = await api.put('/env', updates)
 
-            // Update local state with new values
-            if (envVars.value) {
-                Object.assign(envVars.value, updates)
-            }
+        // A 4xx is a refused update; a network failure means the server is already restarting
+        if (!res.success && res.status >= 400 && res.status < 500) throw new Error(res.error)
 
-            // Wait for server to restart (3 seconds)
-            await new Promise(resolve => setTimeout(resolve, 3000))
+        if (res.success && envVars.value) Object.assign(envVars.value, updates)
 
-            // Reload page to reconnect after restart
-            window.location.reload()
-
-            return res
-        } catch (err) {
-            // If server is restarting, wait and reload
-            if (err.message?.includes('ENOENT') || err.message?.includes('fetch failed') || !err.statusCode) {
-                console.log('Server restarting, reloading page...')
-                await new Promise(resolve => setTimeout(resolve, 3000))
-                window.location.reload()
-            } else {
-                throw err
-            }
-        }
+        // Waits for server to restart (3 seconds), then reload page to reconnect
+        await new Promise(resolve => setTimeout(resolve, 3000))
+        window.location.reload()
+        return res
     })
 
     return {

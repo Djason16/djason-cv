@@ -1,0 +1,21 @@
+/* Titles and texts of a page (translation keys), with clickable emails, phone numbers and links (CustomList) */
+.custom-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.custom-list .custom-list__item {
+    border-left: 4px solid var(--fourth-color);
+    padding-left: 1.5rem;
+}
+
+.custom-list .custom-list__title {
+    margin: 0 0 0.6rem;
+    font-weight: bold;
+}
+
+.custom-list .custom-list__content {
+    margin: 0;
+    line-height: 1.7;
+}

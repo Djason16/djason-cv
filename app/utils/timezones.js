@@ -4,9 +4,7 @@
 export const timezones = [
     'UTC',
 
-    // ============================================
-    // AFRICA (54 countries)
-    // ============================================
+    // Africa (54 countries)
     'Africa/Abidjan',        // Ivory Coast
     'Africa/Accra',          // Ghana
     'Africa/Addis_Ababa',    // Ethiopia
@@ -61,16 +59,12 @@ export const timezones = [
     'Africa/Tunis',          // Tunisia
     'Africa/Windhoek',       // Namibia
 
-    // ============================================
-    // NORTH AMERICA (3 countries)
-    // ============================================
+    // North America (3 countries)
     'America/Toronto',       // Canada
     'America/Mexico_City',   // Mexico
     'America/New_York',      // United States
 
-    // ============================================
-    // CENTRAL AMERICA (7 countries)
-    // ============================================
+    // Central America (7 countries)
     'America/Belize',        // Belize
     'America/San_Jose',      // Costa Rica
     'America/San_Salvador',  // El Salvador
@@ -79,9 +73,7 @@ export const timezones = [
     'America/Managua',       // Nicaragua
     'America/Panama',        // Panama
 
-    // ============================================
-    // CARIBBEAN (13 countries)
-    // ============================================
+    // Caribbean (13 countries)
     'America/Antigua',       // Antigua and Barbuda
     'America/Nassau',        // Bahamas
     'America/Barbados',      // Barbados
@@ -96,9 +88,7 @@ export const timezones = [
     'America/St_Vincent',    // Saint Vincent and the Grenadines
     'America/Port_of_Spain', // Trinidad and Tobago
 
-    // ============================================
-    // SOUTH AMERICA (13 countries)
-    // ============================================
+    // South America (13 countries)
     'America/Buenos_Aires',  // Argentina
     'America/La_Paz',        // Bolivia
     'America/Sao_Paulo',     // Brazil
@@ -113,9 +103,7 @@ export const timezones = [
     'America/Montevideo',    // Uruguay
     'America/Caracas',       // Venezuela
 
-    // ============================================
-    // ASIA (47 countries)
-    // ============================================
+    // Asia (47 countries)
     'Asia/Kabul',            // Afghanistan
     'Asia/Yerevan',          // Armenia
     'Asia/Baku',             // Azerbaijan
@@ -164,9 +152,7 @@ export const timezones = [
     'Asia/Ho_Chi_Minh',      // Vietnam
     'Asia/Aden',             // Yemen
 
-    // ============================================
-    // EUROPE (47 countries)
-    // ============================================
+    // Europe (47 countries)
     'Europe/Tirane',         // Albania
     'Europe/Andorra',        // Andorra
     'Europe/Vienna',         // Austria
@@ -214,9 +200,7 @@ export const timezones = [
     'Europe/London',         // United Kingdom
     'Europe/Vatican',        // Vatican City
 
-    // ============================================
-    // OCEANIA (14 countries)
-    // ============================================
+    // Oceania (14 countries)
     'Australia/Sydney',      // Australia
     'Pacific/Fiji',          // Fiji
     'Pacific/Tarawa',        // Kiribati

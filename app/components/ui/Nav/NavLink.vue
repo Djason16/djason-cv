@@ -1,5 +1,5 @@
 <template>
-    <!-- Clickable link that scrolls to a target section -->
+    <!-- Link of the header that scrolls to a section of the home page -->
     <span class="header-top__link text-normal text-bold text-uppercase" @click="handleClick">
         <slot></slot>
     </span>
@@ -9,14 +9,15 @@
 import { nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 
-// Prop: target section ID to scroll to
+// id of the section of the home page to scroll to
 const props = defineProps({ id: { type: String, required: true } })
 const router = useRouter()
 
-// Handle click: navigate home if needed, then scroll
+// Goes to the home page if needed, then scrolls to the section
 const handleClick = async () => {
-    if (router.currentRoute.value.path !== '/') await router.push('/') // go home if not already
-    await nextTick() // wait for DOM to update
+    if (router.currentRoute.value.path !== '/') await router.push('/')
+    // The sections of the home page are in the page once it is rendered
+    await nextTick()
     scrollToSection()
 }
 
@@ -35,22 +36,3 @@ const scrollToSection = () => {
     })
 }
 </script>
-
-<style scoped>
-.header-top__link {
-    text-decoration: none;
-    color: var(--text-color-light);
-    transition: color 0.3s ease;
-    cursor: pointer;
-}
-
-.header-top__link:hover {
-    color: var(--fourth-color);
-}
-
-@media (max-width:1024px) {
-    .header-top__link:hover {
-        color: inherit;
-    }
-}
-</style>

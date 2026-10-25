@@ -1,8 +1,10 @@
-import { useNuxtApp } from '#app'
+import { useLang } from './useLang.js'
 import { computed, ref } from 'vue'
+import { api } from '@/utils/api.js'
 
+// Unavailability periods and manual availability status (/api/unavailability, /api/availability), used by the home page and the admin
 export const useUnavailability = () => {
-    const { $lang } = useNuxtApp()
+    const lang = useLang()
 
     // Reactive state
     const periods = ref([])
@@ -11,7 +13,7 @@ export const useUnavailability = () => {
     const error = ref(null)
 
     // Helper functions
-    const translateStatus = (status) => $lang.getTranslation(status)
+    const translateStatus = (status) => lang.getTranslation(status)
     const displayValue = (v) => v ?? '-'
 
     // Wraps async calls with loading + error handling
@@ -29,31 +31,37 @@ export const useUnavailability = () => {
         }
     }
 
+    // API failure -> thrown error (handled by run and the callers like before)
+    const check = res => {
+        if (!res.success) throw new Error(res.error)
+        return res
+    }
+
     // Unavailability periods
     const fetchPeriods = () =>
         run(async () => {
-            const res = await $fetch('/api/unavailability')
-            periods.value = res
-            return res
+            const res = check(await api.get('/unavailability'))
+            periods.value = res.periods
+            return res.periods
         })
 
     const createPeriod = (data) =>
         run(async () => {
-            const res = await $fetch('/api/unavailability', { method: 'POST', body: data })
+            const res = check(await api.post('/unavailability', data))
             await fetchPeriods()
             return res
         })
 
     const updatePeriod = (id, data) =>
         run(async () => {
-            const res = await $fetch(`/api/unavailability/${id}`, { method: 'PUT', body: data })
+            const res = check(await api.put(`/unavailability/${id}`, data))
             await fetchPeriods()
             return res
         })
 
     const deletePeriod = (id) =>
         run(async () => {
-            const res = await $fetch(`/api/unavailability/${id}`, { method: 'DELETE' })
+            const res = check(await api.delete(`/unavailability/${id}`))
             await fetchPeriods()
             return res
         })
@@ -65,24 +73,21 @@ export const useUnavailability = () => {
     // Manual availability override
     const fetchOverride = () =>
         run(async () => {
-            const res = await $fetch('/api/availability')
-            override.value = res
-            return res
+            const res = check(await api.get('/availability'))
+            override.value = res.override
+            return res.override
         })
 
     const toggleOverride = (enabled, status = 'unavailable', id = null) =>
         run(async () => {
             const finalId = id || override.value?.id
 
-            const res = await $fetch('/api/availability/toggle', {
-                method: 'PUT',
-                body: { enabled, status, id: finalId }
-            })
+            const res = check(await api.put('/availability/toggle', { enabled, status, id: finalId }))
 
             override.value = {
-                id: res.id,
-                enabled: res.enabled,
-                status: res.status,
+                id: res.override.id,
+                enabled: res.override.enabled,
+                status: res.override.status,
                 updatedAt: new Date().toISOString()
             }
 
@@ -100,17 +105,13 @@ export const useUnavailability = () => {
     // Loads override and periods together
     const fetchAll = () =>
         run(async () => {
-            const [overrideData, periodsData] = await Promise.all([
-                $fetch('/api/availability').catch(() => ({ enabled: false, status: null, id: null })),
-                $fetch('/api/unavailability').catch(() => [])
-            ])
+            const [overrideRes, periodsRes] = await Promise.all([api.get('/availability'), api.get('/unavailability')])
 
-            override.value = overrideData
-            periods.value = periodsData
+            override.value = overrideRes.success ? overrideRes.override : { enabled: false, status: null, id: null }
+            periods.value = periodsRes.success ? periodsRes.periods : []
         })
 
     return {
-        $lang,
         periods,
         override,
         loading,

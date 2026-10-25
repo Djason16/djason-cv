@@ -1,0 +1,30 @@
+/* Signature of the client on a quote: mention, date and signature line (QuoteSignature) */
+.quote-signature-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+}
+
+.quote-signature-section .signature-box {
+    border: 1px solid var(--second-color);
+    padding: 20px;
+    min-width: 300px;
+    background: #fafbfc;
+}
+
+.quote-signature-section .signature-label {
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: var(--third-color);
+}
+
+.quote-signature-section .signature-info {
+    margin-bottom: 10px;
+    color: var(--text-color-dark);
+}
+
+.quote-signature-section .signature-line {
+    margin-top: 40px;
+    border-bottom: 2px solid var(--text-color-dark);
+    width: 100%;
+}

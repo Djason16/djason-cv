@@ -1,5 +1,5 @@
 <template>
-    <!-- Sticky header with dynamic styling when scrolled -->
+    <!-- Top of every page: sticks to the top and changes its style once the page is scrolled -->
     <header :class="{ scrolled: isScrolled }" ref="header">
         <HeaderTop />
     </header>
@@ -7,15 +7,15 @@
 
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
-import HeaderTop from './sections/HeaderTop.vue'
+import HeaderTop from './HeaderTop.vue'
 
 const isScrolled = ref(false)
 
-// Update scroll state: true if page scrolled down
+// Updates scroll state: true if page scrolled down
 const handleScroll = () => (isScrolled.value = window.scrollY > 0)
 
 onMounted(() => {
-    handleScroll() // initialize on mount
+    handleScroll()
     window.addEventListener('scroll', handleScroll, { passive: true })
 })
 onUnmounted(() => window.removeEventListener('scroll', handleScroll))

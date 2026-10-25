@@ -1,0 +1,20 @@
+/* Lines of the quote or invoice: columns depend on the pricing mode (TJM or flat rate) and the VAT (ItemsTable) */
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: var(--text-color-dark);
+    margin-bottom: 30px;
+}
+
+.items-table th {
+    background: var(--third-color);
+    color: var(--text-color-light);
+    text-align: left;
+    padding: 8px 12px;
+    border: 1px solid var(--second-color);
+}
+
+.items-table td {
+    padding: 8px 12px;
+    border: 1px solid var(--second-color);
+}
