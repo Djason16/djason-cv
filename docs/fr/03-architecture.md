@@ -62,6 +62,6 @@ app/
 - **Pas de fichier de plus de 300 lignes** : découpe-le en composants ou helpers plus petits
 - **Commentaires en anglais**, courts : un en-tête par fichier, puis une phrase avant chaque bloc qui n'est pas évident
 - **Tous les textes sont traduits** : aucun texte écrit en dur dans un composant (voir [Le site](04-le-site.md))
-- **Données chargées une seule fois** : les listes de l'admin (clients, missions, services, taux) sont dans `stores/adminData.js` et partagées par toutes les fenêtres ; la session est vérifiée une fois par chargement de page (`useAuth().checkAuth()`) ; les projets de l'accueil sont chargés par le serveur et réutilisés par le navigateur (`callOnce`)
+- **Données chargées une seule fois** : les listes de l'admin (clients, missions, services, taux) sont dans `stores/adminData.js` et partagées par toutes les fenêtres ; la session est vérifiée une fois par chargement de page (`useAuth().checkAuth()`) ; les projets de l'accueil sont dans le HTML pré-rendu (moteurs de recherche) et rechargés dans le navigateur, pour que les nouveaux apparaissent sans refaire de build
 - **Chaque appel à l'API passe par `utils/api.js`** (voir [L'API](05-l-api.md))
 - **Config TypeScript** : `tsconfig.json` utilise les références de projet de Nuxt 4 (app, server, shared, node)

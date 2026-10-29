@@ -62,6 +62,6 @@ app/
 - **No file over 300 lines**: split it into smaller components or helpers
 - **Comments in English**, short: a header per file, then one sentence before each block that is not obvious
 - **Every text is translated**: no text written directly in a component (see [The site](04-site.md))
-- **Data loaded once**: the admin lists (clients, missions, services, rates) live in `stores/adminData.js` and are shared by every modal; the session is checked once per page load (`useAuth().checkAuth()`); the projects of the home page are loaded by the server and reused by the browser (`callOnce`)
+- **Data loaded once**: the admin lists (clients, missions, services, rates) live in `stores/adminData.js` and are shared by every modal; the session is checked once per page load (`useAuth().checkAuth()`); the projects of the home page are in the pre-rendered HTML (search engines) and loaded again in the browser, so new ones show up without a rebuild
 - **Every API call goes through `utils/api.js`** (see [The API](05-api.md))
 - **TypeScript config**: `tsconfig.json` uses the Nuxt 4 project references (app, server, shared, node)

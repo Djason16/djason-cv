@@ -21,6 +21,7 @@
 
 <script setup>
 import { useLang } from '@/composables/useLang.js'
+import { onMounted } from 'vue'
 import CarouselWithPagination from '@/components/ui/Carousel/CarouselWithPagination.vue'
 import { useProjects } from '@/composables/useProjects.js'
 
@@ -28,6 +29,8 @@ const { getTranslation: t } = useLang()
 
 const { projects, fetchProjects } = useProjects()
 
-// Projects of the API: loaded once by the server, reused by the browser (no second request)
+// Projects of the API: in the HTML for search engines (the home page is pre-rendered at build time)...
 await callOnce('projects', fetchProjects)
+// ...and loaded again in the browser, so the projects added from the admin since the build show up
+onMounted(fetchProjects)
 </script>

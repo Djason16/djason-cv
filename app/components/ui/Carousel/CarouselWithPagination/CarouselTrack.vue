@@ -2,7 +2,7 @@
     <!-- Slides of the carousel, moved with a transition -->
     <div class="carousel-track" :class="{ 'no-transition': !transitionEnabled }" :style="trackStyle">
         <!-- Loops through each slide -->
-        <article v-for="(item, index) in slides" :key="item?.id || index" class="carousel-item" role="group"
+        <article v-for="(item, index) in slides" :key="`${index}-${item?.id}`" class="carousel-item" role="group"
             aria-roledescription="slide" :aria-label="`${getRealIndex(index) + 1} / ${itemsLength}`">
             <!-- Only render if item exists -->
             <template v-if="item && item.name">

@@ -6,8 +6,8 @@ import { todayIso } from '@/utils/display.js'
 
 /*
  * Projects of the home page: static ones (data/projects.js) and the ones added from the admin page (/api/projects).
- * The list of the API is shared by every component (useState): on the home page it is loaded once by the server
- * and reused by the browser (callOnce in LastProject.vue), the admin loads it when its modal opens.
+ * The list of the API is shared by every component (useState): the home page loads it on the server (pre-rendered HTML)
+ * and again in the browser (LastProject.vue), the admin loads it when its modal opens.
  */
 export const useProjects = () => {
     const lang = useLang()
