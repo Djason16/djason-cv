@@ -68,6 +68,7 @@ const goTo = next => {
 // Shows the result of an API call: its translated message or its error key
 const show = res => showMessage(res.success ? 'success' : 'error', res.success ? res.message : res.error)
 
+// Step 1: email + password, then a code is sent by email
 const submitLogin = async () => {
     clearMessage()
     const res = await login(form.value.email, form.value.password)
@@ -76,13 +77,14 @@ const submitLogin = async () => {
     showMessage('success', 'otpSent')
 }
 
-// On success useAuth redirects to /admin/
+// Step 2: the code received by email. On success useAuth redirects to /admin/
 const submitOtp = async () => {
     clearMessage()
     const res = await verifyOtp(form.value.otp)
     if (!res.success) show(res)
 }
 
+// Forgotten password: a temporary password is sent when the security answer is right, then back to the login
 const submitForgot = async () => {
     clearMessage()
     const res = await forgotPassword(form.value.email, form.value.securityAnswer, lang.current.value)
@@ -112,10 +114,12 @@ const STEPS = {
 }
 const current = computed(() => STEPS[step.value])
 
+// Text sections of the page (loginSection1Title... in plugins/translations/pages/login.js)
 const loginSections = Array.from({ length: 3 }, (_, i) => ({ titleKey: `loginSection${i + 1}Title`, contentKey: `loginSection${i + 1}Content` }))
 </script>
 
 <style scoped>
+/* Form of the current step */
 .login-form-wrapper {
     text-align: left;
     margin-top: 2rem;
@@ -129,6 +133,7 @@ const loginSections = Array.from({ length: 3 }, (_, i) => ({ titleKey: `loginSec
     position: relative;
 }
 
+/* Password field with the show / hide button inside it */
 .input-with-toggle {
     display: flex;
     align-items: center;
@@ -148,6 +153,7 @@ const loginSections = Array.from({ length: 3 }, (_, i) => ({ titleKey: `loginSec
     line-height: 1;
 }
 
+/* Submit and "other action" buttons */
 .login-buttons {
     display: flex;
     flex-wrap: wrap;

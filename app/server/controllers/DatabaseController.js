@@ -43,12 +43,14 @@ export default class DatabaseController extends Controller {
         return ResponseHelper.success(event, { initialized: Boolean(users), adminExists: Boolean(admin) })
     }
 
+    // GET /api/database/download-db: the SQLite file
     async download(event) {
         setResponseHeader(event, 'Content-Disposition', 'attachment; filename="db.sqlite"')
         setResponseHeader(event, 'Content-Type', 'application/x-sqlite3')
         return readFile(DatabaseHelper.file())
     }
 
+    // GET /api/database/export-sql: the whole database as SQL
     async exportSql(event) {
         const tables = await this.fetchAll("SELECT name, sql FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")
         let dump = 'BEGIN TRANSACTION;\n'

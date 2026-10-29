@@ -1,5 +1,5 @@
-// Generates selectable duration options (5min–12h, in 5min steps)
-export const getDurationOptions = () => {
+// Durations of a mission that can be picked: 5min to 12h, in 5min steps
+const buildDurationOptions = () => {
     const opts = []
 
     // Adds durations under 1 hour
@@ -20,3 +20,5 @@ export const getDurationOptions = () => {
 
     return opts
 }
+
+export const DURATION_OPTIONS = buildDurationOptions()

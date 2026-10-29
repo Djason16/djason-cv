@@ -20,6 +20,7 @@ const toParams = params => params.map(value => {
     return value
 })
 
+// Prepared query on the database of nuxt.config.ts
 const statement = sql => useDatabase().prepare(sql)
 
 export const DatabaseHelper = {

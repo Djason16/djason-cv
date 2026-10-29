@@ -1,10 +1,12 @@
 /* Main button of the site: a link when href is given, otherwise a button (HeroButton) */
+/* No underline animation on the button */
 .custom-button::after,
 .custom-button .custom-button__icon::after,
 .custom-button .custom-button__text::after {
     display: none;
 }
 
+/* Outlined button with an icon and an uppercase text */
 .custom-button {
     display: inline-flex;
     align-items: center;
@@ -23,6 +25,7 @@
     will-change: transform, opacity;
 }
 
+/* Hover: filled, icon grows */
 .custom-button:hover {
     background-color: var(--second-color);
     border-color: var(--third-color);
@@ -46,6 +49,7 @@
     color: var(--third-color);
 }
 
+/* Touch screens: no hover effect */
 @media (max-width: 1024px) {
     .custom-button:hover {
         background-color: transparent;
@@ -59,6 +63,7 @@
     }
 }
 
+/* Phone */
 @media (max-width: 768px) {
     .custom-button .custom-button__text {
         display: none;

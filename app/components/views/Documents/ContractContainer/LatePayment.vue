@@ -13,7 +13,7 @@
             <div class="example-box text-small">
                 <p class="info-label">{{ t('example') }}:</p>
                 <p
-                    v-html="t('latePaymentExample_individual', { amount, days, divisor: divisorFormatted, interest, total })">
+                    v-html="t('latePaymentExample_individual', { subject, amount, days, divisor: divisorFormatted, interest, total })">
                 </p>
             </div>
         </template>
@@ -30,7 +30,7 @@
             <div class="example-box text-small">
                 <p class="info-label">{{ t('example') }}:</p>
                 <p
-                    v-html="t('latePaymentExample_pro', { amount, days, penalty, divisor: divisorFormatted, interest, total })">
+                    v-html="t('latePaymentExample_pro', { subject, amount, days, penalty, divisor: divisorFormatted, interest, total })">
                 </p>
             </div>
         </template>
@@ -48,12 +48,18 @@ const { getTranslation: t } = useLang()
 
 const props = defineProps({
     interestRate: { type: Number, default: null },
-    clientType: { type: String, default: 'individual' }
+    clientType: { type: String, default: 'individual' },
+    // Paid in monthly installments (Stripe subscription): the example is a late installment, otherwise a late payment
+    isSubscription: { type: Boolean, default: false },
 })
 
 // True for company, freelance, association — false for individual
 const isPro = computed(() => isProfessionalType(props.clientType))
 
+// What is late in the example
+const subject = computed(() => t(props.isSubscription ? 'latePaymentSubjectMonthly' : 'latePaymentSubjectSingle'))
+
+// Example amounts
 const amount = 55
 const days = 15
 const penalty = 40
@@ -72,53 +78,11 @@ const total = computed(() => {
 </script>
 
 <style scoped>
-.section {
-    margin-bottom: 25px
-}
-
-.section-title {
-    color: var(--third-color);
-    margin-bottom: 12px;
-    border-bottom: 2px solid var(--second-color);
-    padding-bottom: 6px
-}
-
-.section-text {
-    text-align: justify;
-    margin-bottom: 16px;
-    line-height: 1.8
-}
-
-.bullet-list {
-    list-style: none;
-    padding-left: 20px;
-    margin: 0 0 16px 0;
-    line-height: 1.8
-}
-
-.bullet-list li {
-    margin-bottom: 8px;
-    text-align: justify;
-    position: relative;
-    padding-left: 20px;
-}
-
-.bullet-list li::before {
-    content: "• ";
-    position: absolute;
-    left: 0;
-    font-weight: bold;
-}
-
+/* Example of late payment interest, highlighted */
 .example-box {
     background-color: rgba(255, 0, 0, 0.05);
     border: 1px solid var(--accent-red);
     padding: 12px;
     margin-bottom: 16px
-}
-
-.info-label {
-    font-weight: 700;
-    margin-bottom: 6px
 }
 </style>

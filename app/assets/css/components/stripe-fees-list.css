@@ -6,6 +6,7 @@
     margin: 10px 0
 }
 
+/* One line per card type, with a custom bullet */
 .stripe-fees-detail .bullet-list {
     list-style: none;
     padding-left: 20px;
@@ -26,6 +27,7 @@
     font-weight: bold
 }
 
+/* Amount of the fee */
 .stripe-fees-detail .amount-value {
     font-weight: 700
 }

@@ -1,7 +1,8 @@
 <template>
-    <!-- Frame of every page (and of the error page): loader, header, page, footer, floating buttons, cookie banner -->
+    <!-- Frame of every page (and of the error page): loader, header, page, footer, floating buttons, cookie banner, dialogs and notifications -->
     <Loader v-if="showLoader" />
-    <div v-show="!showLoader">
+    <!-- The content is always in the HTML (search engines): the loader covers it, it does not hide it -->
+    <div>
         <!-- Floating controls stacked bottom-right -->
         <div class="floating-controls">
             <BackToTop />
@@ -11,6 +12,8 @@
         <slot />
         <Footer />
         <PreferencesBanner />
+        <AppDialog />
+        <AppToasts />
     </div>
 </template>
 
@@ -22,6 +25,8 @@ import Header from '@/components/layout/Header/Header.vue'
 import BackToTop from '@/components/ui/Button/BackToTop.vue'
 import ChangeLanguageButton from '@/components/ui/Button/ChangeLanguageButton.vue'
 import Loader from '@/components/ui/Loader/Loader.vue'
+import AppDialog from '@/components/ui/Dialog/AppDialog.vue'
+import AppToasts from '@/components/ui/Toast/AppToasts.vue'
 import PreferencesBanner from '@/components/ui/PreferencesBanner/PreferencesBanner.vue'
 import { useUserPreferencesStore } from '@/stores/userPreferences.js'
 
@@ -30,6 +35,9 @@ const showLoader = ref(true)
 const fontsLoaded = ref(false)
 const userPreferences = useUserPreferencesStore()
 
+// Without JavaScript the loader never leaves: hidden, so the page stays readable
+useHead({ noscript: [{ innerHTML: '<style>.loader-wrapper { display: none; }</style>' }] })
+
 onMounted(async () => {
     // Choice saved during a previous visit (cookie)
     userPreferences.loadPreferences()
@@ -37,13 +45,12 @@ onMounted(async () => {
     // Language of a previous visit, only if the visitor accepted functional cookies
     if (userPreferences.preferences.functional) lang.restore()
 
-    // Loads fonts and marks DOM when ready
+    // Waits for the fonts, so the text does not change size once the loader leaves
     try {
         await Promise.all([
             document.fonts.load('400 16px "Barlow Condensed"'),
             document.fonts.load('700 16px "Barlow Condensed"')
         ])
-        document.documentElement.setAttribute('data-fonts-loaded', 'true')
     } catch (err) {
         console.warn('Fonts failed to load:', err)
     } finally {
@@ -64,6 +71,7 @@ onMounted(async () => {
 </script>
 
 <style>
+/* Back to top and language buttons, stacked at the bottom right */
 .floating-controls {
     position: fixed;
     bottom: 1.5rem;
@@ -74,6 +82,7 @@ onMounted(async () => {
     z-index: 10;
 }
 
+/* Tablet and phone: closer to the edge */
 @media (max-width: 1024px) {
     .floating-controls {
         right: 1.5rem;

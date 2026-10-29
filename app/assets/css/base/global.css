@@ -1,15 +1,6 @@
 /* Global styles: page, links, modal backdrop */
 @import "../utils/variables.css";
 
-html {
-    visibility: hidden;
-    /* Hidden until the fonts are loaded (data-fonts-loaded set by AppShell) */
-}
-
-html[data-fonts-loaded] {
-    visibility: visible;
-}
-
 body {
     font-family: var(--font-primary);
     color: var(--text-color-light);
@@ -25,6 +16,7 @@ body {
     touch-action: manipulation;
 }
 
+/* Dark backdrop behind an open modal, faded in and out */
 body.modal-open::before,
 body.modal-closing::before {
     content: "";

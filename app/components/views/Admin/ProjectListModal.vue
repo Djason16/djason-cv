@@ -15,6 +15,7 @@ import { computed, ref, watch } from 'vue'
 import EditableTable from '@/components/ui/Table/EditableTable.vue'
 import { useProjects } from '@/composables/useProjects.js'
 import TableModal from '@/components/ui/Modal/TableModal.vue'
+import { showConfirm, showResult } from '@/utils/dialog.js'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close', 'saved'])
@@ -24,7 +25,7 @@ const { getTranslation: t } = lang
 const { projects, fetchProjects, updateProject, removeProject } = useProjects()
 const search = ref('')
 
-// Filters projects from API only
+// Projects added from the admin (they have both short texts), filtered by the search bar
 const apiProjects = computed(() => projects.value.filter(p => p.short_fr && p.short_en))
 const filteredApiProjects = computed(() => {
     const q = search.value.toLowerCase().trim()
@@ -36,7 +37,7 @@ const filteredApiProjects = computed(() => {
     )
 })
 
-// Skills options
+// Skills that can be picked for a project, with their translated name
 const skillOptions = computed(() => ({
     editing: lang.getTranslation('editing'),
     vfx: lang.getTranslation('vfx'),
@@ -61,7 +62,7 @@ const skillOptions = computed(() => ({
     photoshop: lang.getTranslation('photoshop'),
 }))
 
-// Columns for EditableTable
+// Columns of the table: how each value is shown and edited
 const columns = computed(() => [
     {
         key: 'name',
@@ -114,28 +115,21 @@ const columns = computed(() => [
     }
 ])
 
-// Handles updates for text, multiple select and file
+// Saves an edited cell: a new image is sent as a file, any other field as a value
 const handleUpdate = async ({ item, field, value, file }) => {
-    const updates = {}
-    let imageFile = null
-
-    if (field === 'img' && file) {
-        imageFile = file
-    } else if (field === 'skills' && Array.isArray(value)) {
-        updates[field] = value
-    } else {
-        updates[field] = value
-    }
-
-    await updateProject(item.id, updates, imageFile)
+    const imageFile = field === 'img' && file ? file : null
+    const res = await updateProject(item.id, imageFile ? {} : { [field]: value }, imageFile)
+    await showResult(res, lang.getTranslation('saveSuccess'), lang.getTranslation('saveFailed'))
 }
 
-// Deletes project
+// Deletes a project after a confirmation
 const deleteProject = async item => {
-    if (!confirm(lang.getTranslation('deleteProjectConfirm', { name: item.name }))) return
-    await removeProject(item.id)
+    if (!(await showConfirm(lang.getTranslation('deleteProjectConfirm', { name: item.name }), { okLabel: lang.getTranslation('dialogDelete') }))) return
+    const res = await removeProject(item.id)
+    await showResult(res, lang.getTranslation('deleteSuccess'), lang.getTranslation('deleteFailed'))
 }
 
+// Fresh list each time the modal opens
 watch(() => props.show, val => val && fetchProjects())
 const close = () => emit('close')
 </script>

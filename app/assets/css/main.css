@@ -11,6 +11,8 @@
 @import "components/hero-typography.css";
 @import "components/section-layout.css";
 @import "components/editable-table.css";
+@import "components/app-dialog.css";
+@import "components/app-toasts.css";
 @import "components/footer-top.css";
 @import "components/header-top.css";
 @import "components/slide-in-from-right.css";

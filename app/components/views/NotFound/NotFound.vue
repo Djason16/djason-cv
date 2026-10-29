@@ -62,6 +62,7 @@ useSeo(errorKey)
 </script>
 
 <style scoped>
+/* Buttons under the error message */
 .error-actions {
     margin-top: 2rem;
 }

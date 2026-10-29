@@ -1,4 +1,5 @@
 /* Editable table of the admin modals (components/ui/Table/EditableTable) */
+/* Scrolls inside the modal when the table is long */
 .editable-table-wrapper {
     overflow: auto;
     max-height: 60vh;
@@ -9,6 +10,7 @@
     padding-right: 1rem
 }
 
+/* The table, with its header kept on top while scrolling */
 .editable-table-wrapper .editable-table {
     width: 100%;
     min-width: 700px;
@@ -25,7 +27,9 @@
     z-index: 2
 }
 
+/* Cells on one line, cut with "..." when too long */
 .editable-table-wrapper .editable-table th,
+/* A click on a cell edits it, except the read-only ones and the actions column */
 .editable-table-wrapper .editable-table td {
     text-align: left;
     padding: 1rem;
@@ -53,6 +57,7 @@
     background-color: var(--text-color-dark)
 }
 
+/* Fields shown while a cell is edited */
 .editable-table-wrapper .editable-table td input,
 .editable-table-wrapper .editable-table td select {
     width: 100%;
@@ -60,6 +65,7 @@
     box-sizing: border-box;
 }
 
+/* Delete and download buttons of each row */
 .editable-table-wrapper .delete-btn,
 .editable-table-wrapper .download-btn {
     background: transparent;
@@ -81,12 +87,14 @@
     background-color: rgba(52, 152, 219, .1)
 }
 
+/* "No data" row */
 .editable-table-wrapper .empty {
     text-align: center;
     padding: 2rem;
     color: var(--text-color-grey)
 }
 
+/* Select with several choices */
 .editable-table-wrapper .select-multiple-container {
     width: 100%;
 }
@@ -95,6 +103,7 @@
     min-height: 25px;
 }
 
+/* Up to 1440px: each row becomes a card, the column name shown before each value */
 @media(max-width:1440px) {
     .editable-table-wrapper .editable-table {
         min-width: 100%;
@@ -171,6 +180,7 @@
     }
 }
 
+/* Phone: label above its value */
 @media(max-width:768px) {
     .editable-table-wrapper {
         max-height: 50vh

@@ -60,6 +60,7 @@ const { getTranslation: t } = lang
 // True only when at least one item is billed by TJM (has hours > 0)
 const hasTjmItems = computed(() => props.items.some(i => i.hours != null && i.hours > 0))
 
+// Price in the format of the document's language; dates are already formatted
 const formatPrice = v => formatDocumentPrice(v, lang.current.value)
 
 const formatDate = d => d

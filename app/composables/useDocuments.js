@@ -3,9 +3,11 @@ import ContractContainer from '@/components/views/Documents/ContractContainer.vu
 import DocumentContainer from '@/components/views/Documents/DocumentContainer.vue'
 import { useInterestRates } from './useInterestRates.js'
 import { useLang } from './useLang.js'
+import { useAdminDataStore } from '@/stores/adminData.js'
 import { api } from '@/utils/api.js'
 import { CLIENT_TYPE_COMPANY, isCompanyType, isProfessionalType } from '@/utils/clientTypes.js'
 import { documentProblems } from '@/utils/documentChecks.js'
+import { showAlert, showFailure, showSuccess } from '@/utils/dialog.js'
 import { askContractDate, askContractPayment, askDetails, askInvoicePayment, askNumber } from '@/utils/documentDialogs.js'
 import { contractPayment, documentClient, documentItems, missionTotals, normalizeServiceType, quotePaymentOptions, quoteValidityDate } from '@/utils/documents.js'
 import { exportPdf } from '@/utils/pdf.js'
@@ -13,8 +15,8 @@ import { translateServiceName } from '@/utils/serviceTranslations.js'
 
 /*
  * Quotes, invoices and contracts of the admin page (components/views/Admin/DocumentsModal.vue):
- *   1. missions, clients and services are loaded from the API and grouped per document
- *   2. the admin answers a few questions in browser dialogs (utils/documentDialogs.js)
+ *   1. missions, clients and services (stores/adminData.js) are grouped per document
+ *   2. the admin answers a few questions in the dialogs of the site (utils/documentDialogs.js)
  *   3. the template of components/views/Documents is filled and saved as a PDF (utils/pdf.js)
  * Rules and amounts: utils/documents.js. Checks before generating: utils/documentChecks.js. Nothing is stored: the PDF is only downloaded.
  *
@@ -23,46 +25,45 @@ import { translateServiceName } from '@/utils/serviceTranslations.js'
 export const useDocuments = (props, kind) => {
     const lang = useLang()
     const t = lang.getTranslation
+    // Translated name of a service
     const serviceName = name => translateServiceName(name, t)
-    const { fetchInterestRates, getApplicableRate } = useInterestRates()
+    const { getApplicableRate } = useInterestRates()
     const config = useRuntimeConfig()
 
-    const missions = ref([])
+    // Lists shared by every modal (stores/adminData.js)
+    const adminData = useAdminDataStore()
     const search = ref('')
-    const loading = ref(false)
 
     // Data
 
     // Missions with the details of their client and service
-    const fetchAll = async () => {
-        loading.value = true
-        const [clientsRes, missionsRes, servicesRes] = await Promise.all([api.get('/clients'), api.get('/missions'), api.get('/services')])
-        const clients = clientsRes.clients || []
-        const services = servicesRes.services || []
-        missions.value = (missionsRes.missions || []).map(m => {
-            const c = clients.find(x => x.id === m.client_id) || {}
-            return {
-                ...m,
-                service_name: services.find(x => x.id === m.service_id)?.name || m.service_id || '-',
-                client_type: c.type || CLIENT_TYPE_COMPANY,
-                client_name: c.company_name || `${c.firstname || ''} ${c.lastname || ''}`.trim() || 'Unknown',
-                client_address: c.address || '',
-                client_postal_code: c.postal_code || '',
-                client_city: c.city || '',
-                client_siret: c.siret || '',
-                client_phone: c.phone || '',
-                client_email: c.email || '',
-            }
-        })
-        if (kind === 'contract') await fetchInterestRates()
-        loading.value = false
-    }
+    const missions = computed(() => adminData.missions.map(m => {
+        const c = adminData.clients.find(x => x.id === m.client_id) || {}
+        return {
+            ...m,
+            service_name: adminData.services.find(x => x.id === m.service_id)?.name || m.service_id || '-',
+            client_type: c.type || CLIENT_TYPE_COMPANY,
+            client_name: c.company_name || `${c.firstname || ''} ${c.lastname || ''}`.trim() || 'Unknown',
+            client_address: c.address || '',
+            client_postal_code: c.postal_code || '',
+            client_city: c.city || '',
+            client_siret: c.siret || '',
+            client_phone: c.phone || '',
+            client_email: c.email || '',
+        }
+    }))
+
+    // Loaded when the modal opens (only what is not loaded yet); contracts also need the interest rates
+    const fetchAll = () => adminData.load('clients', 'missions', 'services', ...(kind === 'contract' ? ['interestRates'] : []))
     if (props) watch(() => props.show, show => show && fetchAll())
 
-    // One document per group: companies and contracts per client and month, other clients per mission day and service
+    // Month of a mission (YYYY-MM), from its date: the date can be edited in the missions table
+    const missionMonth = m => m.date?.slice(0, 7) || m.month_concerned || 'unknown'
+
+    // One document per group: companies per client and month (monthly invoice), the other clients per mission day and service
     const groupKey = m => {
-        const month = m.month_concerned || m.date?.slice(0, 7) || 'unknown'
-        if (kind === 'contract' || isCompanyType(m.client_type)) return `${m.client_id}_${month}`
+        const month = missionMonth(m)
+        if (isCompanyType(m.client_type)) return `${m.client_id}_${month}`
         return `${m.client_id}_${m.date}_${m.service_id}`
     }
 
@@ -77,7 +78,7 @@ export const useDocuments = (props, kind) => {
             groups[key] = {
                 client: m.client_name || 'Unknown',
                 clientType: m.client_type || CLIENT_TYPE_COMPANY,
-                month: m.month_concerned || m.date?.slice(0, 7) || 'unknown',
+                month: missionMonth(m),
                 missions: [m],
                 client_address: m.client_address,
                 client_postal_code: m.client_postal_code,
@@ -102,10 +103,12 @@ export const useDocuments = (props, kind) => {
         if (!date) return '-'
         const d = new Date(date)
         const month = String(d.getMonth() + 1).padStart(2, '0')
-        if (kind !== 'contract' && isCompanyType(g.clientType)) return `XX/${month}/${d.getFullYear()}`
+        // Companies: monthly document, no day
+        if (isCompanyType(g.clientType)) return `XX/${month}/${d.getFullYear()}`
         return `${String(d.getDate()).padStart(2, '0')}/${month}/${d.getFullYear()}`
     }
 
+    // Short text listing the missions of a group (shown in the modal)
     const missionsSummary = g => {
         const title = m => m.title?.trim()
         if (isProfessionalType(g.clientType)) return g.missions.map(m => title(m) || serviceName(m.service_name) || m.service_name || '-').join(' + ')
@@ -130,22 +133,23 @@ export const useDocuments = (props, kind) => {
 
     const year = () => new Date().getFullYear()
 
-    // Bank details when everything needed by the document is filled in, otherwise null after an alert listing what to fix
+    // Bank details when everything needed by the document is filled in, otherwise null after a dialog listing what to fix
     const checkedBank = async group => {
         const bank = await fetchBank()
         const interestRate = kind === 'contract' ? getApplicableRate(group.clientType) : null
         const problems = documentProblems({ kind, group, config, bank, interestRate })
         if (!problems.length) return bank
-        alert([t('documentNotReady'), '', ...problems.map(key => `- ${t(key)}`)].join('\n'))
+        await showAlert([t('documentNotReady'), '', ...problems.map(key => `- ${t(key)}`)].join('\n'))
         return null
     }
 
+    // Quote of a group of missions: checks the bank details, asks its number and details, downloads the PDF
     const downloadQuote = async group => {
         const bankInfo = await checkedBank(group)
         if (!bankInfo) return
-        const number = askNumber(t, 'Quote')
+        const number = await askNumber(t, 'Quote')
         if (!number) return
-        const details = askDetails(t, group.clientType)
+        const details = await askDetails(t, group.clientType)
         const issueDate = new Date().toISOString()
         const fileName = `DE-${year()}-${number.padStart(4, '0')}`
         const firstService = group.missions[0]?.service_name || ''
@@ -171,15 +175,17 @@ export const useDocuments = (props, kind) => {
                 bankInfo,
             },
         })
+        return true
     }
 
+    // Invoice of a group of missions: checks the bank details, asks its number, details and what is already paid, downloads the PDF
     const downloadInvoice = async group => {
         const bankInfo = await checkedBank(group)
         if (!bankInfo) return
-        const number = askNumber(t, 'Invoice')
+        const number = await askNumber(t, 'Invoice')
         if (!number) return
-        const details = askDetails(t, group.clientType)
-        const payment = askInvoicePayment(t, group, missionTotals(group.missions).totalTTC)
+        const details = await askDetails(t, group.clientType)
+        const payment = await askInvoicePayment(t, group, missionTotals(group.missions).totalTTC)
         if (!payment) return
         const fileName = `${isCompanyType(group.clientType) ? 'FA' : 'CL'}-${year()}-${number.padStart(4, '0')}`
 
@@ -207,19 +213,21 @@ export const useDocuments = (props, kind) => {
                 bankInfo,
             },
         })
+        return true
     }
 
+    // Contract of a group of missions: checks the bank details, asks its number, the payment choice and the date, downloads the PDF
     const downloadContract = async group => {
         const bankInfo = await checkedBank(group)
         if (!bankInfo) return
-        const number = askNumber(t, 'Contract')
+        const number = await askNumber(t, 'Contract')
         if (!number) return
         const serviceType = normalizeServiceType(group.serviceType)
-        // Contract total: every mission of the month, VAT included where it applies
+        // Contract total: every mission of the group (same day and service), VAT included where it applies
         const total = missionTotals(group.missions).totalTTC
-        const choice = askContractPayment(t, lang.current.value, serviceType, total)
+        const choice = await askContractPayment(t, lang.current.value, serviceType, total)
         if (choice === null) return
-        const contractDate = askContractDate(t)
+        const contractDate = await askContractDate(t)
         if (contractDate === null) return
         const payment = contractPayment(total, serviceType, choice)
 
@@ -243,9 +251,19 @@ export const useDocuments = (props, kind) => {
                 bankInfo,
             },
         })
+        return true
     }
 
-    const download = { quote: downloadQuote, invoice: downloadInvoice, contract: downloadContract }[kind]
+    // Success or error dialog once the document is made (nothing shown when the admin cancelled a question)
+    const withResult = make => async group => {
+        try {
+            if (await make(group)) await showSuccess(t('documentDownloaded'))
+        } catch {
+            await showFailure(t('documentFailed'))
+        }
+    }
 
-    return { rows, columns, search, loading, download }
+    const download = withResult({ quote: downloadQuote, invoice: downloadInvoice, contract: downloadContract }[kind])
+
+    return { rows, columns, search, download }
 }

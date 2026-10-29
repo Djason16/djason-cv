@@ -4,10 +4,11 @@ import { isProfessionalType } from '@/utils/clientTypes.js'
  * What is missing before a quote, invoice or contract can be generated (composables/useDocuments.js).
  * Every problem is a translation key (plugins/translations/pages/admin/documentChecks.js):
  *   const problems = documentProblems({ kind: 'contract', group, config, bank, interestRate })
- *   if (problems.length) alert(...)   nothing is generated, the admin fixes the data first
+ *   if (problems.length) showAlert(...)   nothing is generated, the admin fixes the data first
  */
 export const documentProblems = ({ kind, group, config, bank, interestRate }) => {
     const problems = []
+    // Adds the translation key of an empty value to the list
     const missing = (value, key) => { if (!String(value ?? '').trim()) problems.push(key) }
 
     // Provider: NUXT_PUBLIC_* values of the .env file

@@ -1,14 +1,17 @@
 /* Slides of the carousel, moved with a transition (CarouselTrack) */
+/* Row of slides, moved with transform */
 .carousel-track {
     display: flex;
     gap: 1rem;
     transition: transform 0.5s ease;
 }
 
+/* No animation when the carousel jumps back to the start (infinite loop) */
 .carousel-track.no-transition {
     transition: none !important;
 }
 
+/* One project */
 .carousel-track .carousel-item {
     flex: none;
     width: 40rem;
@@ -35,6 +38,7 @@
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+/* Details shown over the image on hover or keyboard focus */
 .carousel-track .carousel-overlay {
     position: absolute;
     inset: 0;
@@ -61,6 +65,7 @@
     filter: brightness(0.5);
 }
 
+/* Texts of the details */
 .carousel-track .project-title {
     margin: 0.5rem 0;
 }
@@ -69,6 +74,7 @@
     margin-bottom: 1rem;
 }
 
+/* Skills of the project, 3 per row, the last ones centered */
 .carousel-track .project-skills {
     list-style: none;
     padding: 0;
@@ -98,11 +104,13 @@
     border-radius: 4px;
 }
 
+/* Link to the project */
 .carousel-track .project-link {
     color: var(--text-color-light);
     text-decoration: none;
 }
 
+/* Touch screens: smaller slides, details always visible at the bottom */
 @media (max-width: 1024px) {
     .carousel-track .carousel-item {
         width: 30rem;
@@ -124,6 +132,7 @@
     }
 }
 
+/* Phone: details centered, 2 skills per row */
 @media (max-width: 768px) {
     .carousel-track .carousel-overlay {
         align-items: center;

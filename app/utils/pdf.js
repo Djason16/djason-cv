@@ -70,6 +70,7 @@ const PAGE_BREAK_CSS = `
     }
 `
 
+// Adds the page break rules to the page while the PDF is made
 const addPageBreakStyles = () => {
     document.getElementById('pdf-pagebreak-styles')?.remove()
     const style = Object.assign(document.createElement('style'), { id: 'pdf-pagebreak-styles', textContent: PAGE_BREAK_CSS })
@@ -131,6 +132,7 @@ export const exportPdf = async ({ component, props, fileName, selector, html2can
         const el = await waitForElement(container, selector)
         markNoBreak(el)
 
+        // Loaded only when a PDF is made (large library)
         const html2pdf = (await import('html2pdf.js')).default
         await html2pdf().set({
             margin: [10, 10, 10, 10],

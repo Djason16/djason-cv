@@ -1,4 +1,5 @@
 /* Home page: "About me" section (age, location, photos) (AboutMe) */
+/* Text on one side, photos on the other */
 .about-section {
     display: flex;
     justify-content: space-between;
@@ -24,6 +25,7 @@
     line-height: 1.5;
 }
 
+/* Tablet and phone: everything stacked */
 @media (max-width: 1024px) {
     .about-section {
         flex-direction: column-reverse;

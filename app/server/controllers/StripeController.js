@@ -11,6 +11,7 @@
  */
 const resultType = event => (RequestHelper.query(event, 'type') === 'cancel' ? 'cancel' : 'success')
 
+// Sends a page of server/templates/StripePages.js
 const html = (event, page) => {
     setResponseHeader(event, 'Content-Type', 'text/html; charset=utf-8')
     return page
@@ -28,6 +29,7 @@ export default class StripeController extends Controller {
         subscriptionResult: ['GET', '/subscription-result'],
     }
 
+    // One-time payment: creates the Stripe page and returns its address
     async createCheckout(event) {
         const data = StripeHelper.validateCheckout(await this.body(event))
         const frontend = useRuntimeConfig().public.frontendDomain
@@ -39,6 +41,7 @@ export default class StripeController extends Controller {
         return ResponseHelper.success(event, { sessionId: session.id, url: session.url })
     }
 
+    // Monthly subscription: creates the Stripe page and returns its address
     async createSubscription(event) {
         const data = StripeHelper.validateSubscription(await this.body(event))
         const frontend = useRuntimeConfig().public.frontendDomain
@@ -50,6 +53,7 @@ export default class StripeController extends Controller {
         return ResponseHelper.success(event, { sessionId: session.id, url: session.url })
     }
 
+    // State of a payment or a subscription, from its Stripe session
     async checkPayment(event) {
         const sessionId = StripeHelper.validateSessionId(RequestHelper.query(event, 'sessionId'))
         return ResponseHelper.success(event, await StripeHelper.paymentStatus(sessionId))
@@ -60,6 +64,7 @@ export default class StripeController extends Controller {
         return ResponseHelper.success(event, await StripeHelper.subscriptionStatus(sessionId))
     }
 
+    // Page shown after Stripe (success or cancel)
     paymentResult(event) {
         return html(event, StripePages.payment(resultType(event)))
     }

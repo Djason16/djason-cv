@@ -17,7 +17,7 @@ if (!process.env.CONFIG_LOADED) {
   console.log(`⚡ Loaded ${envPath}`)
 }
 
-// Detection mode
+// true with npm run dev, false for the production build
 const isDev = process.env.NODE_ENV !== 'production'
 
 // SQLite file of Nitro Database (DB_FILE, relative to the folder the server is started from)
@@ -40,6 +40,7 @@ export default defineNuxtConfig({
     trailingSlash: TRAILING_SLASH_ENABLED,
   },
 
+  // Pages rendered on the server (SEO), styles of the whole site
   ssr: true,
   devtools: { enabled: isDev },
   compatibilityDate: '2024-11-01',
@@ -48,14 +49,17 @@ export default defineNuxtConfig({
   // Transpile CJS packages that need it
   build: { transpile: ['entities'] },
 
+  // Nuxt features turned on: page transitions and server components
   experimental: {
     payloadExtraction: false,
     viewTransition: true,
     componentIslands: true
   },
 
+  // Development server (npm run dev), reachable through ngrok to test on a phone
   devServer: { host: 'localhost', port: 3000 } as any,
 
+  // Production bundle: modern JavaScript, minified, no console logs
   vite: {
     server: { allowedHosts: ['.ngrok.io', '.ngrok-free.app', 'localhost'] } as any,
     build: {
@@ -80,6 +84,7 @@ export default defineNuxtConfig({
         },
       },
     },
+    // Packages prepared in advance by the dev server, so the first page loads faster
     optimizeDeps: {
       include: [
         'gsap',
@@ -103,6 +108,7 @@ export default defineNuxtConfig({
     },
   },
 
+  // Nitro: the server of the API
   nitro: {
     experimental: { database: true },
     // Helpers (ResponseHelper, DatabaseHelper...) and templates (emails, Stripe pages) imported automatically in server/
@@ -127,9 +133,11 @@ export default defineNuxtConfig({
     alias: {
       'entities/decode': 'entities/dist/commonjs/decode.js',
     },
+    // SQLite database of the API
     database: {
       default: { connector: 'sqlite', options: { path: dbFile } }
     },
+    // Public pages written in HTML at build time; admin and login stay out
     prerender: {
       crawlLinks: true,
       routes: publicRoutes,
@@ -141,6 +149,7 @@ export default defineNuxtConfig({
       retryDelay: 1000,
       ignoreUnprefixedPublicAssets: true
     },
+    // Browser cache per type of file, and admin / login / API hidden from search engines
     routeRules: {
       '/images/svg/**': { headers: { 'Cache-Control': 'public, max-age=31536000, immutable', 'X-Content-Type-Options': 'nosniff' } },
       '/images/**': { headers: { 'Cache-Control': 'public, max-age=7200', 'X-Content-Type-Options': 'nosniff' } },
@@ -155,6 +164,7 @@ export default defineNuxtConfig({
     minify: !isDev
   },
 
+  // Sitemap, robots.txt, images and Pinia (cookie banner)
   modules: [
     ['@nuxtjs/sitemap', {
       gzip: true,
@@ -171,6 +181,7 @@ export default defineNuxtConfig({
     '@pinia/nuxt'
   ],
 
+  // Images converted to WebP / AVIF in several sizes
   image: {
     quality: 80,
     format: ['webp', 'avif'],
@@ -178,6 +189,7 @@ export default defineNuxtConfig({
     provider: 'none',
   },
 
+  // <head> of every page: fonts loaded first, favicon
   app: {
     head: {
       link: [
@@ -195,6 +207,7 @@ export default defineNuxtConfig({
     },
   },
 
+  // Values of the .env files: server only at the top, sent to the browser in "public"
   runtimeConfig: {
     dbFile,
     stripeSecretKey: process.env.STRIPE_SECRET_KEY,

@@ -28,7 +28,6 @@
 
 <script setup>
 import { useLang } from '@/composables/useLang.js'
-;
 
 defineProps({
     issueDate: { type: String, default: '' },
@@ -55,6 +54,7 @@ const formatDate = d => d
 </script>
 
 <style scoped>
+/* Logo and company details on one side, document number and dates on the other */
 .header {
     display: flex;
     justify-content: space-between;

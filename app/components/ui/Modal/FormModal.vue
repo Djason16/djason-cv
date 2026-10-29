@@ -67,7 +67,9 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+/* Scrolling form and its buttons */
 .form-modal,
+/* Buttons at the bottom */
 .modal-footer {
     display: flex;
     flex-direction: column;
@@ -83,6 +85,7 @@ onBeforeUnmount(() => {
     box-sizing: border-box;
 }
 
+/* Room for the scrollbar */
 .form-modal.has-scroll {
     padding-right: 1rem;
 }
@@ -114,12 +117,14 @@ onBeforeUnmount(() => {
     margin: 0;
 }
 
+/* Large screens */
 @media (min-width: 1025px) {
     .form-modal :deep(.row-group) {
         flex-direction: row;
     }
 }
 
+/* Tablet and phone */
 @media (max-width: 1024px) {
     .form-modal {
         width: 100%;

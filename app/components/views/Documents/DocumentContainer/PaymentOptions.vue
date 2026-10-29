@@ -29,7 +29,6 @@
 <script setup>
 import { formatPrice as formatDocumentPrice } from '@/utils/documents.js'
 import { useLang } from '@/composables/useLang.js'
-;
 
 defineProps({ paymentOptions: Object })
 const lang = useLang()

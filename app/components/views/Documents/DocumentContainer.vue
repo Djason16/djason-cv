@@ -98,6 +98,7 @@ const currency = computed(() => lang.current.value === 'fr' ? 'EUR' : 'USD')
 // TVA & financial calculations
 const tvaRateLabel = '20%'
 const hasTVA = computed(() => props.items.some(i => i.tvaApplicable))
+// Price of a line including VAT (when VAT applies to it)
 const calculateItemTTC = i => i.unitPrice * i.quantity * (i.tvaApplicable ? 1 + VAT_RATE : 1)
 const totalHT = computed(() => props.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0))
 const totalTVA = computed(() => props.items.reduce((s, i) => s + (i.tvaApplicable ? i.unitPrice * i.quantity * VAT_RATE : 0), 0))

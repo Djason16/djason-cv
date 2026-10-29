@@ -41,7 +41,6 @@ const lang = useLang()
 const { getTranslation: t } = lang
 const site = useSite()
 
-// Composables
 const { periods, override, fetchAll: fetchAvailability } = useUnavailability()
 const { settings, fetchSettings } = useCalendar()
 
@@ -92,21 +91,18 @@ const updateAvailability = () => {
     )
 }
 
-// Fetches data on mount and refreshes every minute
+// Availability of the moment and weekly schedule, loaded once; the status is worked out again every minute (no new request)
 let intervalId
 
-onMounted(() => {
-    const fetchData = async () => {
-        try {
-            await Promise.all([fetchAvailability(), fetchSettings()])
-            dataLoaded.value = true
-            updateAvailability()
-            intervalId = setInterval(updateAvailability, 60000)
-        } catch (err) {
-            console.error('Failed to fetch initial data:', err)
-        }
+onMounted(async () => {
+    try {
+        await Promise.all([fetchAvailability(), fetchSettings()])
+    } catch (err) {
+        return console.error('Failed to fetch the availability:', err)
     }
-    fetchData()
+    dataLoaded.value = true
+    updateAvailability()
+    intervalId = setInterval(updateAvailability, 60000)
 })
 
 onUnmounted(() => {

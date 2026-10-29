@@ -1,157 +1,92 @@
+import { computed } from 'vue'
 import { useLang } from './useLang.js'
-import { computed, ref } from 'vue'
-import { projects as rawProjects } from '@/data/projects.js'
+import { projects as staticProjects } from '@/data/projects.js'
 import { api } from '@/utils/api.js'
+import { todayIso } from '@/utils/display.js'
 
-// Projects of the home page: static ones (data/projects.js) and the ones added from the admin page (/api/projects)
+/*
+ * Projects of the home page: static ones (data/projects.js) and the ones added from the admin page (/api/projects).
+ * The list of the API is shared by every component (useState): on the home page it is loaded once by the server
+ * and reused by the browser (callOnce in LastProject.vue), the admin loads it when its modal opens.
+ */
 export const useProjects = () => {
     const lang = useLang()
-    const projects = ref([])
-    const loading = ref(false)
-    const search = ref('')
+    // Projects of the API, as the API sends them
+    const apiProjects = useState('apiProjects', () => [])
 
-    // Normalizes a project object
-    const normalizeProject = p => {
-        if (!p) return null
-
-        const isApi = p.short_fr && p.short_en
-
-        return {
-            id: p.id ?? crypto.randomUUID(),
-            name: p.name || '',
-            img: isApi && p.img ? `api${p.img}` : p.img || '',
-            image: isApi && p.img ? `api${p.img}` : p.img || '',
-            link: p.link || null,
-            skills: Array.isArray(p.skills) ? p.skills : [],
-            date: p.date || new Date().toISOString().split('T')[0],
-
-            shortKey: !isApi ? p.short || '' : null,
-            short_fr: isApi ? p.short_fr : null,
-            short_en: isApi ? p.short_en : null,
-
-            get short() {
-                if (this.short_fr && this.short_en) {
-                    return lang.current.value === 'en' ? this.short_en : this.short_fr
-                }
-                return lang.getTranslation(this.shortKey)
-            },
-        }
-    }
-
-    // Determines display description based on language
-    const displayProjectShort = p =>
-        p?.short_fr && p?.short_en
-            ? lang.current.value === 'en'
-                ? p.short_en
-                : p.short_fr
-            : lang.getTranslation(p?.shortDescriptionKey)
-
-    // Fetches projects from raw data and API
-    const fetchProjects = async () => {
-        loading.value = true
-        try {
-            const combined = rawProjects.map(normalizeProject).filter(Boolean)
-
-            // Projects added from the admin page; local data only when the API is unreachable
-            const res = await api.get('/projects')
-            if (res.success) combined.push(...res.projects.map(normalizeProject).filter(Boolean))
-            else console.warn('API unreachable, using local data only', res.error)
-
-            projects.value = combined.sort((a, b) => new Date(b.date) - new Date(a.date))
-        } catch (e) {
-            console.error('Project loading failed', e)
-            projects.value = rawProjects
-                .map(normalizeProject)
-                .filter(Boolean)
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-        } finally {
-            loading.value = false
-        }
-    }
-
-    // Filters projects by search query
-    const filteredProjects = computed(() => {
-        const q = search.value.toLowerCase().trim()
-        if (!q) return projects.value
-        return projects.value.filter(p =>
-            [p.name, displayProjectShort(p), p.link, ...(p.skills || [])].some(v =>
-                v?.toString().toLowerCase().includes(q)
-            )
-        )
+    // Same shape for both kinds; images of the API are served by /api/upload
+    const normalize = (p, fromApi) => ({
+        id: p.id ?? p.name,
+        name: p.name || '',
+        img: fromApi && p.img ? `api${p.img}` : p.img || '',
+        link: p.link || null,
+        skills: Array.isArray(p.skills) ? p.skills : [],
+        date: p.date || todayIso(),
+        short_fr: fromApi ? p.short_fr : null,
+        short_en: fromApi ? p.short_en : null,
+        // Short description in the current language (static projects: a translation key)
+        short: fromApi ? (lang.current.value === 'en' ? p.short_en : p.short_fr) : lang.getTranslation(p.short || ''),
     })
 
-    const displayProjectName = p => p?.name || '-'
-    const displayValue = v => v ?? '-'
+    // Every project, most recent first
+    const projects = computed(() => [
+        ...staticProjects.map(p => normalize(p, false)),
+        ...apiProjects.value.map(p => normalize(p, true)),
+    ].sort((a, b) => new Date(b.date) - new Date(a.date)))
 
-    // Converts project object to FormData
+    // Projects of the API (the static ones stay when the API cannot be reached)
+    const fetchProjects = async () => {
+        const res = await api.get('/projects')
+        if (res.success) apiProjects.value = res.projects
+        else console.warn('Projects of the API not loaded:', res.error)
+    }
+
+    // Project -> form data sent to the API (with its image file)
     const createFormData = (project, imageFile = null) => {
         const fd = new FormData()
-            ;['id', 'name', 'short_fr', 'short_en', 'link', 'date'].forEach(
-                k => project[k] && fd.append(k, project[k])
-            )
-        if (project.skills) {
-            fd.append('skills', Array.isArray(project.skills) ? JSON.stringify(project.skills) : project.skills)
-        }
+        ;['id', 'name', 'short_fr', 'short_en', 'link', 'date'].forEach(k => project[k] && fd.append(k, project[k]))
+        if (project.skills) fd.append('skills', Array.isArray(project.skills) ? JSON.stringify(project.skills) : project.skills)
         if (imageFile) fd.append('image', imageFile)
         return fd
     }
 
-    // Adds new project (API projects only)
+    // Changes a project of the local list (no new request)
+    const patch = (id, changes) => {
+        apiProjects.value = apiProjects.value.map(p => p.id === id ? { ...p, ...changes } : p)
+    }
+
+    // Adds a project from the admin page
     const addProject = async (project, imageFile = null) => {
         const res = await api.post('/projects', createFormData(project, imageFile))
-
-        if (res.success) {
-            const normalized = normalizeProject({
-                ...project,
-                id: res.id,
-                img: res.imagePath || project.img,
-            })
-            if (normalized) projects.value.unshift(normalized)
-        } else console.error('Project creation failed', res.error)
-
+        if (res.success) apiProjects.value = [...apiProjects.value, { ...project, id: res.id, img: res.imagePath || project.img }]
+        else console.error('Project creation failed', res.error)
         return res
     }
 
-    // Updates existing project
+    // Saves a new image and / or changed fields of a project
     const updateProject = async (id, updates = {}, imageFile = null) => {
-        let res
-
+        let res = { success: false, error: 'Nothing to update' }
         if (imageFile) {
             res = await api.post(`/projects/${id}/image`, createFormData({}, imageFile))
-            if (res.success) {
-                const newImg = `api${res.imagePath}`
-                const i = projects.value.findIndex(p => p.id === id)
-                if (i !== -1) {
-                    projects.value[i] = {
-                        ...projects.value[i],
-                        img: newImg,
-                        image: newImg,
-                    }
-                }
-            }
+            if (res.success) patch(id, { img: res.imagePath })
         }
-
         if (Object.keys(updates).length) {
             res = await api.put(`/projects/${id}`, updates)
-            if (res.success) {
-                const i = projects.value.findIndex(p => p.id === id)
-                if (i !== -1) projects.value[i] = { ...projects.value[i], ...updates }
-            }
+            if (res.success) patch(id, updates)
         }
-
-        if (res && !res.success) console.error('Project update failed', res.error)
-        return res || { success: false, error: 'Nothing to update' }
+        if (!res.success) console.error('Project update failed', res.error)
+        return res
     }
 
     // Deletes a project
     const removeProject = async id => {
         const res = await api.delete(`/projects/${id}`)
-        if (res.success) projects.value = projects.value.filter(p => p.id !== id)
+        if (res.success) apiProjects.value = apiProjects.value.filter(p => p.id !== id)
         else console.error('Project deletion failed', res.error)
         return res
     }
 
-    // Project form configuration
+    // Fields of the creation form
     const projectFields = [
         { id: 'name', labelKey: 'projectName', placeholderKey: 'enterProjectName', type: 'text', required: true },
         { id: 'short_fr', labelKey: 'projectShortFr', placeholderKey: 'enterShortDescriptionFr', type: 'text', required: true },
@@ -162,18 +97,5 @@ export const useProjects = () => {
         { id: 'date', labelKey: 'projectDate', placeholderKey: 'enterDate', type: 'date' },
     ]
 
-    return {
-        projects,
-        loading,
-        search,
-        filteredProjects,
-        displayProjectName,
-        displayProjectShort,
-        displayValue,
-        fetchProjects,
-        addProject,
-        updateProject,
-        removeProject,
-        projectFields,
-    }
+    return { projects, fetchProjects, addProject, updateProject, removeProject, projectFields }
 }

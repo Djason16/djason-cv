@@ -7,6 +7,7 @@ const serviceTranslations = {
     'Other': 'other'
 }
 
+// Translation key of a service name stored in the database
 const getServiceTranslationKey = (serviceName) => {
     if (!serviceName) return 'other'
     const lower = serviceName.toLowerCase()

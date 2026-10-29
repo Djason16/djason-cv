@@ -11,6 +11,7 @@ const PROFESSIONAL_TYPES = [CLIENT_TYPE_COMPANY, CLIENT_TYPE_FREELANCE, CLIENT_T
 
 // Only individuals are non-B2B
 export const isIndividualType = t => t === CLIENT_TYPE_INDIVIDUAL
+// Company client (SIRET and company name on the documents)
 export const isCompanyType = t => t === CLIENT_TYPE_COMPANY
 export const isProfessionalType = t => PROFESSIONAL_TYPES.includes(t)
 

@@ -1,0 +1,86 @@
+/* Notifications of the result of an action, at the top right under the header (AppToasts) */
+.app-toasts {
+    position: fixed;
+    top: 7rem;
+    right: 1.5rem;
+    z-index: 10001;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: min(24rem, calc(100vw - 3rem));
+    pointer-events: none;
+}
+
+/* Same blurred glass as the header and the cookie banner, colored bar on the left */
+.app-toasts .app-toast {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-left: 4px solid var(--accent-green);
+    border-radius: 4px;
+    background-color: rgba(30, 32, 34, 0.85);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: var(--text-color-light);
+    pointer-events: auto;
+}
+
+.app-toasts .app-toast.is-error {
+    border-left-color: var(--accent-red);
+}
+
+.app-toasts .app-toast__icon {
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    color: var(--accent-green);
+}
+
+.app-toasts .app-toast.is-error .app-toast__icon {
+    color: var(--accent-red);
+}
+
+.app-toasts .app-toast__message {
+    flex: 1;
+    margin: 0;
+}
+
+/* Close button */
+.app-toasts .app-toast__close {
+    flex-shrink: 0;
+    padding: 0.25rem;
+    border: none;
+    background: none;
+    color: var(--text-color-light);
+    opacity: 0.7;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+}
+
+.app-toasts .app-toast__close:hover {
+    opacity: 1;
+}
+
+/* Slides in from the right, fades out */
+.app-toasts .app-toast-enter-active,
+.app-toasts .app-toast-leave-active {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.app-toasts .app-toast-enter-from {
+    transform: translateX(110%);
+    opacity: 0;
+}
+
+.app-toasts .app-toast-leave-to {
+    opacity: 0;
+}
+
+/* Tablet and phone: under the smaller header, across the screen */
+@media (max-width: 768px) {
+    .app-toasts {
+        top: 5rem;
+        right: 1rem;
+        width: calc(100vw - 2rem);
+    }
+}

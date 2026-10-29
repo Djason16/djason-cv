@@ -1,4 +1,5 @@
 // Clients of the admin: GET / POST /api/clients, PUT / DELETE /api/clients/{id}
+// Columns sent to the admin
 const COLUMNS = 'id, firstname, lastname, company_name, email, phone, address, postal_code, city, type, siret, active'
 
 // Optional fields are stored as NULL when empty
@@ -13,6 +14,7 @@ const values = body => [
     body.city || null,
     body.siret || null,
     body.type || null,
+    // Active unless explicitly turned off
     body.active === false || body.active === 0 || body.active === '0' ? 0 : 1,
 ]
 

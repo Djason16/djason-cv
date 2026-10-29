@@ -1,66 +1,68 @@
-import { useLang } from './useLang.js'
 import { computed, ref } from 'vue'
+import { useAdminDataStore } from '@/stores/adminData.js'
 import { api } from '@/utils/api.js'
 import { isIndividualType, isProfessionalType } from '@/utils/clientTypes.js'
 
 // Clients of the admin page: list, search, create / update / delete (GET / POST /api/clients, PUT / DELETE /api/clients/{id}) and form fields
 export function useClients() {
-    const lang = useLang()
-
-    // Reactive state
-    const clients = ref([])
-    const loading = ref(false)
+    // The list is shared by every modal (stores/adminData.js)
+    const adminData = useAdminDataStore()
     const search = ref('')
 
-    // Returns client name or fallback
+    // Name of a client: company name, or first and last name
     const displayClientName = c => c.company_name || [c.firstname, c.lastname].filter(Boolean).join(' ') || '-'
-    const displayValue = v => v ?? '-'
+    // A client is active unless turned off
     const displayActive = c => !(c.active === 0 || c.active === false)
 
-    // Fetches clients from API
-    const fetchClients = async () => {
-        loading.value = true
-        const res = await api.get('/clients')
-        if (res.success) clients.value = res.clients
-        loading.value = false
-    }
+    const fetchClients = () => adminData.load('clients')
 
-    // Creates a client — resolves to the API result ({ success, id } or { success: false, error })
-    const createClient = data => api.post('/clients', data)
-
-    // Saves every field of a client — empty optional fields are stored as null
-    const updateClient = item => api.put(`/clients/${item.id}`, {
-        ...item,
-        firstname: item.firstname || null,
-        lastname: item.lastname || null,
-        company_name: item.company_name || null,
-        siret: item.siret || null
-    })
-
-    // Deletes a client and removes it from the local list
-    const deleteClient = async id => {
-        const res = await api.delete(`/clients/${id}`)
-        if (res.success) clients.value = clients.value.filter(c => c.id !== id)
+    // Creates a client: the list is loaded again the next time it is shown
+    const createClient = async data => {
+        const res = await api.post('/clients', data)
+        if (res.success) adminData.invalidate('clients')
         return res
     }
 
-    // Filters clients by search query
+    // Saves every field of a client (empty optional fields stored as null); the missions show its name, so they are loaded again
+    const updateClient = async item => {
+        const res = await api.put(`/clients/${item.id}`, {
+            ...item,
+            firstname: item.firstname || null,
+            lastname: item.lastname || null,
+            company_name: item.company_name || null,
+            siret: item.siret || null
+        })
+        if (res.success) adminData.invalidate('missions')
+        return res
+    }
+
+    // Deletes a client (its missions are deleted with it by the database)
+    const deleteClient = async id => {
+        const res = await api.delete(`/clients/${id}`)
+        if (res.success) {
+            adminData.remove('clients', id)
+            adminData.invalidate('missions')
+        }
+        return res
+    }
+
+    // Clients matching the search bar
     const filteredClients = computed(() => {
         const q = search.value.toLowerCase()
-        return clients.value.filter(c =>
+        return adminData.clients.filter(c =>
             [c.firstname, c.lastname, c.company_name, c.email, c.address, c.city, c.postal_code]
                 .filter(Boolean)
                 .some(v => v.toLowerCase().includes(q))
         )
     })
 
-    // Updates name fields dynamically
+    // Edited name: company name when the client has no first / last name, otherwise first word = first name, the rest = last name
     const updateNameField = (item, value) => {
         if (!item.firstname && !item.lastname) item.company_name = value
         else { const [first, ...rest] = value.split(' '); item.firstname = first; item.lastname = rest.join(' ') }
     }
 
-    // Handles client type change with field migration
+    // Changing between individual and professional moves the name: first + last name <-> company name
     const updateClientType = (item, newType) => {
         const oldType = item.type
         item.type = newType
@@ -74,7 +76,7 @@ export function useClients() {
         }
     }
 
-    // All client fields
+    // Fields of the creation form
     const clientFields = [
         { id: 'firstname', labelKey: 'firstName', placeholderKey: 'enterFirstName', type: 'text', required: true, autocomplete: 'given-name' },
         { id: 'lastname', labelKey: 'lastName', placeholderKey: 'enterLastName', type: 'text', required: true, autocomplete: 'family-name' },
@@ -87,15 +89,16 @@ export function useClients() {
         { id: 'siret', labelKey: 'siret', placeholderKey: 'enterSiret', type: 'text', required: false, autocomplete: 'off' }
     ]
 
-    // Professional types use company_name; individual uses firstname/lastname
+    // Professional clients have a company name, individuals a first and last name
     const getVisibleFields = type => {
         if (isProfessionalType(type)) return clientFields.filter(f => !['firstname', 'lastname'].includes(f.id))
         return clientFields.filter(f => f.id !== 'company_name')
     }
 
-    // Group fields into logical rows for layout
+    // Fields grouped into the rows of the form
     const groupFields = visibleFields => {
         const groups = []
+        // Puts the given fields side by side on one row
         const addGroup = ids => { const g = visibleFields.filter(f => ids.includes(f.id)); if (g.length) groups.push(g) }
 
         addGroup(['firstname', 'lastname'])
@@ -110,8 +113,6 @@ export function useClients() {
     }
 
     return {
-        clients,
-        loading,
         search,
         fetchClients,
         createClient,
@@ -119,11 +120,9 @@ export function useClients() {
         deleteClient,
         filteredClients,
         displayClientName,
-        displayValue,
         displayActive,
         updateNameField,
         updateClientType,
-        clientFields,
         getVisibleFields,
         groupFields
     }

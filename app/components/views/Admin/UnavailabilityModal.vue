@@ -12,11 +12,11 @@ import { computed, watch } from 'vue'
 import EditableTable from '@/components/ui/Table/EditableTable.vue'
 import TableModal from '@/components/ui/Modal/TableModal.vue'
 import { useUnavailability } from '@/composables/useUnavailability.js'
+import { showResult } from '@/utils/dialog.js'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 
-// Uses composable for fetching and updating unavailability periods
 const lang = useLang()
 const { getTranslation: t } = lang
 const { periods: unavailabilityPeriods, fetchPeriods, updatePeriod } = useUnavailability()
@@ -32,8 +32,10 @@ const columns = computed(() => ['startDate', 'endDate'].map(key => ({
 })))
 
 // Updates a period when edited
-const handlePeriodUpdate = async ({ item, field, value }) =>
-    await updatePeriod(item.id, { ...item, [field]: value })
+const handlePeriodUpdate = async ({ item, field, value }) => {
+    const res = await updatePeriod(item.id, { ...item, [field]: value })
+    await showResult(res, lang.getTranslation('saveSuccess'), lang.getTranslation('saveFailed'))
+}
 
 // Fetches data when modal opens
 watch(() => props.show, val => val && fetchPeriods())

@@ -92,6 +92,7 @@ let observer = null
 
 // Helpers
 const isFieldDisabled = (item, col) => typeof col.disabled === 'function' ? col.disabled(item) : col.disabled
+// Value shown in a cell (the column's formatter when it has one) and its tooltip
 const getCellValue = (item, col) => col.formatter ? col.formatter(item) : item[col.key] ?? '-'
 const getCellTitle = (item, col) => col.tooltip ? (typeof col.tooltip === 'function' ? col.tooltip(item) : col.tooltip) : (col.processHtml ? null : getCellValue(item, col))
 
@@ -161,6 +162,7 @@ const handleClickOutside = e => {
     }
 }
 
+// File column: the picked file is sent at once
 const handleFileChange = (event, col) => {
     const file = event.target.files[0]
     if (!file) return
@@ -173,6 +175,7 @@ const handleFileChange = (event, col) => {
 
 // Observe scroll
 const checkScroll = () => tableWrapper.value && (hasScroll.value = tableWrapper.value.scrollHeight > tableWrapper.value.clientHeight)
+// Rows added or removed change the height: the scroll check runs again
 const createObserver = () => {
     if (!tableWrapper.value) return
     destroyObserver()

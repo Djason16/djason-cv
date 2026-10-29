@@ -7,6 +7,7 @@
     align-items: center;
 }
 
+/* Round button lifted on hover */
 .round-btn-wrapper .round-btn {
     background: linear-gradient(135deg, var(--second-color) 0%, var(--third-color) 100%);
     color: var(--text-color-light);
@@ -32,6 +33,7 @@
     box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* Icon and text stacked in the center */
 .round-btn-wrapper .round-btn__content {
     display: flex;
     flex-direction: column;
@@ -58,6 +60,7 @@
     max-width: 100%;
 }
 
+/* Fade when the text changes */
 .round-btn-wrapper .fade-enter-active,
 .round-btn-wrapper .fade-leave-active {
     transition: opacity 0.3s ease;
@@ -68,6 +71,7 @@
     opacity: 0;
 }
 
+/* Touch screens: no hover effect */
 @media (max-width: 1024px) {
     .round-btn-wrapper .round-btn {
         will-change: auto;
@@ -80,6 +84,7 @@
     }
 }
 
+/* Phone: smaller button */
 @media (max-width: 768px) {
     .round-btn-wrapper {
         width: 8rem;

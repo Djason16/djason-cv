@@ -14,6 +14,7 @@ export default class EnvController extends Controller {
         }
     }
 
+    // PUT /api/env: updates or adds the given keys
     async save(event) {
         const updates = await this.body(event)
         if (!Object.keys(updates).length) return ResponseHelper.validationError(event, 'Invalid request body')

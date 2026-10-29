@@ -8,6 +8,7 @@ import { seoMetaData } from '@/utils/seo.js'
 export const useSeo = (pageKey) => {
     const lang = useLang()
     const site = useSite()
+    // Builds the <head> of the page (again when the language changes)
     const apply = () => useSeoMeta(seoMetaData(pageKey, lang, site))
 
     apply()

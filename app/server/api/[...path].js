@@ -10,6 +10,7 @@ import controllers from '#controllers'
  */
 const routes = RouteDiscovery.scan(controllers)
 
+// One form per address: "//env/" and "/env" are the same route
 const normalize = path => `/${path}`.replace(/\/{2,}/g, '/').replace(/\/+$/, '') || '/'
 
 export default defineEventHandler(async event => {

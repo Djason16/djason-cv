@@ -9,7 +9,6 @@
 
 <script setup>
 import { useLang } from '@/composables/useLang.js'
-;
 import { isCompanyType } from '@/utils/clientTypes.js';
 
 const { getTranslation: t } = useLang()
@@ -21,5 +20,4 @@ defineProps({
     paymentDue: String,
     clientType: String
 })
-
 </script>

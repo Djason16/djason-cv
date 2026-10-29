@@ -15,6 +15,7 @@ import { computed, watch } from 'vue'
 import EditableTable from '@/components/ui/Table/EditableTable.vue'
 import { useInterestRates } from '@/composables/useInterestRates.js'
 import TableModal from '@/components/ui/Modal/TableModal.vue'
+import { showConfirm, showResult } from '@/utils/dialog.js'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
@@ -26,12 +27,12 @@ const { search, fetchInterestRates, updateInterestRate, deleteInterestRate: remo
 // Table structure with formatters and editable definitions
 const columns = computed(() => [
     {
-        key: 'type', label: lang.getTranslation('type') || 'Type', type: 'select',
-        formatter: r => r.type === 'professional' ? (lang.getTranslation('professional') || 'Professionnel') : (lang.getTranslation('individual') || 'Particulier'),
+        key: 'type', label: lang.getTranslation('type'), type: 'select',
+        formatter: r => r.type === 'professional' ? (lang.getTranslation('professional')) : (lang.getTranslation('individual')),
         editValue: r => r.type,
         options: [
-            { value: 'professional', label: lang.getTranslation('professional') || 'Professionnel' },
-            { value: 'individual', label: lang.getTranslation('individual') || 'Particulier' }
+            { value: 'professional', label: lang.getTranslation('professional') },
+            { value: 'individual', label: lang.getTranslation('individual') }
         ]
     },
     { key: 'rate', label: lang.getTranslation('rate'), formatter: r => formatRate(r.rate), editValue: r => r.rate, inputType: 'number', step: '0.0001', min: '0', max: '1', autocomplete: 'off' },
@@ -47,14 +48,14 @@ watch(() => props.show, v => v && fetchInterestRates())
 const handleUpdate = async ({ item, field, value }) => {
     item[field] = value
     const res = await updateInterestRate(item)
-    if (!res.success) console.error('Failed updating interest rate', res.error)
+    await showResult(res, lang.getTranslation('saveSuccess'), lang.getTranslation('saveFailed'))
 }
 
 // Deletes interest rate with user confirmation
 const deleteInterestRate = async r => {
-    if (!confirm(lang.getTranslation('deleteInterestRateConfirm', { rate: formatRate(r.rate) }))) return
+    if (!(await showConfirm(lang.getTranslation('deleteInterestRateConfirm', { rate: formatRate(r.rate) }), { okLabel: lang.getTranslation('dialogDelete') }))) return
     const res = await removeInterestRate(r.id)
-    if (!res.success) alert(lang.getTranslation('deleteInterestRateFailed'))
+    await showResult(res, lang.getTranslation('deleteSuccess'), lang.getTranslation('deleteInterestRateFailed'))
 }
 
 // Close modal

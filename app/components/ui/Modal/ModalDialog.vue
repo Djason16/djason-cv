@@ -39,7 +39,7 @@ const emit = defineEmits(['close'])
 const modalEl = ref(null)
 const close = () => emit('close')
 
-// Locks scroll & focuses modal on open
+// Open: the page stops scrolling and the modal gets the focus. Close: the backdrop fades out (global.css)
 watch(() => props.show, async v => {
     document.body.classList.toggle('modal-open', v)
     if (v) await nextTick(() => modalEl.value?.focus()), document.body.classList.remove('modal-closing')
@@ -51,7 +51,7 @@ const onKeyDown = e => e.key === 'Escape' && props.show && close()
 onMounted(() => window.addEventListener('keydown', onKeyDown))
 onUnmounted(() => window.removeEventListener('keydown', onKeyDown))
 
-// Animates from trigger or center
+// Opening animation: starts as a small circle on the button that opened it (or the center of the screen)
 const beforeEnter = el => {
     const { top = innerHeight / 2, left = innerWidth / 2, size = 0 } = props.position || {}
     Object.assign(el.style, {
@@ -71,8 +71,9 @@ const beforeEnter = el => {
     })
 }
 
-// Animates to final size
+// ...then grows to its final size
 const enter = (el, done) => {
+    // Reading the height applies the start position before the transition begins
     el.offsetHeight
     const isMobile = innerWidth <= 1024
     Object.assign(el.style, {
@@ -97,7 +98,7 @@ const enter = (el, done) => {
 }
 const afterEnter = el => el.style.transition = ''
 
-// Animates closing back to trigger
+// Closing animation: shrinks back into the button that opened it
 const leave = (el, done) => {
     if (!props.activeButton) return setTimeout(done, 0)
     const rect = props.activeButton.getBoundingClientRect()

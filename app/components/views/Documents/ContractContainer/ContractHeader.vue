@@ -15,7 +15,6 @@
 import { useLang } from '@/composables/useLang.js'
 
 const { getTranslation: t } = useLang()
-;
 
 defineProps({
     companyLogo: String,
@@ -25,6 +24,7 @@ defineProps({
 </script>
 
 <style scoped>
+/* Logo on one side, title and number of the contract on the other */
 .header {
     text-align: left;
     margin-bottom: 30px;

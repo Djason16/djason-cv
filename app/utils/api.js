@@ -76,7 +76,7 @@ const safely = async (label, request) => {
  * @param {RequestHeaders} [headers]
  * @returns {Promise<ApiResult>}
  */
-export const apiRequest = (endpoint, method = 'GET', body = null, headers = {}) =>
+const apiRequest = (endpoint, method = 'GET', body = null, headers = {}) =>
     safely(`${method} ${endpoint}`, async () => {
         log(method, endpoint, body instanceof FormData ? '[FormData]' : body ?? '')
         const res = await $fetch.raw(buildUrl(endpoint), {

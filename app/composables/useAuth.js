@@ -15,15 +15,23 @@ const delayedRedirect = async path => {
     if (process.client) window.location.href = withTrailingSlash(path)
 }
 
+// Session check of this page load (browser only): the plugin, the middlewares and the footer share one request
+let sessionCheck = null
+
 export const useAuth = () => {
     const isAuthenticated = useState('isAuthenticated', () => false)
+    // true once the session check answered (the footer waits for it to show "Login" or "Admin")
+    const authChecked = useState('authChecked', () => false)
     const loading = useState('authLoading', () => false)
 
-    // Checks current session validity against the server
-    const checkAuth = async () => {
-        const res = await api.get('/auth/check-session')
-        isAuthenticated.value = Boolean(res.success && res.authenticated)
-        return isAuthenticated.value
+    // Asks the server once whether the visitor is logged in; resolves to true / false
+    const checkAuth = () => {
+        sessionCheck ??= api.get('/auth/check-session').then(res => {
+            isAuthenticated.value = Boolean(res.success && res.authenticated)
+            authChecked.value = true
+            return isAuthenticated.value
+        })
+        return sessionCheck
     }
 
     // Pending OTP state — stores userId between login and OTP verification
@@ -61,8 +69,9 @@ export const useAuth = () => {
             return { success: false, error: res.error || 'invalidOtp' }
         }
 
+        // Logged in: the admin page opens (a new page load, which checks the session again)
         otpPending.value = { active: false, userId: null }
-        await checkAuth()
+        isAuthenticated.value = true
         await delayedRedirect('/admin')
         loading.value = false
         return { success: true, message: 'loginSuccess' }
@@ -115,5 +124,5 @@ export const useAuth = () => {
             : { success: false, error: res.error || 'passwordUpdateError' }
     }
 
-    return { isAuthenticated, loading, otpPending, checkAuth, login, verifyOtp, cancelOtp, logout, forgotPassword, updatePassword }
+    return { isAuthenticated, authChecked, loading, otpPending, checkAuth, login, verifyOtp, cancelOtp, logout, forgotPassword, updatePassword }
 }

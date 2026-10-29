@@ -43,27 +43,27 @@
 
         <!-- Pricing mode toggle — only for professional clients -->
         <div v-if="!isIndividual" class="form-group">
-            <label for="pricingMode">{{ t('pricingMode') || 'Mode de tarification' }}</label>
+            <label for="pricingMode">{{ t('pricingMode') }}</label>
             <select id="pricingMode" v-model="pricingMode" :title="t('pricingMode')">
-                <option value="tjm">{{ t('pricingModeTjm') || 'Taux horaire × durée' }}</option>
-                <option value="manual">{{ t('pricingModeManual') || 'Prix direct' }}</option>
+                <option value="tjm">{{ t('pricingModeTjm') }}</option>
+                <option value="manual">{{ t('pricingModeManual') }}</option>
             </select>
         </div>
 
         <!-- TJM mode: hourly rate + duration -->
         <div v-if="!isIndividual && pricingMode === 'tjm'" class="row-group">
             <div class="form-group">
-                <label for="tjm">{{ t('hourlyRate') || 'Taux horaire (€/h)' }}</label>
+                <label for="tjm">{{ t('hourlyRate') }}</label>
                 <input id="tjm" name="tjm" v-model="refsMap.tjm" type="number" min="0" step="0.01"
                     :title="t('hourlyRate')" :aria-label="t('hourlyRate')"
-                    :placeholder="t('enterHourlyRate') || 'Ex: 30'" />
+                    :placeholder="t('enterHourlyRate')" />
             </div>
             <div class="form-group">
                 <label for="duration">{{ t('missionDuration') }}</label>
                 <select id="duration" name="duration" v-model="displayDuration"
                     :title="t('missionDuration')"
                     :aria-label="t('missionDuration')">
-                    <option v-for="opt in durationOptions" :key="opt.value" :value="opt.value">{{ opt.label }}
+                    <option v-for="opt in DURATION_OPTIONS" :key="opt.value" :value="opt.value">{{ opt.label }}
                     </option>
                 </select>
             </div>
@@ -78,13 +78,13 @@
                     :aria-label="t('quantity')" />
             </div>
             <div class="form-group">
-                <label for="unitPrice">{{ refsMap.quantity > 1 ? (t('totalAmount') || 'Total') :
+                <label for="unitPrice">{{ refsMap.quantity > 1 ? (t('totalAmount')) :
                     t('unitPrice') }}</label>
                 <input id="unitPrice" name="unitPrice" v-model="refsMap.unitPrice" type="number" min="0" step="0.01"
                     required :readonly="!isIndividual && pricingMode === 'tjm'"
                     :class="{ 'input-readonly': !isIndividual && pricingMode === 'tjm' }"
-                    :title="refsMap.quantity > 1 ? (t('totalAmount') || 'Total') : t('unitPrice')"
-                    :aria-label="refsMap.quantity > 1 ? (t('totalAmount') || 'Total') : t('unitPrice')" />
+                    :title="refsMap.quantity > 1 ? (t('totalAmount')) : t('unitPrice')"
+                    :aria-label="refsMap.quantity > 1 ? (t('totalAmount')) : t('unitPrice')" />
             </div>
         </div>
 
@@ -105,7 +105,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useMessage } from '@/composables/useMessage.js'
 import { useMissions } from '@/composables/useMissions.js'
 import { isProfessionalType } from '@/utils/clientTypes.js'
-import { getDurationOptions } from '@/utils/durationOptions.js'
+import { DURATION_OPTIONS } from '@/utils/durationOptions.js'
 import FormModal from '@/components/ui/Modal/FormModal.vue'
 
 const props = defineProps({ show: Boolean })
@@ -114,7 +114,7 @@ const emit = defineEmits(['close', 'saved'])
 // Composables for missions & messaging
 const lang = useLang()
 const { getTranslation: t } = lang
-const { clients, services, isIndividualClient, displayServiceName, fetchData, createMission } = useMissions()
+const { clients, services, isIndividualClient, displayServiceName, fetchFormData, createMission } = useMissions()
 const { translatedMessage, showMessage, clearMessage } = useMessage()
 
 const formLoading = ref(false)
@@ -125,9 +125,6 @@ const pricingMode = ref('tjm')
 
 // Reactive form state
 const refsMap = reactive({ clientId: '', serviceId: '', title: '', date: '', duration: 7, quantity: 1, unitPrice: 0, tvaApplicable: false, tjm: 30 })
-
-// Duration options
-const durationOptions = computed(() => getDurationOptions())
 
 // Resolves selected client type
 const selectedClientType = computed(() => clients.value.find(c => c.id === refsMap.clientId)?.type)
@@ -180,7 +177,7 @@ let initialForm = {}
 watch(() => props.show, async val => {
     if (val) {
         formLoading.value = true
-        await fetchData()
+        await fetchFormData()
         if (!refsMap.clientId && clients.value.length) refsMap.clientId = clients.value[0].id
         if (!refsMap.serviceId && services.value.length)
             refsMap.serviceId = isIndividual.value
@@ -226,10 +223,12 @@ watch(() => refsMap.clientId, () => {
 </script>
 
 <style scoped>
+/* "VAT applicable" checkbox */
 .form-group label[for="tvaApplicable"] {
     width: fit-content
 }
 
+/* Price computed from the daily rate: read only */
 .input-readonly {
     opacity: 0.6;
     cursor: not-allowed

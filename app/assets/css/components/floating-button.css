@@ -14,10 +14,12 @@
     transition: opacity 0.3s ease;
 }
 
+/* Hover: fully visible */
 .floating-btn:hover {
     opacity: 1;
 }
 
+/* Touch screens: smaller and darker */
 @media (max-width: 1024px) {
     .floating-btn {
         width: 2rem;
@@ -31,6 +33,7 @@
     }
 }
 
+/* Phone */
 @media (max-width: 540px) {
     .floating-btn {
         width: 1.75rem;

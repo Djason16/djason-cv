@@ -12,12 +12,10 @@
 import { useLang } from '@/composables/useLang.js'
 
 const { getTranslation: t } = useLang()
-;
 defineProps({
     description: String,
     translatedDocumentType: String,
     operationNature: String,
     orderRef: String
 })
-
 </script>

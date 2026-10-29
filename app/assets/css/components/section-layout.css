@@ -20,6 +20,7 @@
     margin-top: -1px;
 }
 
+/* Inner part of a section */
 .sections-container .content {
     position: relative;
     z-index: 2;
@@ -46,6 +47,7 @@
     color: var(--text-color-dark);
 }
 
+/* Diagonal at the bottom of a section, in the color of the next one */
 .sections-container .diagonal-separator {
     position: absolute;
     bottom: 0;
@@ -77,6 +79,7 @@
     transform: scaleY(-1);
 }
 
+/* Tablet and phone */
 @media (max-width: 1024px) {
     .sections-container .section-wrapper {
         padding: 5vh 1.5rem;

@@ -75,6 +75,7 @@ export const seoMetaData = (pageKey, lang, site) => {
         noIndex = false
     } = seoConfig[pageKey] || {}
 
+    // Title and description of the page in the current language
     const locale = lang.current.value
     const keyCap = pageKey.charAt(0).toUpperCase() + pageKey.slice(1)
     const title = lang.getTranslation(
@@ -86,18 +87,17 @@ export const seoMetaData = (pageKey, lang, site) => {
         { name }
     )
 
-    const localizedUrl = withTrailingSlash(
-        `${baseUrl}${locale === "en" ? "/en" : ""}${url}`
-    )
-    const frUrl = withTrailingSlash(`${baseUrl}${url}`)
-    const enUrl = withTrailingSlash(`${baseUrl}/en${url}`)
+    // One address per page: English is a switch on the same page, not another address (no /en/ pages)
+    const pageUrl = withTrailingSlash(`${baseUrl}${url}`)
 
+    // Pages hidden from search engines: errors, login, admin
     const robotsContent = noIndex
         ? "noindex, nofollow"
         : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
 
     const socialImage = `${baseUrl}${image}`
 
+    // Structured data (schema.org) read by Google: the business behind the site
     const professionalServiceSchema = {
         "@context": "https://schema.org",
         "@type": "ProfessionalService",
@@ -143,11 +143,12 @@ export const seoMetaData = (pageKey, lang, site) => {
         professionalServiceSchema.vatID = tvaNumber
     }
 
+    // Structured data of the page itself
     const webPageSchema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
         name: title,
-        url: localizedUrl,
+        url: pageUrl,
         description,
         inLanguage: locale,
         isPartOf: {
@@ -157,6 +158,7 @@ export const seoMetaData = (pageKey, lang, site) => {
         }
     }
 
+    // Meta tags: description, Open Graph and Twitter cards
     const meta = {
         title,
         description,
@@ -168,7 +170,7 @@ export const seoMetaData = (pageKey, lang, site) => {
         "og:title": title,
         "og:description": description,
         "og:type": "website",
-        "og:url": localizedUrl,
+        "og:url": pageUrl,
         "og:image": socialImage,
         "og:image:width": "1200",
         "og:image:height": "630",
@@ -188,12 +190,10 @@ export const seoMetaData = (pageKey, lang, site) => {
         "apple-touch-icon": "/favicon_dc.jpg"
     }
 
+    // Canonical address and structured data in the <head>
     useHead({
         link: [
-            { rel: "canonical", href: localizedUrl },
-            { rel: "alternate", hreflang: "fr", href: frUrl },
-            { rel: "alternate", hreflang: "en", href: enUrl },
-            { rel: "alternate", hreflang: "x-default", href: frUrl }
+            { rel: "canonical", href: pageUrl }
         ],
         script: [
             {

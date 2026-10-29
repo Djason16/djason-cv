@@ -12,6 +12,7 @@ import { DatabaseHelper } from './DatabaseHelper.js'
 
 const now = () => Date.now()
 
+// Failed attempts of one key (account or IP)
 const read = key => DatabaseHelper.fetchOne('SELECT * FROM dc_rate_limits WHERE key = ? LIMIT 1', [key])
 
 export const RateLimitHelper = {

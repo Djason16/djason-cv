@@ -26,6 +26,7 @@ const uploadRoot = () => process.env.NODE_ENV === 'production'
     ? join(process.cwd(), '.output', 'public', 'upload')
     : join(process.cwd(), 'upload')
 
+// Folder of the uploaded images
 const imagesDir = () => join(uploadRoot(), 'images')
 
 export const UploadHelper = {

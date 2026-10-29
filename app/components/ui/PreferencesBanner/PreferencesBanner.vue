@@ -89,6 +89,7 @@ watch(() => [userPreferences.hasUserMadeChoice, userPreferences.settingsOpenCoun
 const mounted = ref(false)
 const isMobile = ref(false)
 let mql = null
+// Round icon buttons below 768px
 const onMqlChange = (e) => { isMobile.value = e.matches }
 
 onMounted(() => {

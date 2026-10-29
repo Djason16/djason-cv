@@ -46,8 +46,8 @@
                     </span>
                 </div>
 
-                <!-- Alternative options for web services -->
-                <div class="payment-option-alternative" v-if="serviceType === 'web'">
+                <!-- Upfront payment offered as the other option of a web subscription (nothing about installments otherwise) -->
+                <div class="payment-option-alternative" v-if="serviceType === 'web' && isSubscription">
                     <strong>{{ t('alternativeOption') }}:</strong><br />
                     <span v-if="nbMensualites && monthlyPayment">
                         {{ t('upfrontPaymentOption') }}<br />
@@ -115,7 +115,6 @@
 
 <script setup>
 import { useLang } from '@/composables/useLang.js'
-;
 import StripeFeesList from './StripeFeesList.vue';
 
 const { getTranslation: t } = useLang()
@@ -124,6 +123,8 @@ defineProps({
     totalAmount: Number,
     deposit: Number,
     nbMensualites: Number,
+    // Paid in monthly installments (Stripe subscription)
+    isSubscription: Boolean,
     monthlyPayment: Number,
     serviceType: String,
     formatPrice: Function,
@@ -134,23 +135,7 @@ defineProps({
 </script>
 
 <style scoped>
-.section {
-    margin-bottom: 25px
-}
-
-.section-title {
-    color: var(--third-color);
-    margin-bottom: 12px;
-    border-bottom: 2px solid var(--second-color);
-    padding-bottom: 6px
-}
-
-.section-text {
-    text-align: justify;
-    margin-bottom: 16px;
-    line-height: 1.8
-}
-
+/* Amount and payment method chosen */
 .payment-details {
     background: #f7f9fb;
     padding: 16px;
@@ -158,20 +143,11 @@ defineProps({
     margin-bottom: 16px
 }
 
-.info-label {
-    font-weight: 700;
-    margin-bottom: 6px
-}
-
-.info-content {
-    margin-left: 20px;
-    line-height: 1.8
-}
-
 .amount-value {
     font-weight: 700
 }
 
+/* Chosen option highlighted, the other ones faded */
 .payment-option-selected {
     background: #e8f5e9;
     border-left: 4px solid var(--accent-green);
@@ -192,6 +168,7 @@ defineProps({
     color: var(--third-color)
 }
 
+/* Bank details for a transfer */
 .bank-transfer-option {
     background: #f4edf7;
     border-left: 4px solid var(--accent-purple);
@@ -212,27 +189,7 @@ defineProps({
     margin: 12px 0 8px 0
 }
 
-.bullet-list {
-    list-style: none;
-    padding-left: 20px;
-    margin: 0 0 16px 0;
-    line-height: 1.8
-}
-
-.bullet-list li {
-    margin-bottom: 8px;
-    text-align: justify;
-    position: relative;
-    padding-left: 20px
-}
-
-.bullet-list li::before {
-    content: "• ";
-    position: absolute;
-    left: 0;
-    font-weight: bold
-}
-
+/* Shorter list inside the bank transfer box */
 .bank-transfer-option .bullet-list {
     margin: 8px 0 0 0;
     padding-left: 20px
@@ -240,14 +197,5 @@ defineProps({
 
 .bank-transfer-option .bullet-list li {
     margin-bottom: 4px
-}
-
-a {
-    color: var(--accent-blue);
-    text-decoration: none
-}
-
-a:hover {
-    text-decoration: underline
 }
 </style>

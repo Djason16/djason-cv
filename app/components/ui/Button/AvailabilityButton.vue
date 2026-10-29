@@ -1,11 +1,11 @@
 <template>
     <!-- Availability badge of the moment (available, busy, unavailable), shown in the browser only -->
     <div v-if="isMounted" :class="['availability-button', `is-${status}`]"
-        :aria-label="t(status) || status" :title="t(status) || status">
+        :aria-label="t(status)" :title="t(status)">
         <!-- Dot in the color of the status -->
         <span class="availability-button__dot" aria-hidden="true"></span>
         <span class="availability-button__text text-normal text-uppercase text-bold">
-            {{ t(status) || status }}
+            {{ t(status) }}
         </span>
     </div>
 </template>
@@ -26,6 +26,7 @@ onMounted(() => isMounted.value = true)
 </script>
 
 <style scoped>
+/* Badge with a dot and the status */
 .availability-button {
     display: inline-flex;
     align-items: center;
@@ -55,6 +56,7 @@ onMounted(() => isMounted.value = true)
     position: relative;
 }
 
+/* Pulsing halo around the dot */
 .availability-button__dot::before {
     content: "";
     position: absolute;
@@ -90,6 +92,7 @@ onMounted(() => isMounted.value = true)
     }
 }
 
+/* Color of each status */
 .availability-button.is-available .availability-button__dot {
     background-color: var(--accent-green);
 }

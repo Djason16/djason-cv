@@ -62,6 +62,7 @@ const { translatedMessage, showMessage, clearMessage } = useMessage()
 const formData = reactive({ email: '', name: '', amount: 0, currency: 'eur', cardType: 'european' })
 watch(() => lang.current.value, code => { formData.currency = code === 'fr' ? 'eur' : 'usd' }, { immediate: true })
 
+// Fields shared by the one-time payment and the subscription forms
 const currencyField = id => ({
     id, model: 'currency', labelKey: 'currency',
     options: [{ value: 'eur', labelKey: 'eurCurrency' }, { value: 'usd', labelKey: 'usdCurrency' }],
@@ -117,6 +118,7 @@ const checkStatus = async (modeConfig, sessionId) => {
     showMessage(ok ? 'success' : 'error', ok ? modeConfig.successKey : modeConfig.cancelKey, ok ? 5000 : 0)
 }
 
+// One-time payment: checks the amount, then opens the Stripe payment page
 const startCheckout = async () => {
     clearMessage()
     if (formData.amount <= 0) return showMessage('error', 'invalidAmount', 0)
@@ -141,6 +143,7 @@ const payMeSections = Array.from({ length: 10 }, (_, i) => ({ titleKey: `payMeSe
 </script>
 
 <style scoped>
+/* Payment form */
 .stripe-payment-form {
     text-align: left;
     margin-top: 2rem
@@ -154,6 +157,7 @@ const payMeSections = Array.from({ length: 10 }, (_, i) => ({ titleKey: `payMeSe
     justify-content: left
 }
 
+/* Buttons under the form */
 .payment-buttons {
     display: flex;
     flex-wrap: wrap;

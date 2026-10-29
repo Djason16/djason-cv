@@ -64,6 +64,7 @@ const trackStyle = computed(() => {
 
 // Navigation methods
 const goToSlide = i => currentSlide.value = i
+// Previous / next slide (arrows of CarouselControls)
 const prevSlide = () => {
     if (validItems.value.length === 1) return
     goToSlide(currentSlide.value - 1)
@@ -108,6 +109,7 @@ watch(() => validItems.value.length, newLength => {
 </script>
 
 <style scoped>
+/* Track, arrows and dots stacked */
 .carousel {
     position: relative;
     width: 100%;

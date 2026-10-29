@@ -12,6 +12,7 @@ const cleanInvisible = txt =>
         .replace(/&#64;/g, '@')
         .replace(/&ZeroWidthSpace;/g, '') || txt
 
+// Text of a link without its final punctuation
 const escapeLabel = txt => txt.replace(/[.,!?;:]$/, '')
 
 // Replaces {{email}} / {{phone}} / {{url}} placeholders with links

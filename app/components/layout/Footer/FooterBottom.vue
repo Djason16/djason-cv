@@ -27,8 +27,7 @@
 
         <!-- Footer links & auth -->
         <div class="footer-links text-normal">
-            <NuxtLink v-for="(link, i) in footerLinks" :key="i" :to="link.to" :aria-label="link.label"
-                :title="t(link.translationKey) || link.label">
+            <NuxtLink v-for="(link, i) in footerLinks" :key="i" :to="link.to" :title="t(link.translationKey)">
                 {{ t(link.translationKey) }}
             </NuxtLink>
 
@@ -37,7 +36,7 @@
                 {{ t('prefsSettings') }}
             </button>
 
-            <template v-if="authChecked">
+            <template v-if="mounted && authChecked">
                 <NuxtLink v-if="!isAuthenticated" :to="withTrailingSlash('/login')"
                     :aria-label="t('loginLink')" :title="t('loginLink')">
                     {{ t('loginLink') }}
@@ -56,25 +55,27 @@ import { useLang } from '@/composables/useLang.js'
 import { useSite } from '@/composables/useSite.js'
 import { useRuntimeConfig } from '#app'
 import { withTrailingSlash } from '@/utils/pathHelpers.js'
-import { onMounted, ref } from 'vue'
 import { useAuth } from '@/composables/useAuth.js'
+import { onMounted, ref } from 'vue'
 import { useUserPreferencesStore } from '@/stores/userPreferences.js'
 
 const { getTranslation: t } = useLang()
 
 const config = useRuntimeConfig()
 const site = useSite()
-const { isAuthenticated, checkAuth } = useAuth()
+const { isAuthenticated, authChecked } = useAuth()
+
+// "Login" or "Admin" link: only after the page is hydrated (the server does not know the session, so it never renders it)
+const mounted = ref(false)
+onMounted(() => { mounted.value = true })
 const userPreferences = useUserPreferencesStore()
 
 const currentYear = new Date().getFullYear()
-const authChecked = ref(false)
-onMounted(async () => { await checkAuth(); authChecked.value = true })
 
-// Extracts public config values with fallbacks
+// Contact details and social links of the .env (NUXT_PUBLIC_...)
 const { linkedin = '', github = '', malt = '', instagram = '', whatsapp = '', contactEmail = '', contactPhone = '' } = config.public || {}
 
-// Inline Malt SVG
+// Malt logo (not in Font Awesome)
 const MaltIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 104.3 104.3" width="32" height="32">
   <g>
     <path d="M69,35.3c-3.6-3.6-7.4-1.3-9.8,1.1L36.6,59c-2.4,2.4-4.9,6-1.1,9.8c3.7,3.8,7.4,1.3,9.8-1.1l22.6-22.6C70.3,42.7,72.6,38.8,69,35.3z" fill="currentColor"/>
@@ -87,7 +88,7 @@ const MaltIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 104.3 104
   </g>
 </svg>`
 
-// Social icons array with labels & SVG support
+// Social links: a Font Awesome icon or an SVG, with a translated label when it needs a value
 const socialIcons = [
     { link: contactEmail ? `mailto:${contactEmail}` : '#', class: 'fas fa-envelope', labelKey: 'sendEmail', vars: { email: contactEmail } },
     { link: contactPhone ? `tel:${contactPhone.replace(/\s+/g, '')}` : '#', class: 'fas fa-phone', labelKey: 'callPhone', vars: { phone: contactPhone } },
@@ -98,12 +99,12 @@ const socialIcons = [
     { link: instagram || '#', class: 'fab fa-instagram', label: 'Instagram' },
 ]
 
-// Footer navigation links
+// Legal pages
 const footerLinks = [
-    { to: withTrailingSlash('/legal'), label: 'Legal Notice', translationKey: 'legal' },
-    { to: withTrailingSlash('/terms'), label: 'Terms and Conditions', translationKey: 'terms' },
-    { to: withTrailingSlash('/privacy'), label: 'Privacy Policy', translationKey: 'privacy' },
-    { to: withTrailingSlash('/refund-policy'), label: 'Refund Policy', translationKey: 'refundPolicy' },
+    { to: withTrailingSlash('/legal'), translationKey: 'legal' },
+    { to: withTrailingSlash('/terms'), translationKey: 'terms' },
+    { to: withTrailingSlash('/privacy'), translationKey: 'privacy' },
+    { to: withTrailingSlash('/refund-policy'), translationKey: 'refundPolicy' },
 ]
 </script>
 

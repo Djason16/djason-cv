@@ -14,7 +14,9 @@ import { computed, watch } from 'vue'
 import EditableTable from '@/components/ui/Table/EditableTable.vue'
 import { useMissions } from '@/composables/useMissions.js'
 import { isIndividualType, isProfessionalType } from '@/utils/clientTypes.js'
-import { getDurationOptions } from '@/utils/durationOptions.js'
+import { showConfirm, showResult } from '@/utils/dialog.js'
+import { displayValue } from '@/utils/display.js'
+import { DURATION_OPTIONS } from '@/utils/durationOptions.js'
 import TableModal from '@/components/ui/Modal/TableModal.vue'
 
 const props = defineProps({ show: Boolean })
@@ -23,10 +25,7 @@ const emit = defineEmits(['close'])
 // Composable provides missions, clients, services, search, formatting helpers
 const lang = useLang()
 const { getTranslation: t } = lang
-const { missions, clients, services, search, isIndividualClient, displayValue, displayServiceName, fetchData, saveMission, deleteMission: removeMission } = useMissions()
-
-// Precompute duration options for select fields
-const durationOptions = computed(() => getDurationOptions())
+const { missions, clients, services, search, isIndividualClient, displayServiceName, fetchData, saveMission, deleteMission: removeMission } = useMissions()
 
 // Resolves client type for a mission
 const getClientType = m => clients.value.find(c => c.id === m.client_id)?.type
@@ -60,18 +59,18 @@ const columns = computed(() => [
     },
     {
         // Pricing mode selector — hidden for individuals
-        key: 'pricing_mode', label: lang.getTranslation('pricingMode') || 'Tarification', type: 'select',
-        formatter: m => isIndividualType(getClientType(m)) ? '-' : (getPricingMode(m) === 'tjm' ? (lang.getTranslation('pricingModeTjm') || 'TJM') : (lang.getTranslation('pricingModeManual') || 'Prix direct')),
+        key: 'pricing_mode', label: lang.getTranslation('pricingMode'), type: 'select',
+        formatter: m => isIndividualType(getClientType(m)) ? '-' : (getPricingMode(m) === 'tjm' ? (lang.getTranslation('pricingModeTjm')) : (lang.getTranslation('pricingModeManual'))),
         editValue: m => getPricingMode(m),
         disabled: m => isIndividualType(getClientType(m)),
         options: [
-            { value: 'tjm', label: lang.getTranslation('pricingModeTjm') || 'Taux horaire × durée' },
-            { value: 'manual', label: lang.getTranslation('pricingModeManual') || 'Prix direct' }
+            { value: 'tjm', label: lang.getTranslation('pricingModeTjm') },
+            { value: 'manual', label: lang.getTranslation('pricingModeManual') }
         ]
     },
     {
         // TJM — visible and editable only in TJM mode for professionals
-        key: 'tjm', label: lang.getTranslation('hourlyRate') || '€/h',
+        key: 'tjm', label: lang.getTranslation('hourlyRate'),
         formatter: m => (isProfessionalType(getClientType(m)) && getPricingMode(m) === 'tjm') ? displayValue(m.tjm) : '-',
         disabled: m => isIndividualType(getClientType(m)) || getPricingMode(m) === 'manual',
         inputType: 'number', autocomplete: 'off'
@@ -79,15 +78,15 @@ const columns = computed(() => [
     {
         // Duration — visible and editable only in TJM mode for professionals
         key: 'duration', label: lang.getTranslation('missionDuration'), type: 'select',
-        formatter: m => (isProfessionalType(getClientType(m)) && getPricingMode(m) === 'tjm') ? (durationOptions.value.find(o => parseFloat(o.value) === parseFloat(m.duration))?.label || displayValue(m.duration)) : '-',
+        formatter: m => (isProfessionalType(getClientType(m)) && getPricingMode(m) === 'tjm') ? (DURATION_OPTIONS.find(o => parseFloat(o.value) === parseFloat(m.duration))?.label || displayValue(m.duration)) : '-',
         editValue: m => parseFloat(m.duration).toFixed(2),
         disabled: m => isIndividualType(getClientType(m)) || getPricingMode(m) === 'manual',
-        get options() { return durationOptions.value }
+        get options() { return DURATION_OPTIONS }
     },
     { key: 'quantity', label: lang.getTranslation('quantity'), formatter: m => displayValue(m.quantity), inputType: 'number', autocomplete: 'off' },
     {
         // Unit price — readonly in TJM mode (auto-calculated), editable in manual mode
-        key: 'unit_price', label: lang.getTranslation('unitPrice') + ' / ' + (lang.getTranslation('totalAmount') || 'Total'),
+        key: 'unit_price', label: lang.getTranslation('unitPrice') + ' / ' + (lang.getTranslation('totalAmount')),
         formatter: m => displayValue(m.unit_price),
         disabled: m => isProfessionalType(getClientType(m)) && getPricingMode(m) === 'tjm',
         inputType: 'number', autocomplete: 'off'
@@ -126,7 +125,7 @@ const handleUpdate = async ({ item, field, value }) => {
             item.tjm = 0
             item.duration = 0
             const res = await saveMission(item)
-            if (!res.success) console.error('Update error:', res.error)
+            await showResult(res, lang.getTranslation('saveSuccess'), lang.getTranslation('saveFailed'))
         }
         // Switching to TJM: reverse-calculate tjm from existing unit_price to avoid price change
         else {
@@ -140,7 +139,7 @@ const handleUpdate = async ({ item, field, value }) => {
                 : 30
             // unit_price stays unchanged since tjm × duration × quantity = existing price
             const res = await saveMission(item, { quantity: qty })
-            if (!res.success) console.error('Update error:', res.error)
+            await showResult(res, lang.getTranslation('saveSuccess'), lang.getTranslation('saveFailed'))
         }
         // pricing_mode is local only — side effects persisted above, exit early
         return
@@ -161,14 +160,14 @@ const handleUpdate = async ({ item, field, value }) => {
     if (field === 'date') missions.value.sort((a, b) => new Date(b.date) - new Date(a.date))
 
     const res = await saveMission(item)
-    if (!res.success) console.error('Update error:', res.error)
+    await showResult(res, lang.getTranslation('saveSuccess'), lang.getTranslation('saveFailed'))
 }
 
 // Deletes mission with confirmation
 const deleteMission = async m => {
-    if (!confirm(lang.getTranslation('deleteMissionConfirm'))) return
+    if (!(await showConfirm(lang.getTranslation('deleteMissionConfirm'), { okLabel: lang.getTranslation('dialogDelete') }))) return
     const res = await removeMission(m.id)
-    if (!res.success) alert(lang.getTranslation('deleteMissionFailed'))
+    await showResult(res, lang.getTranslation('deleteSuccess'), lang.getTranslation('deleteMissionFailed'))
 }
 
 // Close modal

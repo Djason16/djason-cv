@@ -41,6 +41,7 @@
     transition: font-size 0.3s ease-in-out;
 }
 
+/* Weight and case */
 .text-bold {
     font-weight: bold !important;
 }
@@ -88,6 +89,7 @@
     }
 }
 
+/* Small phones */
 @media (max-width: 480px) {
     .text-tiny {
         font-size: calc(var(--font-tiny) - 0.1rem) !important;

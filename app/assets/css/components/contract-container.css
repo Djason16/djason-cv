@@ -22,3 +22,64 @@
         margin: 0;
     }
 }
+
+/* Layout shared by every article of the contract (components/views/Documents/ContractContainer/) */
+.contract-container .section {
+    margin-bottom: 25px;
+}
+
+.contract-container .section-title {
+    color: var(--third-color);
+    margin-bottom: 12px;
+    border-bottom: 2px solid var(--second-color);
+    padding-bottom: 6px;
+}
+
+.contract-container .section-text {
+    text-align: justify;
+    margin-bottom: 16px;
+    line-height: 1.8;
+}
+
+/* Label and value of a block of information */
+.contract-container .info-label {
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.contract-container .info-content {
+    margin-left: 20px;
+    line-height: 1.8;
+}
+
+/* List with "•" bullets */
+.contract-container .bullet-list {
+    list-style: none;
+    padding-left: 20px;
+    margin: 0 0 16px 0;
+    line-height: 1.8;
+}
+
+.contract-container .bullet-list li {
+    margin-bottom: 8px;
+    text-align: justify;
+    position: relative;
+    padding-left: 20px;
+}
+
+.contract-container .bullet-list li::before {
+    content: "• ";
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+/* Links (email, website) */
+.contract-container a {
+    color: var(--accent-blue);
+    text-decoration: none;
+}
+
+.contract-container a:hover {
+    text-decoration: underline;
+}

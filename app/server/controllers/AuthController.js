@@ -14,6 +14,7 @@ const sameCode = (expected, given) => {
     return a.length === b.length && timingSafeEqual(a, b)
 }
 
+// The security answer is compared without case or spaces around
 const lower = value => String(value || '').trim().toLowerCase()
 
 export default class AuthController extends Controller {

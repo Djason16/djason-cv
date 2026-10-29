@@ -4,6 +4,7 @@
     min-width: 300px;
 }
 
+/* Grid of square tiles */
 .skills-grid-container .skills-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -26,6 +27,7 @@
     will-change: transform;
 }
 
+/* The whole tile is a button */
 .skills-grid-container .skills-item__button {
     all: unset;
     width: 100%;
@@ -37,6 +39,7 @@
     cursor: pointer;
 }
 
+/* Clicked tile: grows and shows its title and description over the faded icon */
 .skills-grid-container .skills-item.expanded {
     transform: scale(2);
     z-index: 2;
@@ -54,6 +57,7 @@
     opacity: 0.15;
 }
 
+/* Title and description, hidden until the tile is clicked */
 .skills-grid-container .skills-item__title {
     max-width: 100%;
     color: var(--text-color-dark);
@@ -81,11 +85,13 @@
     opacity: 1;
 }
 
+/* Keyboard focus */
 .skills-grid-container .skills-item__button:focus-visible {
     outline: 2px solid var(--fourth-color);
     outline-offset: -2px;
 }
 
+/* Layout of the 10 tiles: the first one, larger, in the middle of the others */
 .skills-grid-container .skills-grid--dev,
 .skills-grid-container .skills-grid--video {
     grid-template-areas:
@@ -144,6 +150,7 @@
     grid-area: item-10;
 }
 
+/* Phone: title only */
 @media (max-width: 768px) {
     .skills-grid-container .skills-item__description {
         display: none;

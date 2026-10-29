@@ -12,6 +12,7 @@ import { computed, watch } from 'vue'
 import EditableTable from '@/components/ui/Table/EditableTable.vue'
 import { useEnv } from '@/composables/useEnv.js'
 import TableModal from '@/components/ui/Modal/TableModal.vue'
+import { showFailure, showSuccess } from '@/utils/dialog.js'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
@@ -108,9 +109,9 @@ const handleUpdate = async ({ item, field, value }) => {
     if (!item?.key) return console.error('No item key')
 
     try {
-        await updateEnvVars({ [item.key]: value })
-    } catch (err) {
-        console.error('Update failed:', err)
+        await updateEnvVars({ [item.key]: value }, () => showSuccess(lang.getTranslation('envSaved')))
+    } catch {
+        await showFailure(lang.getTranslation('saveFailed'))
     }
 }
 

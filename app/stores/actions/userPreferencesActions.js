@@ -22,6 +22,7 @@ const FUNCTIONAL_STORAGE_KEYS = ['selectedLanguage']
 // Cookies only exist in the browser (not while the server renders the page)
 const inBrowser = () => typeof document !== 'undefined'
 
+// Value of the choice cookie, or null
 const readCookie = () => {
     const cookie = document.cookie.split('; ').find((part) => part.startsWith(`${COOKIE_NAME}=`))
     return cookie ? decodeURIComponent(cookie.slice(COOKIE_NAME.length + 1)) : null

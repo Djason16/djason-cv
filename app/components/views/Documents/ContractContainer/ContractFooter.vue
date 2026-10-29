@@ -11,7 +11,6 @@
 import { useLang } from '@/composables/useLang.js'
 
 const { getTranslation: t } = useLang()
-;
 
 defineProps({
     providerInfo: Object,
@@ -20,6 +19,7 @@ defineProps({
 </script>
 
 <style scoped>
+/* Last line of each page */
 .footer {
     margin-top: 40px;
     padding-top: 20px;

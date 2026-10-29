@@ -95,6 +95,7 @@ const adminButtons = [
     { icon: 'fas fa-cog', textKey: 'adminEnvironment', component: EnvModal }
 ]
 
+// Logs out (useAuth redirects to the login page)
 const signOut = async () => {
     clearMessage()
     loggingOut.value = true
@@ -103,6 +104,7 @@ const signOut = async () => {
     loggingOut.value = false
 }
 
+// Buttons under the dashboard: logout and database backup
 const toolButtons = [
     { labelKey: 'logoutButton', busyKey: 'loggingOut', busy: loggingOut, icon: 'fas fa-sign-out-alt', action: signOut },
     { labelKey: 'replaceDB', icon: 'fas fa-upload', action: () => { clearMessage(); refFileInput.value.value = ''; refFileInput.value.click() } },
@@ -110,6 +112,7 @@ const toolButtons = [
     { labelKey: 'exportSQL', icon: 'fas fa-file-export', action: () => download('/database/export-sql', 'backup.sql', 'exportSuccess', 'exportError') }
 ]
 
+// Opens the modal of a tool from the center of its button
 const openModal = (btn, e) => {
     const r = e.currentTarget.getBoundingClientRect()
     activeButton.value = e.currentTarget

@@ -28,7 +28,6 @@
 import { useLang } from '@/composables/useLang.js'
 
 const { getTranslation: t } = useLang()
-;
 
 defineProps({
     client: Object,
@@ -41,23 +40,13 @@ defineProps({
 </script>
 
 <style scoped>
-.section {
-    margin-bottom: 25px
-}
-
-.section-title {
-    color: var(--third-color);
-    margin-bottom: 12px;
-    border-bottom: 2px solid var(--second-color);
-    padding-bottom: 6px
-}
-
 .signature-date {
     text-align: center;
     font-weight: 700;
     margin-bottom: 20px
 }
 
+/* One signature area per party, side by side */
 .signature-block {
     display: grid;
     grid-template-columns: 1fr 1fr;

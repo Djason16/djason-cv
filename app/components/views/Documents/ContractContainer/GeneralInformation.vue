@@ -50,37 +50,8 @@ defineProps({
 </script>
 
 <style scoped>
-.section {
-    margin-bottom: 25px
-}
-
-.section-title {
-    color: var(--third-color);
-    margin-bottom: 12px;
-    border-bottom: 2px solid var(--second-color);
-    padding-bottom: 6px
-}
-
+/* One block per party: label, then its details */
 .info-block {
     margin-bottom: 16px
-}
-
-.info-label {
-    font-weight: 700;
-    margin-bottom: 6px
-}
-
-.info-content {
-    margin-left: 20px;
-    line-height: 1.8
-}
-
-a {
-    color: var(--accent-blue);
-    text-decoration: none
-}
-
-a:hover {
-    text-decoration: underline
 }
 </style>

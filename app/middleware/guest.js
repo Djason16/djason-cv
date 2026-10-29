@@ -4,8 +4,9 @@ import { withTrailingSlash } from '@/utils/pathHelpers.js'
 export default defineNuxtRouteMiddleware(async () => {
     if (!process.client) return
 
+    // Same request as the one started by plugins/auth.client.js
     const { isAuthenticated, checkAuth } = useAuth()
-    if (!isAuthenticated.value) await checkAuth()
+    await checkAuth()
     if (isAuthenticated.value) {
         const redirect = withTrailingSlash('/admin')
         if (window.location.pathname !== redirect) window.location.replace(redirect)

@@ -1,4 +1,5 @@
 /* Home page: skills section, one grid per group of skills (Skills) */
+/* Text on one side, skill grids on the other */
 .skills-section {
     display: flex;
     flex-direction: column;
@@ -24,6 +25,7 @@
     line-height: 1.5;
 }
 
+/* Skill grids side by side */
 .skills-section .skills-section__grid {
     flex: 1;
     display: flex;
@@ -33,6 +35,7 @@
     transition: all 0.3s ease;
 }
 
+/* Tablet and phone: everything stacked */
 @media (max-width: 1024px) {
     .skills-section {
         flex-direction: column;

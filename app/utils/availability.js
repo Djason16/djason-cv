@@ -21,7 +21,6 @@ export const getAvailability = (periodsData, overrideData, settingsData) => {
 
     const now = new Date()
     const localNow = new Date(now.toLocaleString('en-US', { timeZone: rawSettings.timezone }))
-    const todayStr = localNow.toISOString().split('T')[0]
 
     // Checks if currently in an unavailability period
     if (rawPeriods.find(p => {

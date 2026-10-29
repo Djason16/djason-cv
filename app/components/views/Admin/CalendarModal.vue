@@ -23,6 +23,7 @@ import { getGMTOffset, useCalendar } from '@/composables/useCalendar.js'
 import { useMessage } from '@/composables/useMessage.js'
 import timezones from '@/utils/timezones.js'
 import TableModal from '@/components/ui/Modal/TableModal.vue'
+import { showFailure, showSuccess } from '@/utils/dialog.js'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
@@ -113,7 +114,12 @@ const handleUpdate = async ({ item, field, value }) => {
         }
     }
 
-    try { await updateSettings(item.id, payload) } catch (err) { console.error('Update failed:', err) }
+    try {
+        await updateSettings(item.id, payload)
+        await showSuccess(lang.getTranslation('saveSuccess'))
+    } catch {
+        await showFailure(lang.getTranslation('saveFailed'))
+    }
 }
 
 // Picks the right confirmation message key depending on override status vs. dated unavailability

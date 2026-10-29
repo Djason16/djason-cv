@@ -20,11 +20,11 @@
 
             <!-- Payment terms -->
             <PaymentTerms :totalAmount="totalAmount" :deposit="deposit" :nbMensualites="nbMensualites"
-                :monthlyPayment="monthlyPayment" :serviceType="serviceType" :formatPrice="formatPrice"
+                :monthlyPayment="monthlyPayment" :isSubscription="isSubscription" :serviceType="serviceType" :formatPrice="formatPrice"
                 :calculateStripeFees="calculateStripeFees" :websiteUrl="websiteUrl" :providerInfo="providerInfo" />
 
             <!-- Other contract sections -->
-            <LatePayment :interestRate="interestRate" :clientType="client?.type" />
+            <LatePayment :interestRate="interestRate" :clientType="client?.type" :isSubscription="isSubscription" />
             <DeliveryAndTransfer :serviceType="serviceType" :getDeliveryText="getDeliveryText" />
             <IntellectualProperty :serviceType="serviceType"
                 :getIntellectualPropertyText="getIntellectualPropertyText" />
@@ -34,7 +34,7 @@
             <Confidentiality :providerInfo="providerInfo" />
             <WarrantiesAndMaintenance :serviceType="serviceType" :getWarrantyText="getWarrantyText" />
             <Liability />
-            <Disputes />
+            <Disputes :isSubscription="isSubscription" />
             <TCIntegration :websiteUrl="websiteUrl" />
 
             <!-- Signatures and footer -->
@@ -88,6 +88,9 @@ const { getTranslation: t } = lang
 const config = useRuntimeConfig()
 const site = useSite()
 
+// Paid in monthly installments (Stripe subscription): the clauses about installments and subscriptions only apply then
+const isSubscription = props.nbMensualites > 0 && props.monthlyPayment > 0
+
 // Reactive provider info
 const providerInfo = documentProvider(config, props.bankInfo)
 
@@ -112,7 +115,8 @@ const getServiceLabel = type => lang.getTranslation(`service_${type}`)
 const getDurationText = type => lang.getTranslation(`duration_${type}`)
 const getDeliveryText = type => lang.getTranslation(`delivery_${type}`)
 const getIntellectualPropertyText = type => lang.getTranslation(`intellectualProperty_${type}`)
-const getTerminationText = type => lang.getTranslation(`termination_${type}`)
+// A web contract paid with a deposit has its own termination clause (no installments)
+const getTerminationText = type => lang.getTranslation(type === 'web' && !isSubscription ? 'termination_web_upfront' : `termination_${type}`)
 const getRefundPolicyText = type => lang.getTranslation(`refundPolicy_${type}`)
 const getWarrantyText = type => lang.getTranslation(`warranty_${type}`)
 </script>

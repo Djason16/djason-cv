@@ -1,4 +1,5 @@
 /* Photos of the "About me" section (AboutImages) */
+/* Photos in rows of three square images */
 .about-section__images {
     display: flex;
     flex-direction: column;
@@ -36,10 +37,12 @@
     will-change: transform;
 }
 
+/* Zoom on hover */
 .about-section__images .about-section__image-wrapper:hover .about-section__image {
     transform: scale(1.1);
 }
 
+/* Tablet */
 @media (max-width: 1024px) {
     .about-section__images .about-section__row {
         gap: 0.5rem;
@@ -51,6 +54,7 @@
     }
 }
 
+/* Phone: no zoom */
 @media (max-width: 768px) {
     .about-section__images .about-section__row {
         gap: 0.5rem;

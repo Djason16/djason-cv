@@ -60,6 +60,7 @@ export default class ProjectsController extends Controller {
         return changed ? ResponseHelper.success(event, { id: args.id }) : ResponseHelper.notFound(event, 'Project not found')
     }
 
+    // POST /api/projects/{id}/image: replaces the image of a project
     async updateImage(event, args) {
         const project = await this.fetchOne('SELECT img FROM dc_projects WHERE id = ?', [args.id])
         if (!project) return ResponseHelper.notFound(event, 'Project not found')

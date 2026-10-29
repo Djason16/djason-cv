@@ -26,6 +26,7 @@ const PAYMENT_RULES = {
     video: { hasChoice: false, depositRate: 0.5, monthlyInstallments: 0, defaultPaymentType: 'deposit' },
     repair: { hasChoice: false, depositRate: 0, monthlyInstallments: 0, defaultPaymentType: 'full' },
 }
+// Payment rules of a service (web rules by default)
 export const paymentRules = serviceType => PAYMENT_RULES[serviceType] || PAYMENT_RULES.web
 
 // Amounts
@@ -37,6 +38,7 @@ export const formatPrice = (value, language) => language === 'fr'
 
 // Totals of a group of missions (VAT only on the missions where it applies)
 export const missionTotals = missions => {
+    // Price of a mission line
     const line = m => (m.unit_price || 0) * (m.quantity || 1)
     const totalHT = missions.reduce((sum, m) => sum + line(m), 0)
     const totalTVA = missions.reduce((sum, m) => sum + (m.vat_applicable ? VAT_RATE : 0) * line(m), 0)
@@ -53,6 +55,7 @@ export const monthlyPaymentSchedule = (total, firstDate, installments = 12) => {
     const [d, m, y] = firstDate.split('/')
     const first = new Date(`${y}-${m}-${d}`)
     const today = new Date()
+    // Installments already due: whole months since the first one, the first one included
     let monthsElapsed = (today.getFullYear() - first.getFullYear()) * 12 + (today.getMonth() - first.getMonth())
     if (today.getDate() < first.getDate()) monthsElapsed--
     monthsElapsed = Math.max(0, monthsElapsed + 1)

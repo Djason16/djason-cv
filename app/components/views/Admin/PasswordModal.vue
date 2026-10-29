@@ -65,6 +65,7 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
+/* Password field with the show / hide button inside it */
 .input-with-toggle {
     display: flex;
     align-items: center;

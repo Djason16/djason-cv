@@ -14,5 +14,4 @@
 import { useLang } from '@/composables/useLang.js'
 
 const { getTranslation: t } = useLang()
-;
 </script>

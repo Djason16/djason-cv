@@ -9,6 +9,5 @@
 import { useLang } from '@/composables/useLang.js'
 
 const { getTranslation: t } = useLang()
-;
 defineProps({ deliveryAddress: String, clientType: String })
 </script>

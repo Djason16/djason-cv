@@ -8,11 +8,13 @@
 const BATCH_SIZE = 5
 const BATCH_DELAY = 500
 
+// Pause between two emails, so the SMTP server does not refuse them
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms))
 
 // 'YYYY-MM-DD' whatever the driver returns (string or Date)
 const toDateStr = d => (d instanceof Date ? d.toISOString().slice(0, 10) : String(d).slice(0, 10))
 
+// Database row -> JSON sent to the site (camelCase)
 const toSettings = row => ({
     id: row.id,
     userId: row.user_id,
@@ -50,6 +52,7 @@ export default class CalendarController extends Controller {
         return ResponseHelper.success(event, { settings: { id: args.id, timezone, schedule, updatedAt: new Date().toISOString() } })
     }
 
+    // POST /api/calendar/send-agenda: emails the weekly schedule to the clients, in small batches
     async sendAgenda(event) {
         const { locale = 'fr' } = await this.body(event)
 

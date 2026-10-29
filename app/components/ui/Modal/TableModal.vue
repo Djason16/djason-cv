@@ -40,6 +40,7 @@ const search = defineModel('search', { type: String, default: '' })
 </script>
 
 <style scoped>
+/* Search bar, table and buttons stacked */
 .table-modal {
     display: flex;
     flex-direction: column;
@@ -51,11 +52,13 @@ const search = defineModel('search', { type: String, default: '' })
     box-sizing: border-box;
 }
 
+/* Search bar above the table */
 .search-bar {
     display: flex;
     justify-content: flex-end;
 }
 
+/* Buttons at the bottom */
 .modal-footer {
     display: flex;
     gap: 1rem;

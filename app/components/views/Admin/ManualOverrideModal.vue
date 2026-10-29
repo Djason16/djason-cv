@@ -12,14 +12,14 @@ import { computed, watch } from 'vue'
 import EditableTable from '@/components/ui/Table/EditableTable.vue'
 import TableModal from '@/components/ui/Modal/TableModal.vue'
 import { useUnavailability } from '@/composables/useUnavailability.js'
+import { showResult } from '@/utils/dialog.js'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
 
-// Composable for translations and override management
 const lang = useLang()
 const { getTranslation: t } = lang
-const { override, fetchOverride, toggleOverride, translateStatus } = useUnavailability()
+const { override, fetchOverride, toggleOverride } = useUnavailability()
 
 // Wraps override in an array for EditableTable
 const overrideItems = computed(() => override.value ? [{
@@ -43,7 +43,7 @@ const columns = computed(() => [
         key: 'status',
         label: lang.getTranslation('status'),
         type: 'select',
-        formatter: m => translateStatus(m.status),
+        formatter: m => t(m.status),
         editValue: m => m.status,
         disabled: false,
         options: ['available', 'busy', 'unavailable'].map(s => ({ value: s, label: lang.getTranslation(s) }))
@@ -55,7 +55,8 @@ const handleOverrideUpdate = async ({ item, field, value }) => {
     const enabled = field === 'enabled' ? value : true
     const status = field === 'status' ? value : (enabled ? override.value.status : 'unavailable')
     override.value = { ...override.value, enabled, status }
-    await toggleOverride(enabled, status)
+    const res = await toggleOverride(enabled, status)
+    await showResult(res, lang.getTranslation('saveSuccess'), lang.getTranslation('saveFailed'))
 }
 
 // Fetches latest override when modal opens

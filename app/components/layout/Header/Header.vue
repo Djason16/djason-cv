@@ -22,6 +22,7 @@ onUnmounted(() => window.removeEventListener('scroll', handleScroll))
 </script>
 
 <style scoped>
+/* Header stuck at the top of the page while scrolling */
 header {
     position: sticky;
     top: 0;
@@ -32,6 +33,7 @@ header {
     will-change: background-color, box-shadow, backdrop-filter;
 }
 
+/* Once the page is scrolled: see-through blurred background */
 header.scrolled {
     background-color: rgba(82, 97, 107, 0.75);
     backdrop-filter: blur(10px);

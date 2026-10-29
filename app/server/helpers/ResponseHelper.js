@@ -7,15 +7,18 @@
  * Error messages are translation keys when the front displays them (e.g. 'invalidCredentials').
  */
 export const ResponseHelper = {
+    // Sends data with a status code
     respond(event, data, statusCode = 200) {
         setResponseStatus(event, statusCode)
         return data
     },
 
+    // { success: true, ...data }
     success(event, data = {}, statusCode = 200) {
         return ResponseHelper.respond(event, { success: true, ...data }, statusCode)
     },
 
+    // { success: false, error, type }, with the status code
     error(event, message, statusCode = 400, type = 'ERROR', extra = {}) {
         return ResponseHelper.respond(event, { success: false, error: message, type, ...extra }, statusCode)
     },

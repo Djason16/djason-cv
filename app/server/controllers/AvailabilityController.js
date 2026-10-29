@@ -18,6 +18,7 @@ export default class AvailabilityController extends Controller {
         return ResponseHelper.success(event, { override })
     }
 
+    // PUT /api/availability/toggle: turns the manual status on (available, busy, unavailable) or off
     async toggle(event) {
         const { enabled, status } = await this.body(event)
         if (enabled && !STATUSES.includes(status))

@@ -53,15 +53,18 @@ const tabRefs = ref([])
 // Updates the active service when a tab is clicked
 const setActiveService = i => (activeService.value = i)
 
+// Keeps each tab element, to move the keyboard focus between them
 const setTabRef = (el, i) => {
     if (el) tabRefs.value[i] = el
 }
 
+// Focuses a tab and shows its service
 const focusTab = i => {
     tabRefs.value[i]?.focus()
     activeService.value = i
 }
 
+// Keyboard navigation of the tabs: arrows go to the next / previous one (looping), Home and End to the first / last
 const onKeydown = (event, i) => {
     const lastIndex = services.length - 1
 
@@ -88,6 +91,7 @@ const onKeydown = (event, i) => {
 </script>
 
 <style scoped>
+/* Row of tabs */
 .services-section__nav {
     display: flex;
     position: relative;
@@ -114,6 +118,7 @@ const onKeydown = (event, i) => {
     will-change: transform;
 }
 
+/* Selected tab */
 .services-section__tab--active {
     color: var(--text-color-dark);
     transform: scale(1.1);
@@ -130,6 +135,7 @@ const onKeydown = (event, i) => {
     color: var(--text-color-dark);
 }
 
+/* Bar under the selected tab, moved with "left" */
 .services-section__indicator {
     position: absolute;
     bottom: 0;
@@ -141,6 +147,7 @@ const onKeydown = (event, i) => {
     will-change: left;
 }
 
+/* Details of the selected service, faded in */
 .services-section__content {
     width: 80%;
     text-align: left;
@@ -164,6 +171,7 @@ const onKeydown = (event, i) => {
     }
 }
 
+/* Tablet and phone */
 @media (max-width: 1024px) {
     .services-section__nav {
         background: transparent;

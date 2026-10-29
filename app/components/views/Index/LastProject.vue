@@ -21,7 +21,6 @@
 
 <script setup>
 import { useLang } from '@/composables/useLang.js'
-import { onMounted } from 'vue'
 import CarouselWithPagination from '@/components/ui/Carousel/CarouselWithPagination.vue'
 import { useProjects } from '@/composables/useProjects.js'
 
@@ -29,11 +28,6 @@ const { getTranslation: t } = useLang()
 
 const { projects, fetchProjects } = useProjects()
 
-// Fetches projects during SSR/initial render
-await fetchProjects()
-
-// Ensures projects are fetched on client mount if empty
-onMounted(() => {
-    if (!projects.value.length) fetchProjects()
-})
+// Projects of the API: loaded once by the server, reused by the browser (no second request)
+await callOnce('projects', fetchProjects)
 </script>

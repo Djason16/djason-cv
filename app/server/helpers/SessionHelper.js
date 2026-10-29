@@ -15,10 +15,13 @@ const MAX_SESSIONS_PER_USER = 3
 const isSecure = event =>
     getRequestHeader(event, 'x-forwarded-proto') === 'https' || Boolean(event.node.req.connection?.encrypted)
 
+// Session cookie: not readable in JavaScript, HTTPS only on the live site
 const cookieOptions = event => ({ httpOnly: true, sameSite: 'lax', path: '/', secure: isSecure(event) })
 
+// End date of a new session
 const expiry = () => new Date(Date.now() + MAX_AGE * 1000).toISOString()
 
+// Deletes the sessions that are over
 const removeExpired = () => DatabaseHelper.execute('DELETE FROM dc_sessions WHERE expires_at < ?', [new Date().toISOString()])
 
 export const SessionHelper = {

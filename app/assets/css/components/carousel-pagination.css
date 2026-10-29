@@ -6,6 +6,7 @@
     margin-top: 10px;
 }
 
+/* One dot per slide */
 .carousel-pagination button {
     width: 1rem;
     height: 1rem;
@@ -25,6 +26,7 @@
     transition: transform 0.3s ease, background 0.3s ease;
 }
 
+/* Tablet */
 @media (max-width: 1024px) {
     .carousel-pagination button {
         width: 0.75rem;
@@ -36,6 +38,7 @@
     }
 }
 
+/* Phone: smaller dots */
 @media (max-width: 540px) {
     .carousel-pagination button {
         width: 0.5rem;

@@ -1,6 +1,17 @@
 // Texts used everywhere on the site (header, footer, buttons, error page)
 export default {
     fr: {
+        // Buttons of the dialogs (components/ui/Dialog/AppDialog.vue)
+        dialogOk: "OK",
+        dialogDelete: "Supprimer",
+        // Result of an action of the admin, shown in a dialog
+        saveSuccess: "Modification enregistrée.",
+        saveFailed: "La modification n'a pas pu être enregistrée. Réessayez.",
+        deleteSuccess: "Suppression effectuée.",
+        deleteFailed: "La suppression a échoué. Réessayez.",
+        documentDownloaded: "Le document a été téléchargé.",
+        documentFailed: "Le document n'a pas pu être créé. Réessayez.",
+        envSaved: "Réglage enregistré. Le serveur redémarre, la page va se recharger.",
         sendEmail: "Envoyer un e-mail à {{email}}",
         callPhone: "Appeler {{phone}}",
         visitUrl: "Visiter {{url}}",
@@ -38,6 +49,17 @@ export default {
         serverErrorSection3Content: "Si le problème persiste, contactez-moi par e-mail à {{email}} ou par téléphone au {{phone}}.",
     },
     en: {
+        // Buttons of the dialogs (components/ui/Dialog/AppDialog.vue)
+        dialogOk: "OK",
+        dialogDelete: "Delete",
+        // Result of an action of the admin, shown in a dialog
+        saveSuccess: "Change saved.",
+        saveFailed: "The change could not be saved. Please try again.",
+        deleteSuccess: "Deleted.",
+        deleteFailed: "The deletion failed. Please try again.",
+        documentDownloaded: "The document has been downloaded.",
+        documentFailed: "The document could not be created. Please try again.",
+        envSaved: "Setting saved. The server restarts, the page will reload.",
         sendEmail: "Send email to {{email}}",
         callPhone: "Call {{phone}}",
         visitUrl: "Visit {{url}}",

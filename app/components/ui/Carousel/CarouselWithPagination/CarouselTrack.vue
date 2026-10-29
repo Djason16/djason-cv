@@ -19,24 +19,24 @@
                             <!-- Skills list -->
                             <ul v-if="item.skills && item.skills.length > 0" class="project-skills">
                                 <li v-for="(skill, i) in item.skills" :key="i" class="skill text-normal">
-                                    {{ t(skill) || skill }}
+                                    {{ t(skill) }}
                                 </li>
                             </ul>
 
                             <!-- Optional external link -->
                             <a v-if="item.link" :href="item.link" target="_blank" rel="noopener noreferrer"
-                                :title="`${item.name} - ${t('viewMore') || 'View more'}`"
+                                :title="`${item.name} - ${t('viewMore')}`"
                                 class="project-link text-normal text-bold">
-                                {{ t('viewMore') || 'View more' }}
+                                {{ t('viewMore') }}
                             </a>
                         </div>
 
                         <!-- API image served directly (dynamic, no NuxtImg) -->
-                        <img v-if="(item.image || item.img)?.startsWith('api/')" :src="item.image || item.img"
+                        <img v-if="item.img?.startsWith('api/')" :src="item.img"
                             :alt="itemAlt(item)" class="carousel-image" loading="lazy" width="640" height="480" />
 
                         <!-- Static image via NuxtImg -->
-                        <NuxtImg v-else-if="item.image || item.img" :src="item.image || item.img" :alt="itemAlt(item)"
+                        <NuxtImg v-else-if="item.img" :src="item.img" :alt="itemAlt(item)"
                             class="carousel-image" width="640" height="480" loading="lazy" />
                     </div>
                 </slot>
@@ -58,6 +58,7 @@ const props = defineProps({
     itemsLength: { type: Number, default: 0 }
 })
 
+// Index of a slide in the project list: the track has a copy of the last project first and of the first project last (infinite loop)
 const getRealIndex = index => {
     if (props.itemsLength <= 1) return index
     if (index === 0) return props.itemsLength - 1
@@ -65,6 +66,7 @@ const getRealIndex = index => {
     return index - 1
 }
 
+// Alternative text of a project image: name and short description
 const itemAlt = item => {
     if (!item?.name && !item?.short) return ''
     if (item?.short) return `${item.name} — ${item.short}`

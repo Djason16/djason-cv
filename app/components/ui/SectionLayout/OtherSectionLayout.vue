@@ -55,6 +55,7 @@ const contentBackgroundColor = "var(--third-color)"
 </script>
 
 <style scoped>
+/* Page content, centered */
 .content-container {
     padding: 4rem 2.5rem 3rem;
     background: var(--third-color);
@@ -62,6 +63,7 @@ const contentBackgroundColor = "var(--third-color)"
     line-height: 1.8;
 }
 
+/* Title and subtitle of the page */
 .header {
     margin-bottom: 3rem;
     text-align: left;

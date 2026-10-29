@@ -1,8 +1,10 @@
 // Unavailability periods (holidays...): GET (public) / POST /api/unavailability, PUT / DELETE /api/unavailability/{id}
+// Database row -> JSON sent to the site (camelCase)
 const toPeriod = ({ id, start_date, end_date, created_at, updated_at }) =>
     ({ id, startDate: start_date, endDate: end_date, createdAt: created_at, updatedAt: updated_at })
 
 export default class UnavailabilityController extends Controller {
+    // Public: the site reads the periods to show the availability of the moment
     static publicActions = ['getAll']
 
     async getAll(event) {

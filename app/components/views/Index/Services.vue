@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        <!-- Single card component to display services -->
+        <!-- Tabs of the services -->
         <SectionCard />
     </section>
 </template>
@@ -24,6 +24,7 @@ const { getTranslation: t } = useLang()
 </script>
 
 <style scoped>
+/* Text on one side, tabs on the other */
 .services-section {
     display: flex;
     flex-direction: column;
@@ -49,6 +50,7 @@ const { getTranslation: t } = useLang()
     line-height: 1.5;
 }
 
+/* Tablet and phone */
 @media (max-width: 1024px) {
     .services-section__title {
         margin: 0;

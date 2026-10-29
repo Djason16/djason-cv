@@ -1,5 +1,6 @@
 /* Modal that grows from the button that opened it; TableModal and FormModal are built on it (ModalDialog) */
 .morph-modal,
+/* Content scrolls when it is taller than the screen */
 .morph-modal .modal-inner,
 .morph-modal .modal-header,
 .morph-modal .modal-body {
@@ -11,6 +12,7 @@
     will-change: transform, opacity
 }
 
+/* Fullscreen layer above the page */
 .morph-modal {
     position: fixed;
     inset: 0;
@@ -36,6 +38,7 @@
     overflow-y: auto
 }
 
+/* Title and close button */
 .morph-modal .modal-header {
     justify-content: space-between;
     align-items: center;
@@ -43,6 +46,7 @@
     flex-shrink: 0
 }
 
+/* Buttons at the bottom */
 .morph-modal .morph-modal__footer {
     border-top: 1px solid var(--text-color-grey);
     padding-top: 1rem;

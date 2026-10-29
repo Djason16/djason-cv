@@ -1,4 +1,5 @@
 // Late payment interest rates: GET / POST /api/interest-rates, PUT / DELETE /api/interest-rates/{id}
+// A rate applies to professional or individual clients
 const TYPES = ['professional', 'individual']
 
 export default class InterestRatesController extends Controller {

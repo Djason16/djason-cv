@@ -152,6 +152,7 @@ const SEEDS = {
         [DatabaseHelper.uuid(), 0, 'unavailable']),
 }
 
+// Default rows are only added to an empty table
 const isEmpty = async table => !(await DatabaseHelper.fetchOne(`SELECT 1 AS found FROM ${table} LIMIT 1`))
 
 export const DatabaseSchema = {
