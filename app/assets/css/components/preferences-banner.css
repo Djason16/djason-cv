@@ -5,11 +5,12 @@
     left: 50%;
     transform: translateX(-50%);
     width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
     z-index: 9000;
     background-color: rgba(82, 97, 107, 0.75);
     backdrop-filter: blur(10px);
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
-    transition: all 0.5s ease-in-out, overflow 0s;
 }
 
 .cookie-banner .cookie-banner__inner {
@@ -33,26 +34,76 @@
     white-space: nowrap;
 }
 
+/* Buttons side by side, all the same width */
 .cookie-banner .cookie-banner__actions {
-    display: flex;
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
     flex-shrink: 0;
     gap: 0.75rem;
 }
 
-.cookie-banner .cookie-slide-enter-active,
-.cookie-banner .cookie-slide-leave-active {
+.cookie-banner .cookie-banner__actions .custom-button {
+    width: 100%;
+    justify-content: center;
+    white-space: nowrap;
+}
+
+/* List of the categories, shown after "Customize" */
+.cookie-banner .cookie-banner__categories {
+    display: grid;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    color: var(--text-color-light);
+}
+
+.cookie-banner .cookie-banner__categories label {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    cursor: pointer;
+}
+
+.cookie-banner .cookie-banner__categories input {
+    margin-top: 0.3rem;
+    accent-color: var(--third-color);
+}
+
+.cookie-banner .cookie-banner__categories input:disabled {
+    cursor: not-allowed;
+}
+
+.cookie-banner .cookie-banner__categories small {
+    display: block;
+    font-weight: normal;
+    color: var(--second-color);
+}
+
+/* Slides in from the bottom (the classes are on the banner itself) */
+.cookie-banner.cookie-slide-enter-active,
+.cookie-banner.cookie-slide-leave-active {
     transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-.cookie-banner .cookie-slide-enter-from,
-.cookie-banner .cookie-slide-leave-to {
+.cookie-banner.cookie-slide-enter-from,
+.cookie-banner.cookie-slide-leave-to {
     transform: translateX(-50%) translateY(100%);
     opacity: 0;
 }
 
+/* Not enough room beside the text: buttons under it, on the right */
 @media (max-width: 1024px) {
     .cookie-banner {
         width: 100vw;
+    }
+
+    .cookie-banner .cookie-banner__inner {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cookie-banner .cookie-banner__actions {
+        align-self: flex-end;
     }
 }
 
@@ -65,17 +116,6 @@
         display: block;
         margin-top: .5vh;
         width: fit-content;
-    }
-}
-
-@media (max-width: 540px) {
-    .cookie-banner .cookie-banner__inner {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .cookie-banner .cookie-banner__actions {
-        align-self: flex-end;
     }
 }
 

@@ -15,6 +15,9 @@ export const useUserPreferencesStore = defineStore('userPreferences', {
         // true once the visitor clicked a button of the banner
         hasUserMadeChoice: false,
 
+        // Goes up on each click on "Cookie settings": the banner opens again, even when closed by a page change
+        settingsOpenCount: 0,
+
         // Current choice of the visitor
         preferences: {
             essential: true,
@@ -23,7 +26,7 @@ export const useUserPreferencesStore = defineStore('userPreferences', {
             functional: false,
         },
 
-        // Categories of cookies used by the site
+        // Categories listed when the visitor clicks "Customize"
         categories: {
             essential: { required: true }, // navigation, admin session
             security: { required: true }, // protection against unauthorized access

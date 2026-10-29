@@ -9,7 +9,7 @@
  * @property {Record<string, boolean>} preferences
  * @property {Record<string, { required: boolean }>} categories
  */
-/** @typedef {UserPreferencesState & { savePreferences(chosen?: Record<string, boolean>): void, resetPreferences(): void }} UserPreferencesStore */
+/** @typedef {UserPreferencesState & { settingsOpenCount: number, savePreferences(chosen?: Record<string, boolean>): void, resetPreferences(): void }} UserPreferencesStore */
 
 // Name of the cookie holding the choice, and how long it is kept
 // Same name as before the DC Scaffold (https://github.com/Djason16/dc-scaffold) alignment: visitors keep the choice they already made
@@ -29,8 +29,10 @@ const readCookie = () => {
 
 /** @param {string} value */
 const writeCookie = (value) => {
+    // Secure: only sent over HTTPS (the live site); not in development (http://localhost)
+    const secure = location.protocol === 'https:' ? '; Secure' : ''
     const expires = new Date(Date.now() + EXPIRES_IN_DAYS * 864e5).toUTCString()
-    document.cookie = `${COOKIE_NAME}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Strict`
+    document.cookie = `${COOKIE_NAME}=${encodeURIComponent(value)}; expires=${expires}; path=/; SameSite=Strict${secure}`
 }
 
 /**
@@ -96,6 +98,7 @@ export const userPreferencesActions = {
     /** @this {UserPreferencesStore} */
     openSettings() {
         this.hasUserMadeChoice = false
+        this.settingsOpenCount++
     },
 
     // Forgets the choice: the banner shows again, every optional category off
