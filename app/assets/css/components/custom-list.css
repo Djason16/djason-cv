@@ -1,0 +1,68 @@
+/* Numbered titles and texts of a page (CustomList): the number on top, then the title on the left and its text on the right,
+   both starting on the same line; a thin rule above each */
+.custom-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.custom-list .custom-list__item {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: auto auto;
+    gap: 0.9rem 4rem;
+    align-items: baseline;
+    padding: 2.75rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.custom-list .custom-list__item:first-child {
+    padding-top: 0;
+    border-top: none;
+}
+
+/* The last one: no room under it (the page or the section has its own) */
+.custom-list .custom-list__item:last-child {
+    padding-bottom: 0;
+}
+
+/* The number and the title take their own cells of the grid: the text lines up with the title */
+.custom-list .custom-list__head {
+    display: contents;
+}
+
+.custom-list .custom-list__number {
+    grid-column: 1 / -1;
+}
+
+.custom-list .custom-list__title,
+.custom-list .custom-list__content {
+    grid-row: 2;
+}
+
+.custom-list .custom-list__title {
+    margin: 0;
+    color: var(--fg);
+}
+
+.custom-list .custom-list__content {
+    max-width: 44rem;
+    margin: 0;
+    color: var(--fg-muted);
+}
+
+.custom-list .custom-list__content a {
+    color: var(--fg);
+}
+
+/* Tablet and phone: the text under its title */
+@media (max-width: 768px) {
+    .custom-list .custom-list__item {
+        grid-template-columns: 1fr;
+        padding: 2.25rem 0;
+    }
+
+    .custom-list .custom-list__content {
+        grid-row: 3;
+    }
+}

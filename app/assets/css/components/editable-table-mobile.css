@@ -1,0 +1,228 @@
+/*
+ * Editable table on a phone (EditableTable), after editable-table.css: one compact card per row, like the list of the projects.
+ * The first value is the title of the card, its buttons on the top right; the other values one per line under it,
+ * the small name of its column on the left, the value on the right on one line (the whole value shows while editing).
+ */
+@media (max-width: 768px) {
+    /* No height of their own: the modal scrolls them with the rest */
+    .editable-table-wrapper {
+        max-height: none;
+        overflow: visible;
+    }
+
+    .editable-table-wrapper.has-scroll {
+        padding-right: 0;
+    }
+
+    .editable-table-wrapper .editable-table {
+        display: block;
+        min-width: 100%;
+    }
+
+    .editable-table-wrapper .editable-table thead {
+        display: none;
+    }
+
+    .editable-table-wrapper .editable-table tbody {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .editable-table-wrapper .editable-table tr {
+        display: block;
+    }
+
+    /* Card: a rule under it, one value per line */
+    .editable-table-wrapper .editable-table .table-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 0.3rem 0.4rem;
+        padding: 0.7rem 0.25rem 0.75rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* A value: a line of its own, its name on the left (a fixed width: the values line up), the value beside it */
+    .editable-table-wrapper .editable-table td {
+        box-sizing: border-box;
+        flex: 0 0 100%;
+        order: 2;
+        display: grid;
+        grid-template-columns: 6.5rem minmax(0, 1fr);
+        align-items: baseline;
+        gap: 0.75rem;
+        min-width: 0;
+        max-width: none;
+        padding: 0;
+        border-bottom: none;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+
+    .editable-table-wrapper .editable-table td::before {
+        content: attr(data-label);
+        color: var(--paper-muted);
+        font-family: var(--font-label);
+        font-size: var(--font-label-size);
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    /* The pencil of a value that can be changed: small and quiet (the whole line can be touched) */
+    .editable-table-wrapper .editable-table .cell-edit-icon {
+        color: var(--paper-muted);
+        font-size: 0.6rem;
+        opacity: 0.5;
+    }
+
+    /* Value: one line on a card of a table in pages (the whole value in its tooltip and while editing), two lines otherwise */
+    .editable-table-wrapper.is-paged .editable-table .table-row .cell-value {
+        -webkit-line-clamp: 1;
+    }
+
+    /* Value: two lines at most */
+    .editable-table-wrapper .editable-table .cell-content {
+        display: flex;
+        width: 100%;
+    }
+
+    .editable-table-wrapper .editable-table .cell-value {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* No number on a phone: the first value is the title of the card, the whole width, room left for the buttons */
+    .editable-table-wrapper .editable-table .table-row .col-index {
+        display: none;
+    }
+
+    /* The title: the first line, beside its buttons */
+    .editable-table-wrapper .editable-table .table-row td:nth-child(2) {
+        display: flex;
+        flex: 1 1 0;
+        order: 0;
+        align-self: center;
+        margin-bottom: 0.15rem;
+        font-weight: 600;
+    }
+
+    .editable-table-wrapper .editable-table .table-row td:nth-child(2)::before {
+        display: none;
+    }
+
+    /* Buttons at the end of the first line (in the flow: never over a value) */
+    .editable-table-wrapper .editable-table .col-actions {
+        display: flex;
+        flex: 0 0 auto;
+        order: 1;
+        width: auto;
+        padding: 0;
+    }
+
+    .editable-table-wrapper .editable-table .col-actions::before,
+    .editable-table-wrapper .editable-table .table-section td::before,
+    .editable-table-wrapper .editable-table td.empty::before {
+        display: none;
+    }
+
+    /* Editable value: a light mark on touch */
+    .editable-table-wrapper .editable-table td.is-editable:active {
+        background-color: rgba(126, 230, 168, 0.08);
+    }
+
+    /* Title of a group, above its cards */
+    .editable-table-wrapper .editable-table .table-section td {
+        display: block;
+        padding: 1.5rem 0 0.6rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+    }
+
+    .editable-table-wrapper .select-multiple-container select {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .editable-table-wrapper .editable-table td.empty {
+        display: block;
+        padding: 0;
+    }
+
+    /* An empty value that cannot be changed: not shown on the card */
+    .editable-table-wrapper .editable-table td.is-blank:not(.col-actions) {
+        display: none;
+    }
+
+    /* mobile: 'labeled' (column option): the title of the card with its name before it (a value that says nothing alone) */
+    .editable-table-wrapper .editable-table .table-row td.is-mobile-labeled:nth-child(2) {
+        display: grid;
+        font-weight: 400;
+    }
+
+    .editable-table-wrapper .editable-table .table-row td.is-mobile-labeled:nth-child(2)::before {
+        display: block;
+    }
+
+    /* mobile: 'plain' (column option): the value alone, without its name, quieter (an email, a phone) */
+    .editable-table-wrapper .editable-table td.is-mobile-plain {
+        display: flex;
+        color: var(--paper-muted);
+    }
+
+    .editable-table-wrapper .editable-table td.is-mobile-plain::before {
+        display: none;
+    }
+
+    /* mobile: 'tag' (column option): small labels side by side at the bottom of the card (a type, a state) */
+    .editable-table-wrapper .editable-table td.is-mobile-tag {
+        display: inline-flex;
+        flex: 0 0 auto;
+        order: 3;
+        margin-top: 0.35rem;
+        padding: 0.3rem 0.6rem;
+        background: var(--panel);
+        color: var(--paper);
+        font-family: var(--font-label);
+        font-size: var(--font-label-size);
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .editable-table-wrapper .editable-table td.is-mobile-tag::before {
+        display: none;
+    }
+
+    .editable-table-wrapper .editable-table td.is-mobile-tag .cell-edit-icon {
+        display: none;
+    }
+
+    /* A tag: its whole word, never cut */
+    .editable-table-wrapper .editable-table td.is-mobile-tag .cell-content,
+    .editable-table-wrapper .editable-table td.is-mobile-tag .cell-value {
+        display: inline;
+        width: auto;
+        overflow: visible;
+        white-space: nowrap;
+    }
+
+    .editable-table-wrapper .editable-table td.is-mobile-tag.is-editing {
+        flex: 0 0 100%;
+    }
+
+    /* Cell being edited: the whole width of the card, the whole value */
+    .editable-table-wrapper .editable-table td.is-editing {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        flex: 0 0 100%;
+        min-width: 0;
+        padding: 0.5rem;
+    }
+}

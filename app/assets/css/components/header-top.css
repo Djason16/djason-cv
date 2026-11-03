@@ -1,0 +1,125 @@
+/* Header (HeaderTop): logo on the left, links of the sections in the middle, "Pay me" on the right, on the slate of the page */
+.header-top a::after,
+.header-top .nav-link::after {
+    display: none;
+}
+
+.header-top {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 6rem;
+    padding: 0 var(--page-gutter);
+    transition: height var(--motion-base) var(--ease);
+}
+
+.header-top .header-top__content {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 2rem;
+    width: 100%;
+    max-width: 1320px;
+    height: 100%;
+    margin: 0 auto;
+}
+
+.header-top .header-top__title,
+.header-top .header-top__logo-link {
+    display: flex;
+    align-items: center;
+}
+
+.header-top .header-top__logo {
+    width: auto;
+    height: 1.75rem;
+    object-fit: contain;
+}
+
+.header-top .header-top__nav {
+    display: flex;
+    align-items: center;
+    gap: 2.25rem;
+}
+
+/* "Pay me" at the right edge, like the links */
+.header-top .header-top__pay {
+    justify-self: end;
+    color: var(--mint);
+    transition: color var(--motion-fast) var(--ease);
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .header-top .header-top__pay:hover {
+        color: var(--paper);
+    }
+}
+
+/* "Menu" button: hidden on large screens */
+.header-top .header-top__menu {
+    display: none;
+    align-items: center;
+    gap: 0.9rem;
+    justify-self: end;
+    padding: 0.5rem 0;
+    border: none;
+    background: none;
+    color: var(--paper);
+    cursor: pointer;
+}
+
+/* Two lines turning into a cross when the menu is open */
+.header-top .header-top__burger {
+    position: relative;
+    width: 1.5rem;
+    height: 0.6rem;
+}
+
+.header-top .header-top__burger span {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    top: calc(50% - 0.75px);
+    height: 1.5px;
+    background: currentColor;
+    /* Only the transform moves: smooth on a phone */
+    transition: transform var(--motion-base) var(--ease);
+}
+
+.header-top .header-top__burger span:first-child {
+    transform: translateY(-0.3rem);
+}
+
+.header-top .header-top__burger span:last-child {
+    transform: translateY(0.3rem);
+}
+
+.header-top .header-top__burger.is-open span:first-child {
+    transform: rotate(45deg);
+}
+
+.header-top .header-top__burger.is-open span:last-child {
+    transform: rotate(-45deg);
+}
+
+/* Tablets and phones: logo on the left, "Menu" on the right; the links are in the full screen menu */
+@media (max-width: 1024px) {
+    .header-top .header-top__content {
+        grid-template-columns: auto 1fr;
+    }
+
+    .header-top .header-top__nav,
+    .header-top .header-top__pay {
+        display: none;
+    }
+
+    .header-top .header-top__menu {
+        display: inline-flex;
+    }
+}
+
+/* Keyboard focus of the "Menu" button: a thin square mint frame */
+.header-top .header-top__menu:focus-visible {
+    outline: 1px solid var(--mint);
+    outline-offset: 6px;
+}

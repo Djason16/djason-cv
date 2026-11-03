@@ -1,0 +1,156 @@
+/* Text sizes, weights and transforms, used as classes in the HTML: text-small ... text-xlarge, text-bold, text-uppercase,
+   and the scale of the public pages: text-display-xl ... text-display-xs, text-label, text-body-l / text-body / text-body-s, text-numeral */
+@import "../utils/variables.css";
+
+.text-small {
+    font-size: var(--font-small) !important;
+}
+
+.text-normal {
+    font-size: var(--font-normal) !important;
+}
+
+.text-large {
+    font-size: var(--font-large) !important;
+}
+
+.text-xlarge {
+    font-size: var(--font-xlarge) !important;
+}
+
+/* Weight and case */
+.text-bold {
+    font-weight: bold !important;
+}
+
+.text-uppercase {
+    text-transform: uppercase !important;
+}
+
+.text-lowercase {
+    text-transform: lowercase !important;
+}
+
+/* Responsive typography */
+@media (max-width: 768px) {
+    .text-small {
+        font-size: calc(var(--font-small) - 0.1rem) !important;
+    }
+
+    .text-normal {
+        font-size: calc(var(--font-normal) - 0.1rem) !important;
+    }
+
+    .text-large {
+        font-size: calc(var(--font-large) - 0.1rem) !important;
+    }
+
+    .text-xlarge {
+        font-size: calc(var(--font-xlarge) - 0.2rem) !important;
+    }
+}
+
+/* Small phones */
+@media (max-width: 480px) {
+    .text-small {
+        font-size: calc(var(--font-small) - 0.2rem) !important;
+    }
+
+    .text-normal {
+        font-size: calc(var(--font-normal) - 0.2rem) !important;
+    }
+
+    .text-large {
+        font-size: calc(var(--font-large) - 0.2rem) !important;
+    }
+
+    .text-xlarge {
+        font-size: calc(var(--font-xlarge) - 0.3rem) !important;
+    }
+}
+
+/* Public pages: titles and names in the wide letters of the logo (Archivo Expanded), semi bold capitals */
+.text-display-xl,
+.text-display-l,
+.text-display-m,
+.text-display-s,
+.text-display-xs {
+    margin: 0;
+    font-family: var(--font-display);
+    font-stretch: 125%;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+}
+
+.text-display-xl {
+    font-size: var(--font-display-xl);
+    line-height: 0.95;
+}
+
+.text-display-l {
+    font-size: var(--font-display-l);
+    line-height: 1;
+}
+
+.text-display-m {
+    font-size: var(--font-display-m);
+    line-height: 1.05;
+}
+
+.text-display-s {
+    font-size: var(--font-display-s);
+    line-height: 1.1;
+}
+
+.text-display-xs {
+    font-size: var(--font-display-xs);
+    line-height: 1.15;
+}
+
+/* Small label in spaced capitals (Barlow Condensed); .eyebrow: the same in the accent color of the section */
+.text-label,
+.eyebrow {
+    margin: 0;
+    font-family: var(--font-label);
+    font-size: var(--font-label-size);
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+}
+
+/* Texts of the public pages (Barlow Condensed light) */
+.text-body-l,
+.text-body,
+.text-body-s {
+    font-family: var(--font-text);
+    font-weight: 300;
+}
+
+.text-body-l {
+    font-size: var(--font-body-l);
+    line-height: 1.6;
+}
+
+.text-body {
+    font-size: var(--font-body);
+    line-height: 1.6;
+}
+
+.text-body-s {
+    font-size: var(--font-body-s);
+    line-height: 1.5;
+}
+
+/* Large italic numbers (roman numbers, counts) */
+.text-numeral {
+    font-family: var(--font-text);
+    font-size: var(--font-display-l);
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.eyebrow {
+    color: var(--accent, var(--mint));
+}

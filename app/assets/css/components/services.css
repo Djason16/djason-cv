@@ -1,0 +1,99 @@
+/* Home page: services (Services): columns with roman numbers split by thin lines, then the numbered list on two columns */
+.services-section {
+    text-align: left;
+}
+
+.services-columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0 0 6rem;
+    padding: 0;
+    list-style: none;
+}
+
+.services-columns .services-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 0 2.5rem 1rem;
+    border-left: 1px solid var(--line);
+}
+
+.services-columns .services-column:first-child {
+    padding-left: 0;
+    border-left: none;
+}
+
+.services-columns .services-column__title {
+    color: var(--fg);
+}
+
+.services-columns .services-column__text,
+.services-columns .services-column__value {
+    margin: 0;
+    color: var(--fg-muted);
+}
+
+/* Numbered list: two columns, a thin line around each line */
+.services-list__label {
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.services-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.services-list .services-list__item {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    padding: 1.75rem 2rem 1.75rem 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.services-list .services-list__item:nth-child(even) {
+    padding-left: 2.5rem;
+    border-left: 1px solid var(--line);
+}
+
+.services-list .services-list__number {
+    padding-top: 0.55rem;
+}
+
+.services-list .services-list__title {
+    margin: 0 0 0.6rem;
+}
+
+.services-list .services-list__text {
+    margin: 0;
+    color: var(--fg-muted);
+}
+
+/* Tablet and phone: one column */
+@media (max-width: 1024px) {
+    .services-columns {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        margin-bottom: 4rem;
+    }
+
+    .services-columns .services-column {
+        padding: 0;
+        border-left: none;
+    }
+
+    .services-list {
+        grid-template-columns: 1fr;
+    }
+
+    .services-list .services-list__item,
+    .services-list .services-list__item:nth-child(even) {
+        grid-template-columns: 3rem minmax(0, 1fr);
+        padding: 1.5rem 0;
+        border-left: none;
+    }
+}

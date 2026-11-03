@@ -1,0 +1,27 @@
+/* Success or error message of a form, nothing when there is no message (MessageBox):
+   a fine line of the site, mint for a success, red for an error, on a light ground */
+.message-box p {
+    max-width: 34rem;
+    padding: 0.75rem 1rem;
+    text-align: left;
+    animation: message-in 0.3s ease;
+}
+
+.message-box p.success {
+    color: var(--accent);
+    background: rgba(126, 230, 168, 0.08);
+    box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.message-box p.error {
+    color: #ffb4a8;
+    background: rgba(231, 76, 60, 0.1);
+    box-shadow: inset 2px 0 0 #e74c3c;
+}
+
+@keyframes message-in {
+    from {
+        opacity: 0;
+        transform: translateY(-0.25rem);
+    }
+}

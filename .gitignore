@@ -1,0 +1,32 @@
+# Node.js dependencies
+node_modules/
+
+# Build and output directories
+.output/
+.nuxt/
+.nitro/
+.cache/
+.dist/
+
+# Database files and backups (MySQL of docker-compose.yml); mysql/init/*.sql run on the first start
+/database/
+*.sql
+!mysql/init/*.sql
+
+# Logs (the empty mysql/logs/ folder is kept: MySQL writes its error log there)
+logs/
+!mysql/logs/
+mysql/logs/*
+!mysql/logs/.gitkeep
+*.log
+
+# Systems and IDEs
+.DS_Store
+.idea/
+.fleet/
+
+# Environment variables
+env/
+.env
+.env.*
+!.env.example

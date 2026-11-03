@@ -1,0 +1,229 @@
+/*
+ * Details of a project (ProjectModal), in the flush modal of the site (modal-dialog.css):
+ * the photo to the edges on the left with its code, the texts on the right with room around them, the link at the bottom.
+ */
+.project-modal {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    width: min(1180px, 90vw);
+    max-height: 86vh;
+    text-align: left;
+}
+
+/* Photo: the whole height of the modal, a shade at its bottom for its code */
+.project-modal .project-modal__media {
+    position: relative;
+    min-height: 32rem;
+    overflow: hidden;
+    background: var(--ink-700);
+}
+
+.project-modal .project-modal__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    animation: project-modal-zoom 1.4s var(--ease) both;
+}
+
+.project-modal .project-modal__media::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(17, 20, 23, 0.7), transparent 40%);
+}
+
+.project-modal .project-modal__code {
+    position: absolute;
+    left: 1.5rem;
+    bottom: 1.4rem;
+    z-index: 1;
+    color: var(--paper);
+}
+
+/* Texts: they rise one after the other once the modal is open */
+.project-modal .project-modal__body {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 3.5rem 3rem 3rem;
+    overflow-y: auto;
+}
+
+.project-modal .project-modal__body > * {
+    animation: project-modal-rise 0.8s var(--ease) both;
+}
+
+.project-modal .project-modal__body > :nth-child(2) { animation-delay: 80ms; }
+.project-modal .project-modal__body > :nth-child(3) { animation-delay: 160ms; }
+.project-modal .project-modal__body > :nth-child(4) { animation-delay: 240ms; }
+
+.project-modal .project-modal__head {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-right: 3rem;
+}
+
+.project-modal .project-modal__name {
+    margin: 0;
+}
+
+.project-modal .project-modal__text {
+    margin: 0;
+    color: var(--fg-muted);
+}
+
+/* Details: a thin rule above each line, its name on the left */
+.project-modal .project-modal__facts {
+    margin: 0;
+}
+
+.project-modal .project-modal__fact {
+    display: grid;
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 1rem;
+    align-items: baseline;
+    padding: 1.1rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.project-modal .project-modal__fact:last-child {
+    border-bottom: 1px solid var(--line);
+}
+
+.project-modal .project-modal__fact dt {
+    color: var(--fg-muted);
+}
+
+.project-modal .project-modal__fact dd {
+    margin: 0;
+}
+
+/* Tools: small words on a light ground, no outline */
+.project-modal .project-modal__tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.project-modal .project-modal__tools li {
+    padding: 0.4rem 0.75rem;
+    background: var(--panel);
+    color: var(--fg);
+}
+
+/* Link to the project: filled in mint, at the bottom */
+.project-modal .project-modal__link {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: 0.75rem;
+    margin-top: auto;
+    padding: 1.1rem 1.9rem;
+    background: var(--accent);
+    color: var(--ink-900);
+    transition: background-color var(--motion-base) var(--ease), gap var(--motion-base) var(--ease);
+}
+
+.project-modal .project-modal__link::after {
+    display: none;
+}
+
+.project-modal .project-modal__link svg {
+    width: 0.95rem;
+    height: 0.95rem;
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .project-modal .project-modal__link:hover {
+        gap: 1rem;
+        background: var(--fg);
+    }
+}
+
+@keyframes project-modal-zoom {
+    from { transform: scale(1.08); }
+}
+
+@keyframes project-modal-rise {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+}
+
+/* Small laptop and tablet across: side by side still, less room around the texts */
+@media (max-width: 1100px) and (min-width: 821px) {
+    .project-modal {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        width: min(1180px, 94vw);
+    }
+
+    .project-modal .project-modal__media {
+        min-height: 26rem;
+    }
+
+    .project-modal .project-modal__body {
+        gap: 1.5rem;
+        padding: 2.5rem 2rem 2rem;
+    }
+}
+
+/* Tablet upright and phone: the photo above the texts (never taller than 40 % of the screen), the whole modal scrolls */
+@media (max-width: 820px) {
+    .project-modal {
+        grid-template-columns: 1fr;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+
+    .project-modal .project-modal__media {
+        min-height: 0;
+        aspect-ratio: 16 / 10;
+        max-height: 40vh;
+    }
+
+    .project-modal .project-modal__body {
+        gap: 1.4rem;
+        padding: 1.75rem var(--page-gutter) 2rem;
+        overflow: visible;
+    }
+
+    .project-modal .project-modal__fact {
+        grid-template-columns: 5.5rem minmax(0, 1fr);
+        padding: 0.9rem 0;
+    }
+
+    .project-modal .project-modal__link {
+        align-self: stretch;
+        justify-content: center;
+    }
+
+    .project-modal .project-modal__head {
+        padding-right: 0;
+    }
+}
+
+/* Phone: the box with room around it, the photo lower */
+@media (max-width: 600px) {
+    .project-modal {
+        max-height: 88dvh;
+    }
+
+    .project-modal .project-modal__media {
+        max-height: 30dvh;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .project-modal .project-modal__media img,
+    .project-modal .project-modal__body > * {
+        animation: none;
+    }
+}

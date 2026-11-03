@@ -1,0 +1,137 @@
+/*
+ * Grid of square cards, shared by the skills (SkillsGrid), the projects (LastProject) and the tools of the admin (ToolCard):
+ *   <ul class="card-grid">            six per row (four on tablets, two on phones), one card out of two set lower
+ *   <ul class="card-grid card-grid--large">   larger cards: four per row (three on tablets, two on phones)
+ *     <li> <div|button class="grid-card"> <span class="grid-card__top"><span class="grid-card__code eyebrow">FE-01</span>...</span>
+ *                                          <span class="grid-card__name text-display-xs">Name</span> </div|button> </li>
+ * A card: a light ground, its code at the top, its name at the bottom; on hover it lights up and rises, its code turns mint.
+ */
+.card-grid {
+    --card-offset: 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1.5rem 1.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.card-grid.card-grid--large {
+    --card-offset: 3.5rem;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem 1.5rem;
+}
+
+.card-grid > * {
+    min-width: 0;
+}
+
+.card-grid > :nth-child(even) {
+    margin-top: var(--card-offset);
+}
+
+/* The card */
+.grid-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 1rem 1.1rem 1.1rem;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: none;
+    background: var(--panel);
+    color: var(--fg);
+    font: inherit;
+    text-align: left;
+    /* Own layer on the graphics card: the card and its texts move together, without flicker */
+    backface-visibility: hidden;
+    transition: background-color var(--motion-base) var(--ease), transform var(--motion-base) var(--ease);
+}
+
+button.grid-card,
+a.grid-card {
+    cursor: pointer;
+}
+
+.grid-card::after {
+    display: none;
+}
+
+.grid-card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+}
+
+.grid-card .grid-card__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.grid-card .grid-card__code {
+    color: var(--fg-muted);
+    transition: color var(--motion-base) var(--ease);
+}
+
+/*
+ * The name: its size of the type scale, smaller when its longest word would be wider than the card (--letters: its letters,
+ * set by the card; the wide capitals of Archivo are about 0.95 of their size each): never out of the card
+ */
+.grid-card {
+    container-type: inline-size;
+}
+
+.grid-card .grid-card__name {
+    --name-max: var(--font-display-xs);
+    /* Never under 0.8rem (readable): a word still too long then breaks with a hyphen, at its syllables (lang of the page) */
+    font-size: max(0.8rem, min(var(--name-max), calc(100cqi / (var(--letters, 10) * 0.95))));
+    hyphens: auto;
+    word-break: normal;
+    overflow-wrap: break-word;
+}
+
+.grid-card .grid-card__name.text-display-s {
+    --name-max: var(--font-display-s);
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    /* Hover read on the place of the card (it does not move): the lifted card never slips from under the mouse near its bottom edge */
+    .grid-card:hover {
+        background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .card-grid > :hover > .grid-card {
+        transform: translateY(var(--hover-lift));
+    }
+
+    .grid-card:hover .grid-card__code,
+    .card-grid > :hover > .grid-card .grid-card__code {
+        color: var(--accent);
+    }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+    .card-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .card-grid.card-grid--large {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* Phone: two per row */
+@media (max-width: 600px) {
+    .card-grid,
+    .card-grid.card-grid--large {
+        --card-offset: 1.75rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+    }
+}

@@ -1,0 +1,62 @@
+/* Round floating button of the bottom right corner (back to top, languages) (FloatingButton).
+   Sizes in px: the same on every screen, never smaller with the smaller base size of tablets and phones (variables.css) */
+.floating-btn {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--ink-700);
+    color: var(--paper);
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    opacity: 0.9;
+    transition: opacity var(--motion-fast) var(--ease);
+}
+
+/* Its letters (FR, EN) at the size of text-small with the base of 16 px */
+.floating-btn.text-small {
+    font-size: 12.8px !important;
+}
+
+/* Appears and leaves: fades with a small rise */
+.floating-btn-enter-active,
+.floating-btn-leave-active {
+    transition: opacity var(--motion-base) var(--ease), transform var(--motion-base) var(--ease);
+}
+
+.floating-btn-enter-from,
+.floating-btn-leave-to {
+    opacity: 0;
+    transform: translateY(0.75rem);
+}
+
+/* Hover: fully visible */
+@media (hover: hover) and (min-width: 1025px) {
+    .floating-btn:hover {
+        opacity: 1;
+    }
+}
+
+/* Touch screens: smaller and darker */
+@media (max-width: 1024px) {
+    .floating-btn {
+        width: 28px;
+        height: 28px;
+        background-color: var(--ink-700);
+        opacity: 0.8;
+    }
+}
+
+/* Phone */
+@media (max-width: 540px) {
+    .floating-btn {
+        width: 24px;
+        height: 24px;
+    }
+
+    .floating-btn.text-small {
+        font-size: 10.5px !important;
+    }
+}

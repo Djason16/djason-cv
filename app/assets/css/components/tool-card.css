@@ -1,0 +1,49 @@
+/* Card of a tool of the admin (ToolCard): the card of card-grid.css, with an icon at the top right */
+.tool-card .tool-card__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    gap: 1rem;
+}
+
+.tool-card .tool-card__icon {
+    color: var(--fg-muted);
+    transition: color var(--motion-base) var(--ease);
+}
+
+.tool-card .grid-card__name {
+    overflow-wrap: anywhere;
+}
+
+/* Name, then one quiet line about the tool */
+.tool-card .tool-card__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    text-align: left;
+}
+
+.tool-card .tool-card__hint {
+    color: var(--fg-muted);
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .tool-card:hover .tool-card__icon {
+        color: var(--accent);
+    }
+}
+
+/* Fade when the modal opens from the card */
+.tool-card .fade-enter-active,
+.tool-card .fade-leave-active {
+    transition: opacity var(--motion-fast) var(--ease);
+}
+
+.tool-card .fade-enter-from,
+.tool-card .fade-leave-to {
+    opacity: 0;
+}

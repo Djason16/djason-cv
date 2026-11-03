@@ -1,0 +1,21 @@
+/* Link of the header to a section of the home page (NavLink): small spaced capitals, light when its section is on screen */
+.header-top__link {
+    padding-bottom: 0.2rem;
+    /* Light enough on the slate header (5:1) */
+    color: var(--paper-muted);
+    text-decoration: none;
+    background: linear-gradient(currentColor, currentColor) left bottom / 0 1px no-repeat;
+    cursor: pointer;
+    transition: color var(--motion-fast) var(--ease), background-size var(--motion-base) var(--ease);
+}
+
+.header-top__link.is-active {
+    color: var(--paper);
+    background-size: 100% 1px;
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .header-top__link:hover {
+        color: var(--paper);
+    }
+}

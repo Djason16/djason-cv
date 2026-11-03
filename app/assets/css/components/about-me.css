@@ -1,0 +1,121 @@
+/* Home page: "About me" (AboutMe): statement and presentation side by side, then the portrait and the key facts */
+.about-section {
+    display: flex;
+    flex-direction: column;
+    gap: 5rem;
+    text-align: left;
+}
+
+.about-section .about-section__intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4rem;
+    align-items: end;
+}
+
+.about-section .about-section__lead {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.about-section .about-section__text {
+    max-width: 26rem;
+    margin: 0;
+    color: var(--fg-muted);
+}
+
+/* Portrait on the left (upright, not wider than 26rem: the whole head shows), the facts on the right */
+.about-section .about-section__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 4rem;
+    align-items: end;
+}
+
+.about-section .about-section__photo {
+    width: 100%;
+    max-width: 26rem;
+    margin: 0;
+}
+
+.about-section .about-section__photo img {
+    display: block;
+    width: 100%;
+    /* The height attribute of the image would win over the ratio */
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: center 20%;
+}
+
+.about-section .about-section__photo {
+    overflow: hidden;
+}
+
+.about-section .about-section__photo figcaption {
+    margin-top: 1rem;
+    color: var(--fg-muted);
+}
+
+.about-section .about-section__facts {
+    margin: 0;
+}
+
+.about-section .about-section__fact {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.4rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.about-section .about-section__fact:last-child {
+    border-bottom: 1px solid var(--line);
+}
+
+.about-section .about-section__fact dd {
+    margin: 0;
+}
+
+/* Tablet and phone: one block under the other */
+@media (max-width: 1024px) {
+    .about-section {
+        gap: 3rem;
+    }
+
+    .about-section .about-section__intro {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    /* Tablet: the photo and the facts side by side, the facts at the bottom of the photo */
+    .about-section .about-section__body {
+        grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+        align-items: end;
+        gap: 2rem;
+    }
+
+    .about-section .about-section__photo {
+        max-width: 22rem;
+    }
+}
+
+/* Phone: a small portrait, so the facts are not pushed far down */
+/* Phone: the photo the whole width (upright, not too tall), the facts under it */
+@media (max-width: 600px) {
+    .about-section .about-section__body {
+        grid-template-columns: 1fr;
+    }
+
+    .about-section .about-section__photo {
+        max-width: none;
+    }
+
+    .about-section .about-section__photo img {
+        aspect-ratio: 4 / 5;
+        max-height: 60vh;
+        object-fit: cover;
+        object-position: center top;
+    }
+}

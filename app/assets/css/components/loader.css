@@ -1,0 +1,53 @@
+/* Loader of the site (Loader): the ink of the pages, "Loading" in small capitals, a thin mint line that fills up from the left */
+.loader-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--ink-900);
+}
+
+.loader-wrapper .loader-wrapper__text {
+    margin: 0;
+    color: var(--paper-muted);
+}
+
+/* The line: fills from the left, then empties to the right, again and again */
+.loader-wrapper .loader-wrapper__line {
+    width: 7rem;
+    height: 1px;
+    background: var(--mint);
+    transform-origin: left;
+    animation: loader-fill 1.2s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes loader-fill {
+    0% { transform: scaleX(0); transform-origin: left; }
+    50% { transform: scaleX(1); transform-origin: left; }
+    50.1% { transform: scaleX(1); transform-origin: right; }
+    100% { transform: scaleX(0); transform-origin: right; }
+}
+
+/* Comes in and leaves with a fade (AppShell) */
+.loader-wrapper.loader-fade-enter-active {
+    transition: opacity var(--motion-fast) var(--ease);
+}
+
+.loader-wrapper.loader-fade-leave-active {
+    transition: opacity var(--motion-base) var(--ease);
+}
+
+.loader-wrapper.loader-fade-enter-from,
+.loader-wrapper.loader-fade-leave-to {
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .loader-wrapper .loader-wrapper__line {
+        animation: none;
+    }
+}

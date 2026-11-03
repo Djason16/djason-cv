@@ -1,0 +1,11 @@
+/* Home page: skills (Skills): its header, then one group of cards per category */
+.skills-section {
+    display: flex;
+    flex-direction: column;
+    gap: 6rem;
+    text-align: left;
+}
+
+.skills-section .section-head {
+    margin-bottom: 0;
+}

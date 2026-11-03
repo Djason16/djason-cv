@@ -1,0 +1,153 @@
+/*
+ * End of a quote or invoice (BillingDocument), after billing-document.css (its variables):
+ * the totals, the blocks under them, the signature of a quote and the bottom bar.
+ */
+/* Totals on the right, the net to pay on a mint mark */
+.billing-document .bd-totals {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-top: 12px;
+}
+
+.billing-document .bd-totals dl {
+    width: 300px;
+}
+
+.billing-document .bd-totals dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 3px 0;
+}
+
+.billing-document .bd-totals dt {
+    color: var(--bd-muted);
+}
+
+.billing-document .bd-net {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    width: 300px;
+    margin-top: 8px;
+    padding: 12px 16px;
+    box-sizing: border-box;
+    background: #1c2926;
+    border-left: 3px solid var(--bd-green);
+}
+
+.billing-document .bd-net .bd-label {
+    margin: 0;
+    color: var(--bd-green);
+}
+
+.billing-document .bd-net strong {
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-stretch: 125%;
+    font-weight: 600;
+}
+
+/* Blocks under the totals (payment, terms): a thin rule above each, to follow the reading */
+.billing-document .bd-block {
+    margin-top: 20px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.billing-document .bd-steps td {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.billing-document .bd-steps td + td {
+    padding-left: 12px;
+}
+
+.billing-document .bd-terms {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 24px;
+    font-size: 11px;
+    color: var(--bd-muted);
+}
+
+.billing-document .bd-terms.has-sign {
+    grid-template-columns: 0.9fr 1.3fr 0.9fr;
+}
+
+.billing-document .bd-terms p + p {
+    margin-top: 4px;
+}
+
+.billing-document .bd-label--spaced {
+    margin-top: 10px;
+}
+
+.billing-document .bd-notes {
+    grid-column: 1 / -1;
+    color: var(--bd-ink);
+    white-space: pre-line;
+}
+
+/* Quote: room for the signature of the client, beside the terms */
+.billing-document .bd-sign {
+    font-size: 11px;
+}
+
+.billing-document .bd-sign-box {
+    height: 70px;
+    margin-top: 8px;
+    background: var(--bd-panel);
+}
+
+/* Bottom bar, like the one of the opening of the site */
+.billing-document .bd-foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 26px;
+}
+
+.billing-document .bd-foot .bd-label {
+    margin: 0;
+}
+
+.billing-document .bd-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 10px;
+    border-radius: 50%;
+    background: var(--bd-green);
+    vertical-align: 1px;
+}
+
+/* Payment link of the document: a long address that breaks anywhere, in mint (a link in the PDF) */
+.billing-document .bd-paylink {
+    overflow-wrap: anywhere;
+}
+
+.billing-document .bd-paylink a {
+    color: var(--bd-green);
+    text-decoration: none;
+}
+
+/* Under the box of the signature of a quote: the terms accepted, the early start asked (a consumer) */
+.billing-document .bd-sign-note {
+    margin-top: 6px;
+    color: var(--bd-muted);
+    font-size: 9.5px;
+    line-height: 1.45;
+}
+
+/* Box to tick of a notice (quotes, invoices and contracts): drawn, not a character of the font */
+.doc-tick {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 5px;
+    border: 1px solid currentColor;
+    vertical-align: -1px;
+}

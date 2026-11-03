@@ -1,0 +1,86 @@
+/* Square button with an icon (IconButton): no rounded corners, no shadow, no outline, a light ground on the ink */
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-shrink: 0;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--paper);
+    cursor: pointer;
+    transition: background-color var(--motion-fast) var(--ease), color var(--motion-fast) var(--ease),
+        border-color var(--motion-fast) var(--ease);
+}
+
+/* The icon and the text never catch the mouse: the hover stays on the button */
+.icon-btn > * {
+    pointer-events: none;
+}
+
+.icon-btn .icon-btn__svg {
+    display: block;
+    flex-shrink: 0;
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+/* Beside thin elements (bars of the carousel) */
+.icon-btn--tiny {
+    width: 1.75rem;
+    height: 1.75rem;
+}
+
+.icon-btn--tiny .icon-btn__svg {
+    width: 0.9rem;
+    height: 0.9rem;
+}
+
+/* Same height as the fields of the admin (form-field.css) */
+.icon-btn--small {
+    width: 2.25rem;
+    height: 2.25rem;
+}
+
+.icon-btn--large {
+    width: 2.75rem;
+    height: 2.75rem;
+}
+
+.icon-btn--large .icon-btn__svg {
+    width: 1.3rem;
+    height: 1.3rem;
+}
+
+/* With a text: as wide as needed */
+.icon-btn--text {
+    width: auto;
+    padding: 0 1.1rem;
+    white-space: nowrap;
+}
+
+/* Main action: filled in mint */
+.icon-btn--primary {
+    background: var(--mint);
+    color: var(--ink-900);
+}
+
+.icon-btn:focus-visible {
+    outline: 2px solid var(--mint);
+    outline-offset: 2px;
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .icon-btn--ghost:hover,
+    .icon-btn--primary:hover {
+        background: var(--paper);
+        color: var(--ink-900);
+    }
+
+    .icon-btn--danger:hover {
+        background: rgba(231, 76, 60, 0.18);
+        color: #ff8a7d;
+    }
+}

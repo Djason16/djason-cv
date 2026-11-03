@@ -1,0 +1,82 @@
+/*
+ * Quotes and invoices of the admin on small screens (after billing-admin.css): the document under the form, at the scale of the screen;
+ * on a phone one column, the tabs and the ways of payment two by two.
+ */
+/* Small screens: the document under the form */
+@media (max-width: 1200px) {
+    .billing-editor {
+        grid-template-columns: 1fr;
+        width: 100%;
+        max-height: none;
+    }
+
+    .billing-editor__side {
+        overflow: visible;
+    }
+
+    .billing-editor__preview {
+        max-height: 60vh;
+    }
+
+    .billing-editor__preview .billing-document,
+    .billing-editor__preview .contract-container {
+        zoom: 0.42;
+    }
+}
+
+/* Tablet and phone: the buttons of a new quote and a new invoice the whole width, sharing it equally */
+@media (max-width: 1024px) {
+    .billing-list__new {
+        width: 100%;
+    }
+
+    .billing-list__new > .custom-button {
+        flex: 1 1 0;
+        min-width: max-content;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .billing-editor .row-group,
+    .billing-list__summary,
+    .billing-actions__amounts {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    /* The whole width of the screen; the sheet shown at the scale of the phone (794 px wide at 100 %) */
+    .billing-editor {
+        width: 100%;
+        gap: 1.75rem;
+    }
+
+    .billing-editor__preview {
+        padding: 6px;
+    }
+
+    .billing-editor__preview .billing-document,
+    .billing-editor__preview .contract-container {
+        zoom: 0.4;
+    }
+
+    /* The ways of payment and the tabs: two by two, the whole width */
+    .editor-plan__modes,
+    .billing-list__tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .editor-plan__mode,
+    .billing-list__tab {
+        padding: 0.8rem 0.6rem;
+        text-align: center;
+    }
+}
+
+@media (max-width: 380px) {
+    .billing-editor__preview .billing-document,
+    .billing-editor__preview .contract-container {
+        zoom: 0.37;
+    }
+}
