@@ -1,0 +1,67 @@
+/*
+ * Sections of the home page (components/ui/SectionLayout): an ink black tinted with the slate of the site,
+ * two tones one section out of two, near white text, the same width everywhere.
+ */
+.sections-container {
+    --section-pad-y: 8rem;
+    --section-pad-x: var(--page-gutter);
+    overflow: hidden;
+}
+
+/* A section: its ground, one tone out of two (its colors --fg, --accent... come from utils/variables.css) */
+.sections-container .section-wrapper {
+    --section-bg: var(--ink-800);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: var(--section-pad-y) var(--section-pad-x);
+    background: var(--section-bg);
+    color: var(--fg);
+    font-family: var(--font-text);
+}
+
+.sections-container .section-wrapper:nth-of-type(even) {
+    --section-bg: var(--ink-900);
+}
+
+/* The first section (Hero) fills the screen and draws its own spacing */
+.sections-container .section-wrapper:first-child {
+    padding: 0;
+}
+
+.sections-container .content {
+    position: relative;
+    width: 100%;
+    /* A word longer than its line (a long name, an email) goes to the next line instead of past the margin */
+    overflow-wrap: break-word;
+}
+
+.sections-container .content > * {
+    width: 100%;
+    max-width: 1320px;
+    margin-inline: auto;
+    box-sizing: border-box;
+}
+
+.sections-container .section-wrapper:first-child .content > * {
+    max-width: none;
+}
+
+/* Less room above and under each part of the home page on smaller screens */
+@media (max-width: 1024px) {
+    .sections-container {
+        --section-pad-y: 4.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .sections-container {
+        --section-pad-y: 3.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .sections-container {
+        --section-pad-y: 2.75rem;
+    }
+}

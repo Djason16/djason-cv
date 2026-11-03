@@ -1,0 +1,86 @@
+/*
+ * Text pages (OtherSectionLayout: legal, login, admin, pay-me, error), in the style of the home page:
+ * the same ink ground, the same margins and width, the same colors of a section (--fg, --fg-muted, --accent, --line, --panel).
+ */
+.page-layout {
+    padding: 8rem var(--page-gutter) 9rem;
+    background: var(--ink-800);
+    color: var(--fg);
+    font-family: var(--font-text);
+    text-align: left;
+    overflow-wrap: break-word;
+}
+
+.page-layout .page-layout__inner {
+    max-width: 1320px;
+    margin-inline: auto;
+}
+
+/* Label, very large title, short text, then a thin rule */
+.page-layout .page-layout__head {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-bottom: 3rem;
+    margin-bottom: 4rem;
+    border-bottom: 1px solid var(--line);
+}
+
+.page-layout .page-layout__title {
+    max-width: 20ch;
+    margin: 0;
+}
+
+.page-layout .page-layout__subtitle {
+    max-width: 44rem;
+    margin: 0;
+    color: var(--fg-muted);
+}
+
+/* Form or tools of the page */
+.page-layout .page-layout__panel {
+    margin-bottom: 5rem;
+}
+
+/* Labels of the fields (the fields themselves: form-field.css) */
+.page-layout .form-group {
+    color: var(--fg-muted);
+}
+
+/* Tablet, tablet upright, phone: less room above and under the page, its head and its panel */
+@media (max-width: 1024px) {
+    .page-layout {
+        padding: 4rem var(--page-gutter) 4.5rem;
+    }
+
+    .page-layout .page-layout__head {
+        padding-bottom: 2.25rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .page-layout .page-layout__panel {
+        margin-bottom: 3.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-layout {
+        padding: 3rem var(--page-gutter) 3.5rem;
+    }
+
+    .page-layout .page-layout__head {
+        gap: 1.1rem;
+        padding-bottom: 1.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .page-layout .page-layout__panel {
+        margin-bottom: 2.75rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .page-layout {
+        padding: 2.25rem var(--page-gutter) 3rem;
+    }
+}

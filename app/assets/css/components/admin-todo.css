@@ -1,0 +1,174 @@
+/*
+ * "To do" of the admin dashboard (AdminTodo.vue): a board of four steps side by side, like the numbered parts of the site.
+ * Each step: a rule on top (mint when something waits), its number and name, its figure in large letters, then its lines
+ * (client, number and amount, an arrow that slides on hover). Then the line of what the server does alone, on a panel.
+ */
+.admin-todo {
+    margin-bottom: 3rem;
+}
+
+.admin-todo .admin-group__label {
+    margin-bottom: 1.75rem;
+}
+
+.admin-todo__board {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem 1.75rem;
+}
+
+.admin-todo__column {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    padding-top: 1.1rem;
+    border-top: 2px solid var(--accent);
+}
+
+.admin-todo__column.is-empty {
+    border-top-color: var(--line);
+}
+
+.admin-todo__head {
+    margin: 0;
+    color: var(--fg-muted);
+}
+
+.admin-todo__figure {
+    margin: 0.7rem 0 1.1rem;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.admin-todo__column.is-empty .admin-todo__figure {
+    color: var(--fg-muted);
+    opacity: 0.5;
+}
+
+.admin-todo__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* A line: the client, its number and amount under it, an arrow on the right; lit on hover */
+.admin-todo__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    width: 100%;
+    padding: 0.7rem 1.6rem 0.7rem 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    background: none;
+    color: var(--fg);
+    text-align: left;
+    cursor: pointer;
+    transition: padding-left var(--motion-base) var(--ease), background-color var(--motion-base) var(--ease);
+}
+
+.admin-todo__client,
+.admin-todo__meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-todo__meta {
+    color: var(--fg-muted);
+}
+
+.admin-todo__go {
+    position: absolute;
+    top: 50%;
+    right: 0.25rem;
+    color: var(--fg-muted);
+    transform: translateY(-50%);
+    transition: color var(--motion-base) var(--ease), transform var(--motion-base) var(--ease);
+}
+
+.admin-todo__item:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 2px;
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .admin-todo__item:hover {
+        padding-left: 0.6rem;
+        background: var(--panel);
+    }
+
+    .admin-todo__item:hover .admin-todo__go {
+        color: var(--accent);
+        transform: translate(0.15rem, -50%);
+    }
+}
+
+.admin-todo__none {
+    margin: 0;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--line);
+    color: var(--fg-muted);
+}
+
+/* More lines of a step, and the button of the automatic tasks */
+.admin-todo__more,
+.admin-todo__run {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--accent);
+    cursor: pointer;
+    transition: color var(--motion-base) var(--ease);
+}
+
+.admin-todo__more {
+    align-self: flex-start;
+    margin-top: 0.8rem;
+}
+
+.admin-todo__more:hover,
+.admin-todo__run:hover {
+    color: var(--fg);
+}
+
+/* What the server does alone, on a panel with a mint line, well apart from the board */
+.admin-todo__auto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.9rem;
+    margin: 2.5rem 0 0;
+    padding: 0.9rem 1.1rem;
+    background: var(--panel);
+    box-shadow: inset 2px 0 0 var(--accent);
+    color: var(--fg-muted);
+}
+
+.admin-todo__dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(126, 230, 168, 0.6);
+}
+
+.admin-todo__run {
+    margin-left: auto;
+}
+
+/* Tablet: two steps per row; phone: one */
+@media (max-width: 1024px) {
+    .admin-todo__board {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-todo__board {
+        grid-template-columns: 1fr;
+    }
+}

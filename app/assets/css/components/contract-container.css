@@ -1,0 +1,163 @@
+/*
+ * Contract (ContractContainer): one component per article, in order. The same A4 sheet as the quotes and invoices
+ * (billing-document.css), in the style of the site: its ink, light texts, mint marks, Archivo titles, Barlow Condensed texts, thin rules.
+ * The text classes of the articles (text-large, text-small...) get sizes made for a printed page.
+ */
+.contract-container {
+    --bd-ink: #eef1f3;
+    --bd-muted: #a4b0b8;
+    --bd-line: rgba(255, 255, 255, 0.1);
+    --bd-green: #7ee6a8;
+    position: relative;
+    box-sizing: border-box;
+    width: 794px;
+    margin: 0 auto;
+    /* One plain ink: a light on the page would be cut at the top of each sheet */
+    background: #111417;
+    color: var(--bd-ink);
+    font-family: var(--font-text);
+    font-size: 12px;
+    line-height: 1.5;
+    text-align: left;
+}
+
+/* Paragraphs and lists close to each other (the browser would put a line between each) */
+.contract-container p,
+.contract-container ul {
+    margin: 0 0 6px;
+}
+
+.contract-container .content {
+    padding: 36px 52px 30px;
+}
+
+/* Draft: a large word across the first page */
+.contract-container.is-draft::before {
+    content: "BROUILLON";
+    position: absolute;
+    top: 420px;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-24deg);
+    color: rgba(255, 255, 255, 0.035);
+    font-family: var(--font-display);
+    font-size: 120px;
+    font-stretch: 125%;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+/* Sizes of a printed page, whatever the class of the article */
+.contract-container .text-xlarge { font-size: 22px !important; }
+.contract-container .text-large { font-size: 13px !important; }
+.contract-container .text-normal,
+.contract-container .text-small { font-size: 12px !important; }
+
+.contract-container .text-bold {
+    font-weight: 600 !important;
+}
+
+/* An article: a thin rule above it, its number and title in wide letters */
+.contract-container .section {
+    margin-bottom: 18px;
+    padding-top: 14px;
+    /* A thin rule above each article: the reading is easy to follow */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.contract-container .section-title {
+    margin: 0 0 8px;
+    color: var(--bd-ink);
+    font-family: var(--font-display);
+    font-stretch: 125%;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+}
+
+.contract-container .section-subtitle {
+    margin: 10px 0 4px;
+    color: var(--bd-green);
+}
+
+.contract-container .section-text {
+    margin: 0 0 8px;
+    text-align: justify;
+}
+
+.contract-container .info-label {
+    margin: 0 0 4px;
+    color: var(--bd-muted);
+    font-family: var(--font-label);
+    font-size: 10px !important;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.contract-container .info-content {
+    margin-left: 0;
+}
+
+/* Amounts and the option chosen, on a light green mark like the total of an invoice */
+.contract-container .payment-details,
+.contract-container .payment-option-selected {
+    margin: 8px 0;
+}
+
+.contract-container .payment-option-selected {
+    padding: 10px 14px;
+    background: #1c2926;
+    border-left: 3px solid #7ee6a8;
+}
+
+.contract-container .payment-option-alternative,
+.contract-container .bank-transfer-option,
+.contract-container .automatic-debit-section {
+    margin: 10px 0;
+}
+
+.contract-container .amount-value {
+    font-weight: 600;
+}
+
+/* Lists: a short green dash instead of a bullet */
+.contract-container .bullet-list {
+    margin: 0 0 8px;
+    padding-left: 0;
+    list-style: none;
+}
+
+.contract-container .bullet-list li {
+    position: relative;
+    margin-bottom: 4px;
+    padding-left: 16px;
+    text-align: justify;
+}
+
+.contract-container .bullet-list li::before {
+    content: "";
+    position: absolute;
+    top: 0.75em;
+    left: 0;
+    width: 8px;
+    height: 1px;
+    background: var(--bd-green);
+}
+
+.contract-container a {
+    color: var(--bd-ink);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.contract-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.contract-container th,
+.contract-container td {
+    padding: 6px 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    text-align: left;
+}

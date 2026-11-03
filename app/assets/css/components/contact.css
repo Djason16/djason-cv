@@ -1,0 +1,197 @@
+/* Home page: contact (Contact): very large title, giant email, a line of details, the week in seven columns */
+.contact-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    text-align: left;
+}
+
+.contact-section .contact-section__head {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.contact-section .contact-section__title {
+    max-width: 18ch;
+}
+
+/* The email: very large, a line that draws from the left on hover, an arrow that turns */
+.contact-section .contact-section__email {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.25rem;
+    width: fit-content;
+    margin-top: 2.5rem;
+    padding-bottom: 0.5rem;
+    background: linear-gradient(var(--accent), var(--accent)) left bottom / 0 2px no-repeat;
+    color: var(--fg);
+    overflow-wrap: anywhere;
+    transition: background-size 0.8s var(--ease), color var(--motion-base) var(--ease);
+}
+
+.contact-section .contact-section__email::after,
+.contact-section .contact-section__button::after,
+.contact-section .contact-section__item a::after {
+    display: none;
+}
+
+.contact-section .contact-section__email svg {
+    flex-shrink: 0;
+    width: 0.8em;
+    height: 0.8em;
+    transition: transform 0.8s var(--ease);
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .contact-section .contact-section__email:hover {
+        background-size: 100% 2px;
+        color: var(--accent);
+    }
+
+    .contact-section .contact-section__email:hover svg {
+        transform: rotate(45deg);
+    }
+}
+
+/* Phone, city and button on one line */
+.contact-section .contact-section__row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 2rem 4.5rem;
+    margin-top: 2rem;
+    padding: 2.5rem 0;
+    border-top: 1px solid var(--line);
+}
+
+.contact-section .contact-section__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.contact-section .contact-section__item a {
+    color: var(--fg);
+    transition: color var(--motion-fast) var(--ease);
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .contact-section .contact-section__item a:hover {
+        color: var(--accent);
+    }
+}
+
+/* Button filled in mint, dark text, white on hover */
+.contact-section .contact-section__button {
+    margin-left: auto;
+    padding: 1.15rem 2.2rem;
+    background: var(--accent);
+    color: var(--ink-900);
+    transition: background-color var(--motion-base) var(--ease);
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .contact-section .contact-section__button:hover {
+        background: var(--fg);
+    }
+}
+
+/* The week: seven columns on a slightly lighter ground, today in mint */
+.contact-section .contact-week {
+    padding: 2rem 2.25rem 2.25rem;
+    background: var(--panel);
+}
+
+.contact-section .contact-week__head {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+}
+
+.contact-section .contact-week__zone {
+    color: var(--fg-muted);
+}
+
+.contact-section .contact-week__days {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.contact-section .contact-week__days li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1.1rem 1rem;
+    border-top: 2px solid var(--line);
+    transition: border-color var(--motion-base) var(--ease);
+}
+
+.contact-section .contact-week__name {
+    color: var(--fg-muted);
+}
+
+.contact-section .contact-week__end {
+    color: var(--fg-muted);
+}
+
+.contact-section .contact-week__days li.is-closed .contact-week__hours {
+    color: var(--fg-muted);
+}
+
+.contact-section .contact-week__days li.is-today {
+    border-top-color: var(--accent);
+}
+
+.contact-section .contact-week__days li.is-today .contact-week__name {
+    color: var(--accent);
+}
+
+/* Tablet: the week on two lines; phone: one day per line */
+@media (max-width: 1024px) {
+    .contact-section .contact-week__days {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .contact-section .contact-section__button {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    /* The email fits the screen: smaller, and it can break when it is very long */
+    .contact-section .contact-section__email {
+        gap: 0.6rem;
+        margin-top: 1.25rem;
+        font-size: min(var(--font-display-m), 5.2vw);
+    }
+
+    .contact-section .contact-section__email span {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .contact-section .contact-week {
+        padding: 1.5rem;
+    }
+
+    .contact-section .contact-week__days {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-section .contact-week__days li {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.85rem 0;
+    }
+
+    .contact-section .contact-week__name {
+        min-width: 6rem;
+    }
+}

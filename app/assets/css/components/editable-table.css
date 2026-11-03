@@ -1,0 +1,272 @@
+/*
+ * Table of the admin modals (components/ui/Table/EditableTable), in the style of the site, like a register:
+ * a mint number per row, thin rules, the column names in small spaced capitals, no frame and no stripes.
+ * The row under the mouse gets a light ground and a mint line on its left; its buttons appear.
+ */
+.editable-table-wrapper {
+    overflow: auto;
+    max-height: 60vh;
+}
+
+.editable-table-wrapper.has-scroll {
+    padding-right: 1rem
+}
+
+.editable-table-wrapper .editable-table {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    background: transparent;
+    color: var(--paper)
+}
+
+/* Column names: kept on top while scrolling, a stronger rule under them */
+.editable-table-wrapper .editable-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--ink-800);
+}
+
+.editable-table-wrapper .editable-table th {
+    padding: 0.4rem 1rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+    color: var(--paper-muted);
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+}
+
+/* Cells on one line, cut with "..." when too long (the whole value is in the tooltip) */
+.editable-table-wrapper .editable-table td {
+    max-width: 240px;
+    padding: 1.15rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    text-align: left;
+    vertical-align: middle;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: default;
+}
+
+/* Number of the row, in mint, on the left edge */
+.editable-table-wrapper .editable-table .col-index {
+    width: 3.5rem;
+    padding-left: 1rem;
+    color: var(--mint);
+}
+
+/* The first value of a row stands out a little */
+.editable-table-wrapper .editable-table .table-row td:nth-child(2) {
+    font-weight: 500;
+}
+
+.editable-table-wrapper .editable-table td.non-editable {
+    color: var(--paper-muted);
+}
+
+/* Buttons of the row on the right, shown with the row on a computer */
+.editable-table-wrapper .editable-table .col-actions {
+    width: 1%;
+    text-align: right;
+}
+
+.editable-table-wrapper .action-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    transition: opacity var(--motion-fast) var(--ease);
+}
+
+/* Row under the mouse: a light ground, a mint line on its left */
+.editable-table-wrapper .editable-table .table-row {
+    transition: background-color var(--motion-fast) var(--ease), box-shadow var(--motion-fast) var(--ease);
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .editable-table-wrapper .editable-table .table-row .action-buttons {
+        opacity: 0.35;
+    }
+
+    .editable-table-wrapper .editable-table .table-row:hover {
+        background-color: rgba(255, 255, 255, 0.035);
+        box-shadow: inset 2px 0 0 var(--mint);
+    }
+
+    .editable-table-wrapper .editable-table .table-row:hover .action-buttons,
+    .editable-table-wrapper .editable-table .table-row:focus-within .action-buttons {
+        opacity: 1;
+    }
+}
+
+/* Editable cells: a click (or Enter) edits them; the value gets a dotted line and a pencil on hover and keyboard focus */
+.editable-table-wrapper .editable-table td.is-editable {
+    cursor: pointer;
+}
+
+.editable-table-wrapper .editable-table .cell-content {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    max-width: 100%;
+}
+
+.editable-table-wrapper .editable-table .cell-value {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: underline dotted transparent;
+    text-underline-offset: 0.3em;
+    transition: text-decoration-color var(--motion-fast) var(--ease);
+}
+
+.editable-table-wrapper .editable-table .cell-edit-icon {
+    flex-shrink: 0;
+    font-size: 0.7em;
+    color: var(--mint);
+    opacity: 0;
+    transition: opacity var(--motion-fast) var(--ease);
+}
+
+.editable-table-wrapper .editable-table td.is-editable:focus-visible {
+    outline: none;
+    background-color: rgba(126, 230, 168, 0.06);
+}
+
+.editable-table-wrapper .editable-table td.is-editable:focus-visible .cell-edit-icon {
+    opacity: 1;
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .editable-table-wrapper .editable-table td.is-editable:hover .cell-value {
+        text-decoration-color: var(--paper-muted);
+    }
+
+    .editable-table-wrapper .editable-table td.is-editable:hover .cell-edit-icon {
+        opacity: 1;
+    }
+}
+
+/* Empty value ("-") greyed out */
+.editable-table-wrapper .editable-table .cell-value.is-empty {
+    color: var(--paper-muted);
+    opacity: 0.6;
+}
+
+/* Small text under a value (e.g. the name of a variable) */
+.editable-table-wrapper .editable-table .cell-hint {
+    display: block;
+    margin-top: 0.15rem;
+    color: var(--paper-muted);
+    letter-spacing: 0.03em;
+}
+
+/* Title row of a group: a mint label with room above it */
+.editable-table-wrapper .editable-table .table-section td {
+    padding: 2.25rem 1rem 0.8rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+    background: transparent;
+    color: var(--mint);
+}
+
+.editable-table-wrapper .editable-table .table-section:first-child td {
+    padding-top: 1.25rem;
+}
+
+.editable-table-wrapper .editable-table td a {
+    position: relative;
+    color: var(--paper);
+}
+
+.editable-table-wrapper .editable-table td a::after {
+    background-color: var(--paper);
+}
+
+/* Cell being edited: a light ground, wide enough to read and type the whole value */
+.editable-table-wrapper .editable-table td.is-editing {
+    min-width: 280px;
+    max-width: none;
+    overflow: visible;
+    background-color: rgba(255, 255, 255, 0.04);
+}
+
+.editable-table-wrapper .editable-table td input,
+.editable-table-wrapper .editable-table td select,
+.editable-table-wrapper .editable-table td textarea {
+    width: 100%;
+    max-width: 100%;
+}
+
+/* The field, with Save (mint) and Cancel on its right */
+.editable-table-wrapper .cell-editor {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.editable-table-wrapper .cell-editor > :first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.editable-table-wrapper .cell-editor__actions {
+    display: flex;
+    gap: 0.35rem;
+}
+
+.editable-table-wrapper .select-multiple-container {
+    width: 100%;
+}
+
+/* "No data": a large quiet message in the middle */
+.editable-table-wrapper .editable-table td.empty {
+    max-width: none;
+    padding: 1.5rem 0;
+    border-bottom: none;
+}
+
+.editable-table-wrapper .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 3rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--paper-muted);
+    white-space: normal;
+    text-align: center;
+}
+
+.editable-table-wrapper .empty-state__icon {
+    display: grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--mint);
+    font-size: 1.3rem;
+}
+
+.editable-table-wrapper .empty-state__text {
+    margin: 0;
+}
+
+/* Tablet: the same table, closer cells and names of columns on two lines when needed (it fits the modal); the pencils shown */
+@media (max-width: 1024px) {
+    .editable-table-wrapper .editable-table th {
+        padding: 0.4rem 0.6rem 0.9rem;
+        white-space: normal;
+    }
+
+    .editable-table-wrapper .editable-table td {
+        max-width: 180px;
+        padding: 1rem 0.6rem;
+    }
+
+    .editable-table-wrapper .editable-table .cell-edit-icon {
+        opacity: 0.6;
+    }
+}
+
+/* Phone layout (cards): editable-table-mobile.css */

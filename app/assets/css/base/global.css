@@ -1,0 +1,172 @@
+/* Global styles: page, links, modal backdrop, elements that move, scroll bars */
+@import "../utils/variables.css";
+
+body {
+    font-family: var(--font-primary);
+    color: var(--text-color-light);
+    background-color: var(--fifth-color);
+    margin: 0 auto;
+    padding: 0;
+    width: 90vw;
+    height: 100dvh;
+    min-height: 100vh;
+    overflow-x: hidden;
+    touch-action: manipulation;
+}
+
+/* Dark backdrop behind an open modal, faded in and out */
+body.modal-open::before,
+body.modal-closing::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 998;
+}
+
+body.modal-open::before {
+    animation: fade var(--motion-base) var(--ease) forwards;
+}
+
+body.modal-closing::before {
+    animation: fade var(--motion-fast) ease-in forwards reverse;
+}
+
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* Links */
+a {
+    color: var(--text-color-light);
+    text-decoration: none;
+    position: relative;
+    transition: color var(--motion-fast) var(--ease);
+}
+
+a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 1px;
+    background-color: var(--second-color);
+    transition: width var(--motion-fast) var(--ease);
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    a:hover::after {
+        width: 100%;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+    body {
+        width: 100vw;
+    }
+
+    a::after {
+        display: none;
+    }
+}
+
+/* Scroll bars of the whole site (page, modals, tables, menu): thin, on the ink, a light thumb that turns mint under the mouse */
+html {
+    scrollbar-color: rgba(255, 255, 255, 0.22) var(--ink-900);
+}
+
+* {
+    scrollbar-width: thin;
+}
+
+/* Inside the modals and tables: the same thumb, on their own ground */
+.morph-modal,
+.morph-modal * {
+    scrollbar-color: rgba(255, 255, 255, 0.22) transparent;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--ink-900);
+}
+
+.morph-modal ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.22);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--mint);
+    background-clip: padding-box;
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* Elements that move (reveal, cards, buttons, toasts, banner; the menu prepares its own lines while it opens): the graphics card prepares them, they move smoothly.
+   What is prepared: --will-change in utils/variables.css. Not the modals: they grow from a button (a scale), a prepared layer
+   would keep the small picture of their first frame and their text would stay blurred */
+.reveal,
+.reveal--group > *,
+.grid-card,
+.custom-button .custom-button__icon,
+.floating-btn,
+.cookie-banner,
+.app-toast,
+.hero .hero__letter {
+    will-change: var(--will-change);
+}
+
+/* Phones and tablets: few layers prepared in advance (their graphics memory is small), the cards and blocks move without */
+@media (hover: none), (max-width: 1024px) {
+    .reveal,
+    .reveal--group > *,
+    .grid-card,
+    .custom-button .custom-button__icon {
+        will-change: auto;
+    }
+}
+
+/* Once arrived, a revealed element no longer needs it, and never gets it back (not even on hover: a new layer
+   draws its text again, a fraction of a pixel aside, and the block seems to shiver) */
+.reveal.is-revealed,
+.reveal--group.is-revealed > * {
+    will-change: auto;
+}
+
+/* A tap on a phone: no blue or grey flash of the browser (every link and button of the site shows its own change) */
+html {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Selected text: the mint of the site, the ink as text (instead of the blue of the browser) */
+::selection {
+    background: var(--mint);
+    color: var(--ink-900);
+}
+
+/* On a mint ground (buttons, marks): the selection in ink, light text */
+.custom-button--primary ::selection,
+.custom-button--primary::selection {
+    background: var(--ink-900);
+    color: var(--mint);
+}

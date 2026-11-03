@@ -1,0 +1,180 @@
+/*
+ * EditableTable, after editable-table.css: the table in pages (TablePager under it), the arrow of a row
+ * and the values opened under it (columns with detail: true), in a grid of small cards, still editable.
+ * Moves: the rows of a new page slide in one after the other from the side of the page (also the projects list),
+ * the values of a row opened come down one after the other. Only opacity and transform, no blur.
+ */
+.editable-table-block {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-height: 0;
+}
+
+/* In pages: the rows of one page (as many as fit), no fixed height; a row opened can still scroll a little */
+.editable-table-wrapper.is-paged {
+    max-height: none;
+    /* The rows of a new page slide in from the side: never a scrollbar for the moment they stick out */
+    overflow-x: clip;
+}
+
+/* Shorter rows when the table is in pages (computer and tablet: the phone shows cards) */
+@media (min-width: 769px) {
+    .editable-table-wrapper.is-paged .editable-table td {
+        padding-top: 0.85rem;
+        padding-bottom: 0.85rem;
+    }
+}
+
+/* The arrow turns down while the row is open */
+.editable-table-wrapper .row-toggle svg {
+    transition: transform var(--motion-fast) var(--ease);
+}
+
+.editable-table-wrapper .table-row.is-open .row-toggle svg {
+    transform: rotate(90deg);
+}
+
+.editable-table-wrapper .table-row.is-open {
+    background-color: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 2px 0 0 var(--mint);
+}
+
+.editable-table-wrapper .table-row.is-open td {
+    border-bottom-color: transparent;
+}
+
+/* Values opened under a row */
+.editable-table-wrapper .editable-table .table-detail > td {
+    max-width: none;
+    padding: 0 1rem 1rem 3.5rem;
+    white-space: normal;
+    background-color: rgba(255, 255, 255, 0.035);
+    box-shadow: inset 2px 0 0 var(--mint);
+}
+
+.editable-table-wrapper .table-detail__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 0.5rem;
+}
+
+.editable-table-wrapper .table-detail__cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    min-width: 0;
+    padding: 0.65rem 0.8rem;
+    background: rgba(255, 255, 255, 0.04);
+    overflow-wrap: anywhere;
+}
+
+.editable-table-wrapper .table-detail__cell.is-editable {
+    cursor: pointer;
+}
+
+.editable-table-wrapper .table-detail__cell.is-editable:focus-visible {
+    outline: none;
+    background-color: rgba(126, 230, 168, 0.08);
+}
+
+.editable-table-wrapper .table-detail__cell.non-editable {
+    color: var(--paper-muted);
+}
+
+.editable-table-wrapper .table-detail__cell.is-editing {
+    grid-column: 1 / -1;
+}
+
+.editable-table-wrapper .table-detail__label {
+    color: var(--paper-muted);
+}
+
+.editable-table-wrapper .table-detail__label::first-letter {
+    text-transform: uppercase;
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .editable-table-wrapper .table-detail__cell.is-editable:hover .cell-edit-icon {
+        opacity: 1;
+    }
+
+    .editable-table-wrapper .table-detail__cell.is-editable:hover .cell-value {
+        text-decoration-color: var(--paper-muted);
+    }
+}
+
+/* Phone: the opened values under the card, two by two */
+@media (max-width: 768px) {
+    .editable-table-wrapper .editable-table .table-detail > td {
+        display: block;
+        padding: 0 0.25rem 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        background: transparent;
+        box-shadow: none;
+    }
+
+    .editable-table-wrapper .editable-table .table-detail > td::before {
+        display: none;
+    }
+
+    .editable-table-wrapper .table-detail__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .editable-table-wrapper .table-row.is-open {
+        background: transparent;
+        box-shadow: none;
+    }
+}
+
+/* A new page: the rows come from the right (next) or the left (previous), one after the other */
+@keyframes table-turn-next {
+    from { opacity: 0; transform: translate3d(28px, 0, 0); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes table-turn-prev {
+    from { opacity: 0; transform: translate3d(-28px, 0, 0); }
+    to { opacity: 1; transform: none; }
+}
+
+.editable-table tbody.turn-next .table-row,
+.project-rows.turn-next .project-row {
+    animation: table-turn-next var(--motion-base) var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+.editable-table tbody.turn-prev .table-row,
+.project-rows.turn-prev .project-row {
+    animation: table-turn-prev var(--motion-base) var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms);
+}
+
+/* A row opened: its other values come down, one after the other */
+@keyframes table-detail-in {
+    from { opacity: 0; transform: translate3d(0, -10px, 0); }
+    to { opacity: 1; transform: none; }
+}
+
+.editable-table-wrapper .table-detail__cell {
+    animation: table-detail-in var(--motion-fast) var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 35ms);
+}
+
+/* A row closed: its values fade out */
+.table-detail-leave-active {
+    transition: opacity var(--motion-fast) var(--ease);
+}
+
+.table-detail-leave-to {
+    opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .editable-table tbody .table-row,
+    .project-rows .project-row,
+    .editable-table-wrapper .table-detail__cell {
+        animation: none;
+    }
+}

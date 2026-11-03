@@ -1,0 +1,79 @@
+/*
+ * Home page: projects (LastProject), in the card grid of the site (card-grid.css, larger cards):
+ * the photo of a project fades in its card on hover, under a shade so its code and name stay readable.
+ */
+.projects-grid .project-card__box {
+    isolation: isolate;
+}
+
+/* The photo: hidden, the whole square */
+.projects-grid .project-card__box img {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--motion-base) var(--ease);
+}
+
+/* Shade over the photo, shown with it */
+.projects-grid .project-card__box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(to top, rgba(17, 20, 23, 0.85), rgba(17, 20, 23, 0.35) 55%, rgba(17, 20, 23, 0.5));
+    opacity: 0;
+    transition: opacity var(--motion-base) var(--ease);
+}
+
+.projects-grid .project-card__year {
+    color: var(--fg-muted);
+    transition: color var(--motion-base) var(--ease);
+}
+
+/* Hover and keyboard: the photo fades in */
+@media (hover: hover) and (min-width: 1025px) {
+    .projects-grid .project-card__box:hover img,
+    .projects-grid .project-card__box:hover::before {
+        opacity: 1;
+    }
+
+    /* Under the photo no light ground: nothing light can show at its edges */
+    .projects-grid .project-card__box:hover {
+        background-color: transparent;
+    }
+
+    .projects-grid .project-card__box:hover .project-card__year {
+        color: var(--fg);
+    }
+}
+
+.projects-grid .project-card__box:focus-visible img,
+.projects-grid .project-card__box:focus-visible::before {
+    opacity: 1;
+}
+
+.projects-grid .project-card__box:focus-visible {
+    background-color: transparent;
+}
+
+/* Tablets and phones (no hover): the photo is always shown */
+@media (hover: none), (max-width: 1024px) {
+    .projects-grid .project-card__box img,
+    .projects-grid .project-card__box::before {
+        opacity: 1;
+    }
+
+    .projects-grid .project-card__box {
+        background-color: transparent;
+    }
+
+    .projects-grid .project-card__box .grid-card__code,
+    .projects-grid .project-card__year {
+        color: var(--paper);
+    }
+}

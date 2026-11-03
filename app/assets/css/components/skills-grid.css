@@ -1,0 +1,85 @@
+/* One category of tools (SkillsGrid): label | title | text, then its cards (card-grid.css) with their description */
+.skills-group .skills-group__head {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 3rem;
+}
+
+.skills-group .skills-group__text {
+    margin: 0;
+    color: var(--fg-muted);
+}
+
+/* A card and its description under it (the card itself: card-grid.css) */
+.skills-group .skills-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+.skills-group .skills-card__text {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    color: var(--fg-muted);
+}
+
+/* Tablet and phone: the header on several lines */
+@media (max-width: 1024px) {
+    .skills-group .skills-group__head {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/*
+ * Tablet upright and phone: the cards kept, shorter (not square, not set lower one out of two), the description on two lines:
+ * four per row on a tablet, three on a large phone, two on a small one
+ */
+@media (max-width: 768px) {
+    .skills-section {
+        gap: 4rem;
+    }
+
+    .skills-group .skills-group__head {
+        margin-bottom: 1.5rem;
+    }
+
+    .skills-group .card-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1.25rem 0.9rem;
+    }
+
+    .skills-group .card-grid > :nth-child(even) {
+        margin-top: 0;
+    }
+
+    .skills-group .skills-card {
+        gap: 0.5rem;
+    }
+
+    .skills-group .skills-card .grid-card {
+        aspect-ratio: 16 / 10;
+        padding: 0.8rem 0.9rem 0.85rem;
+    }
+
+    .skills-group .skills-card__text {
+        -webkit-line-clamp: 2;
+    }
+}
+
+@media (max-width: 600px) {
+    .skills-group .card-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 480px) {
+    .skills-group .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}

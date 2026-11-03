@@ -1,0 +1,205 @@
+/*
+ * Modal that grows from the button that opened it; TableModal, FormModal and ProjectModal are built on it (ModalDialog).
+ * In the style of the site: the ink ground and the colors of a section (--fg, --fg-muted, --accent, --line, --panel), no outline.
+ */
+.morph-modal,
+.morph-modal .modal-inner,
+.morph-modal .modal-header,
+.morph-modal .modal-body {
+    display: flex
+}
+
+/* Box centered on the screen by its margins (never on half a pixel: the text stays sharp), its final size and place:
+   the opening only animates transform and opacity (ModalDialog.vue).
+   Its size follows its content, which is stacked in a column and shares the height by flex (never a height in %:
+   Safari on iPhone turns "100% of a box as tall as its content" into almost nothing, a tiny empty box) */
+.morph-modal {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: fit-content;
+    height: fit-content;
+    max-width: 90vw;
+    max-height: 90vh;
+    padding: 2.5rem;
+    box-sizing: border-box;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+    background: var(--ink-800);
+    color: var(--fg);
+    font-family: var(--font-text);
+    z-index: 999;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5)
+}
+
+/* Tablet: almost the whole screen */
+@media (max-width: 1024px) {
+    .morph-modal {
+        width: 92vw;
+        max-width: 92vw;
+        max-height: 92dvh;
+        min-height: 50dvh;
+        padding: 1.75rem 2rem;
+    }
+}
+
+/* Phone: a box with room around it (the height really seen, under the bars of the browser), less room inside */
+@media (max-width: 600px) {
+    .morph-modal {
+        width: 94vw;
+        max-width: 94vw;
+        max-height: 88dvh;
+        min-height: 0;
+        padding: 1.1rem 1rem 1.2rem;
+    }
+}
+
+/* Content scrolls when it is taller than the screen: it takes the room of the box (flex), at most its max-height */
+.morph-modal .modal-inner,
+.morph-modal .modal-body {
+    box-sizing: border-box;
+    overflow: auto;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0
+}
+
+.morph-modal .modal-body {
+    overflow-y: auto;
+    /* As tall as its content (the buttons right under it), smaller when the box is full */
+    flex-grow: 0
+}
+
+/* The end of the scroll of a modal never moves the page under it */
+.morph-modal,
+.morph-modal .modal-inner,
+.morph-modal .modal-body {
+    overscroll-behavior: contain
+}
+
+/* A modal only scrolls up and down: what slides in from the side (the rows of a new page) never shows a sideways
+   scrollbar, on every screen */
+.morph-modal .modal-inner,
+.morph-modal .modal-body {
+    overflow-x: hidden
+}
+
+/* The content never goes past the box (its padding stays visible): the body scrolls, or the table inside it */
+.morph-modal .modal-inner {
+    max-height: calc(90vh - 5rem)
+}
+
+@media (max-width: 1024px) {
+    .morph-modal .modal-inner {
+        max-height: calc(92dvh - 3.5rem)
+    }
+
+    .morph-modal .modal-header {
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+        padding-bottom: 1rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .morph-modal .modal-inner {
+        max-height: calc(88dvh - 2.3rem)
+    }
+
+    .morph-modal.morph-modal--flush .modal-inner {
+        max-height: 88dvh
+    }
+
+}
+
+.morph-modal.morph-modal--flush .modal-inner {
+    max-height: 90vh
+}
+
+/* Title and close button, a thin rule under them */
+.morph-modal .modal-header {
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--line);
+    flex-shrink: 0
+}
+
+.morph-modal .modal-header h3 {
+    margin: 0;
+}
+
+/* Buttons at the bottom */
+.morph-modal .morph-modal__footer {
+    border-top: 1px solid var(--line);
+    padding-top: 1rem;
+    margin-top: 1rem;
+    flex-shrink: 0
+}
+
+.morph-modal .close-btn {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    background: var(--panel);
+    border: none;
+    cursor: pointer;
+    color: var(--fg);
+    transition: background-color var(--motion-base) var(--ease), color var(--motion-base) var(--ease)
+}
+
+/* Only the cross turns on hover, the square stays in place */
+.morph-modal .close-btn i {
+    display: block;
+    transition: transform var(--motion-base) var(--ease);
+}
+
+.morph-modal .close-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+@media (hover: hover) and (min-width: 1025px) {
+    .morph-modal .close-btn:hover {
+        background: var(--accent);
+        color: var(--ink-900);
+    }
+
+    .morph-modal .close-btn:hover i {
+        transform: rotate(90deg);
+    }
+}
+
+/* Flush: no padding, no title bar; the close button floats over the top right corner */
+.morph-modal.morph-modal--flush {
+    padding: 0;
+}
+
+.morph-modal.morph-modal--flush .modal-header {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 3;
+    margin: 0;
+    padding: 0;
+    border: none;
+}
+
+.morph-modal.morph-modal--flush .close-btn {
+    background: rgba(17, 20, 23, 0.7);
+    backdrop-filter: blur(8px);
+}
+
+/* Labels of the fields in the label style of the site */
+.morph-modal label {
+    color: var(--fg-muted);
+}

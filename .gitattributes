@@ -1,0 +1,15 @@
+# Shell scripts run in Linux containers (mysql/entrypoint.sh): always LF, even on Windows
+*.sh text eol=lf
+
+# Binaries
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.avif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.pdf binary

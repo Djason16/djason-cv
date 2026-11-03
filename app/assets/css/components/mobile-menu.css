@@ -1,0 +1,124 @@
+/* Full screen menu of tablets and phones (MobileMenu), under the header: only transform and opacity move */
+.mobile-menu {
+    position: fixed;
+    /* Touches stay in the menu: the page behind never scrolls */
+    touch-action: pan-y;
+    inset: 0;
+    z-index: 14;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: calc(4.5rem + 3rem) var(--page-gutter) 3rem;
+    background: var(--ink-900);
+    color: var(--paper);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.mobile-menu .mobile-menu__nav {
+    display: flex;
+    flex-direction: column;
+}
+
+/* One line per section, a thin rule under it (no mask: a clip per line is costly on a phone) */
+.mobile-menu .mobile-menu__link {
+    display: block;
+    padding: 1.1rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+    color: var(--paper);
+}
+
+.mobile-menu .mobile-menu__line {
+    display: flex;
+    align-items: baseline;
+    gap: 1.25rem;
+    transition: color var(--motion-fast) var(--ease);
+}
+
+/* A tap: only the color changes */
+.mobile-menu .mobile-menu__link:active .mobile-menu__line {
+    color: var(--mint);
+}
+
+.mobile-menu .mobile-menu__link::after,
+.mobile-menu .mobile-menu__email::after {
+    display: none;
+}
+
+.mobile-menu .mobile-menu__number {
+    min-width: 2rem;
+    color: var(--mint);
+}
+
+.mobile-menu .mobile-menu__pay {
+    color: var(--mint);
+}
+
+.mobile-menu .mobile-menu__email {
+    margin-top: 2.5rem;
+    color: var(--paper-muted);
+}
+
+/* While the menu is open (MobileMenu adds menu-open to <html>): the header plain, without its blur */
+html.menu-open header {
+    background-color: var(--ink-900) !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+}
+
+/* The ground prepared while it fades; the lines and the email always on their own layer (a few elements):
+   no jump of their letters when the animation ends */
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+    will-change: opacity;
+}
+
+.mobile-menu .mobile-menu__line,
+.mobile-menu .mobile-menu__email {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+}
+
+/* Opening: the ground fades in, then each line rises a little and fades in, one after the other (like the rest of the site) */
+.mobile-menu-enter-active {
+    transition: opacity 0.3s var(--ease);
+}
+
+.mobile-menu-enter-active .mobile-menu__line,
+.mobile-menu-enter-active .mobile-menu__email {
+    animation: mobile-menu-in 0.5s var(--ease) both;
+    animation-delay: calc(var(--i) * 45ms + 80ms);
+}
+
+/* Closing: the whole menu fades out at once */
+.mobile-menu-leave-active {
+    transition: opacity 0.25s var(--ease);
+}
+
+.mobile-menu-enter-from,
+.mobile-menu-leave-to {
+    opacity: 0;
+}
+
+@keyframes mobile-menu-in {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 18px, 0);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mobile-menu-enter-active,
+    .mobile-menu-leave-active {
+        transition: opacity 0.2s linear;
+    }
+
+    .mobile-menu-enter-active .mobile-menu__line,
+    .mobile-menu-enter-active .mobile-menu__email {
+        animation: none;
+    }
+}

@@ -1,0 +1,123 @@
+/* Archivo and Barlow Condensed come from @fontsource (nuxt.config.ts css), served by the site itself */
+
+/* Root variables */
+:root {
+    /* Color variables */
+    --zero-color: #ffffff;
+    --first-color: #F0F5F9;
+    --second-color: #C9D6DF;
+    --third-color: #52616B;
+    --fourth-color: #1E2022;
+    --fifth-color: #0D0D0D;
+
+    /* Text color variables */
+    --text-color-light: #ffffff;
+    --text-color-grey: #616161;
+    --text-color-dark: #1a1d1f;
+
+    /* Additional accent colors */
+    --accent-yellow: #F4D03F;
+    --accent-green: #58D68D;
+    --accent-red: #E74C3C;
+    --accent-blue: #5DADE2;
+    --accent-purple: #BB8FCE;
+
+    /* Font variables */
+    --font-primary: "Barlow Condensed", "Roboto Condensed", arial, sans-serif;
+    /* Two typefaces on the public pages: a wide one for the titles and names (Archivo Expanded, like the logo),
+       a narrow one for the texts, labels and menus (Barlow Condensed) */
+    --font-display: "Archivo Variable", "Archivo", arial, sans-serif;
+    --font-label: "Barlow Condensed", "Roboto Condensed", arial, sans-serif;
+    --font-text: "Barlow Condensed", "Roboto Condensed", arial, sans-serif;
+
+    /* Ink palette of the public pages: a black tinted with the slate of the site, two tones from one section to the next,
+       near white text, a grey for the secondary text and a mint for the labels (every pair over 7:1) */
+    --ink-900: #111417;
+    --ink-800: #171b1f;
+    --ink-700: #1f252a;
+    --paper: #eef1f3;
+    --paper-muted: #a4b0b8;
+    --mint: #7ee6a8;
+
+    /* Colors used by the components of the public pages, the modals and the admin: text, secondary text, labels, rules, light grounds
+       (a section can change them for its own content) */
+    --fg: var(--paper);
+    --fg-muted: var(--paper-muted);
+    --accent: var(--mint);
+    --line: rgba(255, 255, 255, 0.09);
+    --panel: rgba(255, 255, 255, 0.04);
+
+    /* Font sizes */
+    --font-small: 0.8rem;
+    --font-normal: 1rem;
+    --font-large: 1.2rem;
+    --font-xlarge: 1.5rem;
+
+    /* Type scale of the public pages, used through the text-display-*, text-label and text-body-* classes (base/typography.css) */
+    /* Titles grow with the width of the screen, never wider than a phone (wide letters) */
+    --font-display-xl: clamp(2rem, 0.6rem + 7vw, 7.5rem);
+    --font-display-l: clamp(1.5rem, 1rem + 3.2vw, 4rem);
+    --font-display-m: clamp(1.2rem, 0.8rem + 2vw, 2.4rem);
+    --font-display-s: clamp(1.05rem, 1.6vw, 1.45rem);
+    --font-display-xs: clamp(0.78rem, 1.05vw, 1rem);
+    --font-label-size: 0.82rem;
+
+    /* Space on the left and right of the header, the sections and the footer */
+    --page-gutter: clamp(2rem, 7vw, 8rem);
+    --font-body-l: 1.25rem;
+    --font-body: 1.1rem;
+    --font-body-s: 1rem;
+
+    /*
+     * Motion of the whole site: change a value here, every animation follows (ModalDialog.vue reads them in JS: utils/motion.js).
+     */
+    /* Durations: small changes (colors, hover), opening and closing, slow moves */
+    --motion-fast: 0.35s;
+    --motion-base: 0.5s;
+    --motion-slow: 0.75s;
+    /* Smooth curve, without a fast start */
+    --ease: cubic-bezier(0.33, 1, 0.68, 1);
+    /* Elements coming on screen (v-reveal, reveal.css): duration, distance they rise, time between two of them, leaving */
+    --reveal-duration: 0.9s;
+    --reveal-distance: 1.25rem;
+    --reveal-stagger: 90ms;
+    --reveal-leave-duration: 0.5s;
+    /* Content changing in place (payment mode, login step) and page changes */
+    --swap-duration: 0.5s;
+    --page-duration: 0.35s;
+    /* Cards and buttons under the mouse: how much they rise (whole pixels: no blurred edge) */
+    --hover-lift: -6px;
+    /* What the graphics card prepares on the elements that move (base/global.css) */
+    --will-change: transform, opacity;
+}
+
+/* Tablets: the whole site a little smaller (every size in rem follows the base size: texts, buttons, fields, room) */
+@media (max-width: 1024px) {
+    :root {
+        font-size: 15.5px;
+        --font-body-l: 1.15rem;
+        --font-body: 1.05rem;
+        --font-body-s: 0.95rem;
+    }
+}
+
+/* Tablets upright (768): smaller again */
+@media (max-width: 768px) {
+    :root {
+        font-size: 15px;
+    }
+}
+
+/* Phones: the whole site smaller again (base size), the texts and titles too, less room on the sides (the screen is narrow) */
+@media (max-width: 600px) {
+    :root {
+        font-size: 14.5px;
+        --font-display-l: clamp(1.35rem, 0.9rem + 3.2vw, 4rem);
+        --font-display-m: clamp(1.1rem, 0.75rem + 2vw, 2.4rem);
+        --font-body-l: 1.05rem;
+        --font-body: 1rem;
+        --font-body-s: 0.9rem;
+        --font-label-size: 0.8rem;
+        --page-gutter: 1.25rem;
+    }
+}
