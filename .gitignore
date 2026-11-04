@@ -10,6 +10,7 @@ node_modules/
 
 # Database files and backups (MySQL of docker-compose.yml); mysql/init/*.sql run on the first start
 /database/
+/backups/
 *.sql
 !mysql/init/*.sql
 

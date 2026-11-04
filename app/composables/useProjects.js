@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { useLang } from './useLang.js'
 import { projects as staticProjects } from '@/data/projects.js'
 import { api } from '@/utils/api.js'
+import { compressImage } from '@/utils/compressImage.js'
 import { todayIso } from '@/utils/display.js'
 
 /*
@@ -57,7 +58,7 @@ export const useProjects = () => {
 
     // Adds a project from the admin page
     const addProject = async (project, imageFile = null) => {
-        const res = await api.post('/projects', createFormData(project, imageFile))
+        const res = await api.post('/projects', createFormData(project, await compressImage(imageFile)))
         if (res.success) apiProjects.value = [...apiProjects.value, { ...project, id: res.id, img: res.imagePath || project.img }]
         else console.error('Project creation failed', res.error)
         return res
@@ -67,7 +68,7 @@ export const useProjects = () => {
     const updateProject = async (id, updates = {}, imageFile = null) => {
         let res = { success: false, error: 'Nothing to update' }
         if (imageFile) {
-            res = await api.post(`/projects/${id}/image`, createFormData({}, imageFile))
+            res = await api.post(`/projects/${id}/image`, createFormData({}, await compressImage(imageFile)))
             if (res.success) patch(id, { img: res.imagePath })
         }
         if (Object.keys(updates).length) {

@@ -43,6 +43,7 @@ import { useLang } from '@/composables/useLang.js'
 import { useMessage } from '@/composables/useMessage.js'
 import { useSiteSettingsStore } from '@/stores/siteSettings.js'
 import { areaSource, isTicked, townOf } from '@/utils/address.js'
+import { compressImage } from '@/utils/compressImage.js'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
@@ -103,10 +104,10 @@ const savePhoto = async file => {
     photoLoading.value = false
     showMessage(res.success ? 'success' : 'error', t(res.success ? 'saveSuccess' : 'saveFailed'), res.success ? MESSAGE_DELAY : 0)
 }
-const pickPhoto = event => {
+const pickPhoto = async event => {
     const file = event.target.files?.[0]
     event.target.value = ''
-    if (file) savePhoto(file)
+    if (file) savePhoto(await compressImage(file))
 }
 
 // Label of a field: a translated text, or a brand name as it is

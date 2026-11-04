@@ -48,6 +48,23 @@ Then fill in **admin → My info** (name, contact, legal details, social links).
 | Start command | `npm run start` |
 | Port | `3000` |
 
+## 05 — Back up and restore the database
+
+The whole database fits in one SQL file: the tables, their rows and the images uploaded from the admin (`dc_uploads`).
+
+| Action | Command, in `app/` |
+| ------ | ------------------ |
+| Back up the local database | `npm run db:backup` |
+| Back up the online database | `npm run db:backup -- --env .env.production` |
+| Restore a backup locally | `npm run db:restore -- ../backups/<file>.sql` |
+| Restore a backup online | `npm run db:restore -- ../backups/<file>.sql --env .env.production` (asks you to type the database name) |
+
+- Files go to `backups/` at the root of the project, never sent to Git
+- A restore **replaces** every table with the one in the file: back up the current state first
+- The online database only accepts computers allowed in the Infomaniak Manager (**Databases** → **Remote access**). Otherwise: phpMyAdmin from the Manager → **Export** to back up, **Import** the file to restore
+- Infomaniak also keeps automatic backups of the database: **Manager** → **Databases** → **Backups** → **Restore**
+- Before any big release: `npm run db:backup -- --env .env.production`
+
 ---
 
 <p align="center"><sub><a href="07-security.md">← 07 — Security</a> &nbsp;·&nbsp; <a href="README.md">Documentation</a> &nbsp;·&nbsp; <a href="09-troubleshooting.md">09 — Troubleshooting →</a></sub></p>

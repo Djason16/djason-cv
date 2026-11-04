@@ -25,8 +25,8 @@
 
                         <!-- Pay, then switch to the other mode -->
                         <div class="payment-buttons">
-                            <HeroButton primary :label="t(current.payKey)" :iconClass="current.payIcon"
-                                :aria-label="t(current.payKey)" :title="t(current.payKey)"
+                            <HeroButton primary :label="t(opening ? 'loading' : current.payKey)" :iconClass="current.payIcon"
+                                :aria-label="t(current.payKey)" :title="t(current.payKey)" :disabled="opening"
                                 @click="startCheckout" />
                             <HeroButton :label="t(current.switchKey)" :iconClass="current.switchIcon"
                                 :aria-label="t(current.switchKey)"
@@ -127,6 +127,9 @@ const checkStatus = async (modeConfig, sessionId) => {
     showMessage(ok ? 'success' : 'error', ok ? modeConfig.successKey : modeConfig.cancelKey, ok ? 5000 : 0)
 }
 
+// The Stripe page is being created: the pay button is disabled and shows that it is loading
+const opening = ref(false)
+
 // One-time payment: checks the amount, then opens the Stripe payment page
 const startCheckout = async () => {
     clearMessage()
@@ -135,7 +138,10 @@ const startCheckout = async () => {
     if (mode.value === 'subscription' && !/^.{2,50}$/.test(formData.name.trim())) return showMessage('error', 'invalidName', 0)
 
     const modeConfig = current.value
-    const session = await modeConfig.create()
+    // One Stripe page at a time: the button waits for the answer of the API
+    if (opening.value) return
+    opening.value = true
+    const session = await modeConfig.create().finally(() => { opening.value = false })
     if (!session.success || !session.url || !session.sessionId) return showMessage('error', 'checkoutError', 0)
 
     // Stripe Checkout in a popup, checked as soon as the visitor closes it

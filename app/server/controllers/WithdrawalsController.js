@@ -32,6 +32,10 @@ export default class WithdrawalsController extends Controller {
         }
         if (withdrawal.name.length < 2) return ResponseHelper.validationError(event, 'withdrawalNameRequired')
         if (!isEmail(withdrawal.email)) return ResponseHelper.validationError(event, 'invalidEmail')
+        // Also a few sendings per hour for one address, whatever the IP
+        keys.push(`withdrawal-email:${withdrawal.email.toLowerCase()}`)
+        const byEmail = await RateLimitHelper.check(keys)
+        if (byEmail.locked) return ResponseHelper.tooManyRequests(event, 'tooManyAttempts', byEmail.retryAfter)
         if (withdrawal.reference.length < 2) return ResponseHelper.validationError(event, 'withdrawalReferenceRequired')
 
         // Counted even when it works: a few sendings per hour and per address at most
