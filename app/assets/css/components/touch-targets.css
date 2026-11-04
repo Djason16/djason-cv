@@ -1,0 +1,22 @@
+/*
+ * Touch screens: every link and button can be hit with a finger (recette T-015).
+ * At least 44 px high for the controls (menu, buttons of the site), the links of the footer and of the cookie banner
+ * get the same height; the look stays the same with a mouse (hover: hover).
+ */
+@media (pointer: coarse) {
+    .header-top .header-top__menu,
+    .custom-button {
+        min-height: 44px;
+    }
+
+    .footer-column a,
+    .footer-bar__links a,
+    .footer-bar__links .footer-link,
+    .cookie-banner__link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        /* Icon links (social networks) as wide as they are high */
+        min-width: 44px;
+    }
+}

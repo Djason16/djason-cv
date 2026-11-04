@@ -30,13 +30,13 @@
         </div>
     </div>
     <span v-else class="cell-content">
-        <span class="cell-value" :class="{ 'is-empty': empty }" v-html="display"></span>
+        <span class="cell-value" :class="{ 'is-empty': empty }" v-html="safeDisplay"></span>
         <i v-if="!disabled" class="fas fa-pen cell-edit-icon" aria-hidden="true"></i>
     </span>
 </template>
 
 <script setup>
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import IconButton from '@/components/ui/Button/IconButton.vue'
 import { useLang } from '@/composables/useLang.js'
 
@@ -54,6 +54,10 @@ const emit = defineEmits(['save', 'cancel', 'file'])
 const value = defineModel({ default: '' })
 const { getTranslation: t } = useLang()
 const input = ref(null)
+
+// HTML only for the columns that build it themselves (processHtml) ; any other value is shown as text, never run
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c])
+const safeDisplay = computed(() => props.col.processHtml ? props.display : escapeHtml(props.display))
 
 // The field gets the focus as soon as the cell is edited
 const focus = () => nextTick(() => input.value?.focus?.())

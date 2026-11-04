@@ -38,8 +38,13 @@ export const RequestHelper = {
         return { fields, files }
     },
 
-    /** Client IP (first X-Forwarded-For entry behind Apache, socket address otherwise). */
+    /**
+     * Client IP. Behind Apache, the last X-Forwarded-For entry is the one Apache added: the visitor can write
+     * the first ones himself, so they never count (a robot would change them to get past the attempt limits).
+     * Without a proxy, the socket address.
+     */
     ip(event) {
-        return getRequestIP(event, { xForwardedFor: true }) || 'unknown'
+        const forwarded = String(getRequestHeader(event, 'x-forwarded-for') || '').split(',').map(part => part.trim()).filter(Boolean)
+        return forwarded.at(-1) || getRequestIP(event) || 'unknown'
     },
 }

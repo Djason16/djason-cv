@@ -46,7 +46,8 @@
 }
 
 .custom-list .custom-list__content {
-    max-width: 44rem;
+    /* About 80 characters per line at most: the font is narrow (60ch of its zero), a width in rem alone lets lines run long */
+    max-width: min(44rem, 60ch);
     margin: 0;
     color: var(--fg-muted);
 }

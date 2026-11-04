@@ -8,7 +8,9 @@
     "build": "cross-env NODE_ENV=production nuxt build --dotenv .env.production",
     "start": "node --env-file=.env.production .output/server/index.mjs",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "db:backup": "node scripts/db-backup.mjs",
+    "db:restore": "node scripts/db-restore.mjs"
   },
   "dependencies": {
     "@fontsource-variable/archivo": "^5.3.0",

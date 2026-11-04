@@ -48,6 +48,23 @@ Remplis ensuite **admin → Mes infos** (nom, contact, mentions légales, résea
 | Commande de démarrage | `npm run start` |
 | Port | `3000` |
 
+## 05 — Sauvegarder et restaurer la base
+
+Toute la base tient dans un fichier SQL : les tables, leurs lignes et les images envoyées depuis l'admin (`dc_uploads`).
+
+| Action | Commande, dans `app/` |
+| ------ | --------------------- |
+| Sauvegarder la base locale | `npm run db:backup` |
+| Sauvegarder la base en ligne | `npm run db:backup -- --env .env.production` |
+| Remettre une sauvegarde en local | `npm run db:restore -- ../backups/<fichier>.sql` |
+| Remettre une sauvegarde en ligne | `npm run db:restore -- ../backups/<fichier>.sql --env .env.production` (demande de taper le nom de la base) |
+
+- Les fichiers vont dans `backups/` à la racine du projet, jamais envoyé sur Git
+- La restauration **remplace** chaque table par celle du fichier : fais d'abord une sauvegarde de l'état actuel
+- La base en ligne n'accepte que les ordinateurs autorisés dans le Manager Infomaniak (**Bases de données** → **Accès distant**). Sinon : phpMyAdmin du Manager → **Exporter** pour sauvegarder, **Importer** le fichier pour restaurer
+- Infomaniak garde en plus des sauvegardes automatiques de la base : **Manager** → **Bases de données** → **Sauvegardes** → **Restaurer**
+- Avant chaque mise en ligne importante : `npm run db:backup -- --env .env.production`
+
 ---
 
 <p align="center"><sub><a href="07-securite.md">← 07 — Sécurité</a> &nbsp;·&nbsp; <a href="README.md">Documentation</a> &nbsp;·&nbsp; <a href="09-depannage.md">09 — Dépannage →</a></sub></p>

@@ -32,7 +32,8 @@
 }
 
 .page-layout .page-layout__subtitle {
-    max-width: 44rem;
+    /* About 80 characters per line at most, like the texts of the lists (narrow font) */
+    max-width: min(44rem, 60ch);
     margin: 0;
     color: var(--fg-muted);
 }
