@@ -13,7 +13,7 @@
         <div class="about-section__body">
             <figure v-reveal="'lift'" class="about-section__photo">
                 <AppImage :src="photoSrc" :alt="t('aboutPhotoPortrait', { name: site.name })" width="864" height="950" />
-                <figcaption class="eyebrow">{{ site.name }}<template v-if="site.area"> — {{ site.area }}</template></figcaption>
+                <figcaption class="eyebrow">{{ site.name }}<template v-if="site.area"> · {{ site.area }}</template></figcaption>
             </figure>
 
             <!-- Key facts, a thin line between them (only the ones filled in, admin > My info) -->

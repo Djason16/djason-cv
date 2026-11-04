@@ -1,4 +1,6 @@
 /**
+ * dc-scaffold: adapted (Nitro: h3 event, JavaScript; extras used by the site, see Architecture de référence)
+ *
  * Every JSON response of the API goes through this object (DC Scaffold convention: https://github.com/Djason16/dc-scaffold).
  *
  * Success: { "success": true, ...data }

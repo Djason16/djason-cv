@@ -7,7 +7,7 @@
             <span class="contract-header__label">{{ siteHost }}</span>
         </div>
         <p class="contract-header__label contract-header__label--mint">
-            {{ t('contractTitle') }} — {{ contractNumber || (contractIndex ? t('contractNumber', { year: contractYear, index: contractIndex }) : t('billDraft')) }}
+            {{ t('contractTitle') }} · {{ contractNumber || (contractIndex ? t('contractNumber', { year: contractYear, index: contractIndex }) : t('billDraft')) }}
         </p>
         <h1 class="contract-header__title">{{ title || t('contractTitle') }}</h1>
         <p v-if="quoteNumber" class="contract-header__quote">{{ t('billQuote') }} {{ quoteNumber }}</p>

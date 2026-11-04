@@ -3,6 +3,8 @@ import { RequestHelper } from './RequestHelper.js'
 import { ResponseHelper } from './ResponseHelper.js'
 
 /**
+ * dc-scaffold: adapted (Nitro: h3 event, JavaScript; extras used by the site, see Architecture de référence)
+ *
  * Base class for every controller in server/controllers/ (DC Scaffold convention: https://github.com/Djason16/dc-scaffold):
  * short helpers so each controller stays small. Routes are built from the method names
  * by RouteDiscovery (getAll, getOne, create, update, delete, or "static routes").

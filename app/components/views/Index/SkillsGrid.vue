@@ -3,7 +3,7 @@
          its description under it, in the card grid of the site (card-grid.css) -->
     <div class="skills-group">
         <div v-reveal="'group'" class="skills-group__head">
-            <p class="eyebrow">{{ padIndex(number - 1) }} — {{ title }}</p>
+            <p class="eyebrow">{{ padIndex(number - 1) }} · {{ title }}</p>
             <h3 class="skills-group__title text-display-m">{{ title }}</h3>
             <p class="skills-group__text text-body">{{ text }}</p>
         </div>
