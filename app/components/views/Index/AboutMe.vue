@@ -13,7 +13,7 @@
         <div class="about-section__body">
             <figure v-reveal="'lift'" class="about-section__photo">
                 <AppImage :src="photoSrc" :alt="t('aboutPhotoPortrait', { name: site.name })" width="864" height="950" />
-                <figcaption class="eyebrow">{{ site.name }}<template v-if="site.address"> — {{ site.address }}</template></figcaption>
+                <figcaption class="eyebrow">{{ site.name }}<template v-if="site.area"> · {{ site.area }}</template></figcaption>
             </figure>
 
             <!-- Key facts, a thin line between them (only the ones filled in, admin > My info) -->
@@ -49,11 +49,12 @@ const age = computed(() => {
     return today.getFullYear() - birth.getFullYear() - (beforeBirthday ? 1 : 0)
 })
 
-const variables = computed(() => ({ name: site.name, address: site.address, age: age.value ?? '' }))
+// The area only, never the exact address (admin > My info)
+const variables = computed(() => ({ name: site.name, address: site.area, age: age.value ?? '' }))
 
 const facts = computed(() => [
     { label: t('aboutAgeLabel'), value: age.value && t('aboutAgeValue', { age: age.value }) },
-    { label: t('aboutLocationLabel'), value: site.address },
+    { label: t('aboutLocationLabel'), value: site.area },
     { label: t('aboutExpertiseLabel'), value: t('aboutExpertiseValue') },
 ].filter(fact => fact.value))
 </script>

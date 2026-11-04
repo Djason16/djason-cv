@@ -1,5 +1,5 @@
 <template>
-    <!-- Home page: projects, in the card grid of the site (card-grid.css, larger cards): code and year at the top, name at the bottom,
+    <!-- Home page: projects, in the card grid of the site (card-grid.css, larger cards): code at the top, name at the bottom,
          its photo shown on hover; a click opens its details in a modal (ProjectModal) -->
     <section id="projects" class="projects-section" aria-labelledby="projects-title">
         <SectionHead id="projects-title" reveal="zoom-group" :label="t('projectsLabel')" :title="t('lastProjects')" :text="t('projectDescription')" />
@@ -13,7 +13,6 @@
                     <AppImage :src="project.img || '/images/default_image.jpg'" :alt="project.name" width="960" height="640" />
                     <span class="grid-card__top">
                         <span class="grid-card__code eyebrow">{{ padIndex(i, 'PR') }}</span>
-                        <span class="project-card__year eyebrow">{{ String(project.date || '').slice(0, 4) }}</span>
                     </span>
                     <span class="grid-card__name text-display-s">{{ project.name }}</span>
                 </button>

@@ -20,7 +20,7 @@
 
                 <!-- One part per task, its tools in the card grid of the site, rising one after the other; the settings folded -->
                 <section v-for="(group, g) in shownGroups" :key="group.key" class="admin-group">
-                    <p class="admin-group__label eyebrow">{{ padIndex(g) }} — {{ t(group.key) }}</p>
+                    <p class="admin-group__label eyebrow">{{ padIndex(g) }} · {{ t(group.key) }}</p>
                     <ul class="admin-nav card-grid card-grid--large">
                         <li v-for="(id, i) in group.tools" :key="id" v-reveal class="admin-nav__item"
                             :style="{ '--reveal-delay': `calc(var(--reveal-stagger) * ${i % 4})` }">

@@ -18,11 +18,17 @@
 
         <!-- Fields four by four on a computer (FormModal columns), two by two on a tablet -->
         <div v-for="(group, i) in FIELD_ROWS" :key="i" class="row-group">
-            <div v-for="f in group" :key="f.id" class="form-group">
-                <label :for="`setting-${f.id}`">{{ labelOf(f) }}</label>
-                <input :id="`setting-${f.id}`" v-model="form[f.id]" :type="f.type"
-                    :placeholder="f.placeholderKey ? t(f.placeholderKey) : f.placeholder" :title="labelOf(f)"
-                    :aria-label="labelOf(f)" :autocomplete="f.autocomplete" />
+            <div v-for="f in group.filter(f => !f.when || f.when(form))" :key="f.id" class="form-group">
+                <!-- A box to tick, its text beside it -->
+                <label v-if="f.type === 'checkbox'" :for="`setting-${f.id}`" class="settings-check">
+                    <input :id="`setting-${f.id}`" v-model="form[f.id]" type="checkbox" :title="labelOf(f)" /> {{ labelOf(f) }}
+                </label>
+                <template v-else>
+                    <label :for="`setting-${f.id}`">{{ labelOf(f) }}</label>
+                    <input :id="`setting-${f.id}`" v-model="form[f.id]" :type="f.type"
+                        :placeholder="f.placeholderKey ? t(f.placeholderKey) : f.placeholder" :title="labelOf(f)"
+                        :aria-label="labelOf(f)" :autocomplete="f.autocomplete" />
+                </template>
             </div>
         </div>
     </FormModal>
@@ -36,6 +42,7 @@ import FormModal from '@/components/ui/Modal/FormModal.vue'
 import { useLang } from '@/composables/useLang.js'
 import { useMessage } from '@/composables/useMessage.js'
 import { useSiteSettingsStore } from '@/stores/siteSettings.js'
+import { areaSource, isTicked, townOf } from '@/utils/address.js'
 
 const props = defineProps({ show: Boolean })
 const emit = defineEmits(['close'])
@@ -59,8 +66,16 @@ const FIELD_ROWS = [
         { id: 'siret', labelKey: 'siret', placeholderKey: 'enterSiret', type: 'text', autocomplete: 'off' },
         { id: 'tva', labelKey: 'settingTva', placeholderKey: 'enterSettingTva', type: 'text', autocomplete: 'off' },
     ],
-    [{ id: 'address', labelKey: 'settingAddress', placeholderKey: 'enterSettingAddress', type: 'text', autocomplete: 'address-level2' }],
-    [{ id: 'invoiceAddress', labelKey: 'settingInvoiceAddress', placeholderKey: 'enterSettingInvoiceAddress', type: 'text', autocomplete: 'street-address' }],
+    // The billing address (documents); ticked "same", the town and country of the legal pages come from it, otherwise
+    // they are typed apart. The area of the public pages is worked out from them (it can be changed by hand)
+    [
+        { id: 'invoiceAddress', labelKey: 'settingInvoiceAddress', placeholderKey: 'enterSettingInvoiceAddress', type: 'text', autocomplete: 'street-address' },
+        { id: 'sameAddress', labelKey: 'settingSameAddress', type: 'checkbox' },
+    ],
+    [
+        { id: 'address', labelKey: 'settingAddress', placeholderKey: 'enterSettingAddress', type: 'text', autocomplete: 'address-level2', when: f => !f.sameAddress },
+        { id: 'area', labelKey: 'settingArea', placeholderKey: 'enterSettingArea', type: 'text', autocomplete: 'off' },
+    ],
     [
         { id: 'linkedin', label: 'LinkedIn', placeholder: 'https://www.linkedin.com/in/...', type: 'url', autocomplete: 'off' },
         { id: 'github', label: 'GitHub', placeholder: 'https://github.com/...', type: 'url', autocomplete: 'off' },
@@ -86,7 +101,7 @@ const savePhoto = async file => {
     photoLoading.value = true
     const res = await siteSettings.savePhoto(file)
     photoLoading.value = false
-    showMessage(res.success ? 'success' : 'error', t(res.success ? 'saveSuccess' : 'saveFailed'), res.success ? 1500 : 0)
+    showMessage(res.success ? 'success' : 'error', t(res.success ? 'saveSuccess' : 'saveFailed'), res.success ? MESSAGE_DELAY : 0)
 }
 const pickPhoto = event => {
     const file = event.target.files?.[0]
@@ -98,8 +113,28 @@ const pickPhoto = event => {
 const labelOf = field => field.label || t(field.labelKey)
 
 // Copy of the current settings, edited in the form (the site changes only once saved)
+// (the box "same address" ticked or not, saved as '1' or '')
 const form = reactive({ ...siteSettings.values })
-watch(() => props.show, open => { if (open) Object.assign(form, siteSettings.values) })
+const fill = () => Object.assign(form, siteSettings.values, { sameAddress: isTicked(siteSettings.values.sameAddress) })
+watch(() => props.show, open => open && fill(), { immediate: true })
+
+// Same address: the town and country follow the billing address while it is typed
+watch(() => [form.sameAddress, form.invoiceAddress], ([same, invoice]) => { if (same) form.address = townOf(invoice) })
+
+// The area follows the address while it is typed (a moment after the last key): the form shows what the site will show,
+// and it can still be changed by hand afterwards. The saved address gives back the saved area
+// (from the billing address when it is the same address or in the same town: its postal code makes the town certain)
+let areaTimer
+watch(() => areaSource(form), source => {
+    clearTimeout(areaTimer)
+    if (!props.show) return
+    if (source === areaSource({ ...siteSettings.values })) return void (form.area = siteSettings.values.area)
+    areaTimer = setTimeout(async () => {
+        const area = source.trim() ? await siteSettings.areaOf(source) : ''
+        // No answer (null): the area shown stays
+        if (area !== null && areaSource(form) === source) form.area = area
+    }, 500)
+})
 
 // Closes the modal and clears its message
 const close = () => {
@@ -112,7 +147,7 @@ const close = () => {
 const handleSubmit = async () => {
     clearMessage()
     formLoading.value = true
-    const res = await siteSettings.save({ ...form })
+    const res = await siteSettings.save({ ...form, sameAddress: form.sameAddress ? '1' : '' })
     formLoading.value = false
     if (!res.success) return showMessage('error', t('saveFailed'), 0)
 
@@ -123,6 +158,16 @@ const handleSubmit = async () => {
 </script>
 
 <style scoped>
+/* "Same address": the box and its text on one line, level with the field beside it */
+.settings-check {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-top: auto;
+    min-height: 2.75rem;
+    cursor: pointer;
+}
+
 /* Photo of "About me": a small portrait, its name, a hint, the file field and the way back to the photo of the site */
 .settings-photo {
     display: flex;

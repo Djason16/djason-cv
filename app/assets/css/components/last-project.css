@@ -30,11 +30,6 @@
     transition: opacity var(--motion-base) var(--ease);
 }
 
-.projects-grid .project-card__year {
-    color: var(--fg-muted);
-    transition: color var(--motion-base) var(--ease);
-}
-
 /* Hover and keyboard: the photo fades in */
 @media (hover: hover) and (min-width: 1025px) {
     .projects-grid .project-card__box:hover img,
@@ -45,10 +40,6 @@
     /* Under the photo no light ground: nothing light can show at its edges */
     .projects-grid .project-card__box:hover {
         background-color: transparent;
-    }
-
-    .projects-grid .project-card__box:hover .project-card__year {
-        color: var(--fg);
     }
 }
 
@@ -72,8 +63,7 @@
         background-color: transparent;
     }
 
-    .projects-grid .project-card__box .grid-card__code,
-    .projects-grid .project-card__year {
+    .projects-grid .project-card__box .grid-card__code {
         color: var(--paper);
     }
 }

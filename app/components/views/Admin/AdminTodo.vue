@@ -8,7 +8,7 @@ Style: admin-todo.css -->
 
         <div class="admin-todo__board">
             <div v-for="(column, c) in columns" :key="column.key" class="admin-todo__column" :class="{ 'is-empty': !column.items.length }">
-                <p class="admin-todo__head eyebrow">{{ padIndex(c) }} — {{ t(`adminTodo_${column.key}`) }}</p>
+                <p class="admin-todo__head eyebrow">{{ padIndex(c) }} · {{ t(`adminTodo_${column.key}`) }}</p>
                 <p class="admin-todo__figure text-display-s">{{ loading ? '…' : column.figure }}</p>
 
                 <ul v-if="column.items.length" class="admin-todo__list">

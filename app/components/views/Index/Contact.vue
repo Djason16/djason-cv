@@ -22,9 +22,9 @@
                 <span class="eyebrow">{{ t('phoneNumber') }}</span>
                 <a :href="`tel:${site.phone.replace(/\s+/g, '')}`" :title="t('callPhone', { phone: site.phone })">{{ site.phone }}</a>
             </div>
-            <div v-if="site.address" class="contact-section__item text-body-l">
+            <div v-if="site.area" class="contact-section__item text-body-l">
                 <span class="eyebrow">{{ t('aboutLocationLabel') }}</span>
-                <span>{{ site.address }}</span>
+                <span>{{ site.area }}</span>
             </div>
             <a v-if="site.email" :href="`mailto:${site.email}`" :title="t('sendEmailButton')" class="contact-section__button text-label">{{ t('sendEmailButton') }}</a>
         </div>

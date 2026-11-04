@@ -1,5 +1,5 @@
 <!-- Details of a project, in the modal of the site (ModalDialog, flush): it grows from its card.
-The photo to the edges on the left; on the right its code and year, its name, its text, its details (year, tools) and the link -->
+The photo to the edges on the left; on the right its name, its text, its tools and the link -->
 <template>
     <ModalDialog :show="!!project" :title="project?.name || ''" :active-button="activeButton" flush @close="emit('close')">
         <article v-if="project" class="project-modal">
@@ -18,10 +18,6 @@ The photo to the edges on the left; on the right its code and year, its name, it
 
                 <!-- Details: one line each, its name on the left -->
                 <dl class="project-modal__facts">
-                    <div v-if="year" class="project-modal__fact">
-                        <dt class="text-label">{{ t('projectYear') }}</dt>
-                        <dd class="text-body">{{ year }}</dd>
-                    </div>
                     <div v-if="project.skills?.length" class="project-modal__fact">
                         <dt class="text-label">{{ t('projectTools') }}</dt>
                         <dd>
@@ -43,7 +39,6 @@ The photo to the edges on the left; on the right its code and year, its name, it
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { padIndex } from '@/utils/display.js'
 import AppImage from '@/components/ui/Image/AppImage.vue'
 import ModalDialog from '@/components/ui/Modal/ModalDialog.vue'
@@ -51,7 +46,7 @@ import { useLang } from '@/composables/useLang.js'
 
 const { getTranslation: t } = useLang()
 
-const props = defineProps({
+defineProps({
     // Project shown (null: closed)
     project: { type: Object, default: null },
     // Its place in the list (its code PR-01...)
@@ -61,5 +56,4 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 
-const year = computed(() => String(props.project?.date || '').slice(0, 4))
 </script>

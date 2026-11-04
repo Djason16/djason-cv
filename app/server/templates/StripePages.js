@@ -103,7 +103,7 @@ function renderResultPage(configType, resultType = 'success') {
     <main class="card">
       <div class="brand"><img src="/images/main_logo_light.png" alt="Djason Chery"></div>
       <div class="content">
-        <p class="eyebrow"><span class="mark" aria-hidden="true">${icon}</span>${resultType === 'cancel' ? 'Stripe — annulé' : 'Stripe — confirmé'}</p>
+        <p class="eyebrow"><span class="mark" aria-hidden="true">${icon}</span>${resultType === 'cancel' ? 'Stripe · annulé' : 'Stripe · confirmé'}</p>
         <h1>${config.title}</h1>
         <div class="divider"></div>
         <p>${config.message}</p>

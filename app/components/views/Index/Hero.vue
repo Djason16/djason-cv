@@ -8,7 +8,7 @@
         <div class="hero__light" aria-hidden="true"></div>
 
         <div class="hero__center">
-            <p class="hero__line eyebrow">{{ t('heroLine', { place: site.address }) }}</p>
+            <p class="hero__line eyebrow">{{ t('heroLine', { place: site.area }) }}</p>
             <!-- Each letter of the name comes in from a blur, one after the other; the letters kept by word:
                  a line can break between two words, never inside one -->
             <p class="hero__name text-display-xl" :aria-label="site.name">

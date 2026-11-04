@@ -46,6 +46,7 @@ cp .env.example .env
 | `BANK_IBAN`, `BANK_BIC` | Imprimés sur les factures et contrats |
 | **Traduction** (MyMemory, gratuit, sans clé) | |
 | `MYMEMORY_EMAIL` | Facultatif. Vide : environ 5 000 caractères traduits par jour ; un e-mail : environ 50 000 |
+| `GOOGLE_MAPS_API_KEY` | Clé de l'API Google Geocoding (côté serveur) : la région d'une adresse hors de France, affichée sur le site au lieu de la ville. En France : le service public geo.api.gouv.fr. Vide : le pays seulement |
 
 L'ordre est celui de `.env.example` et d'admin → Environnement (une variable absente y apparaît vide : la remplir l'ajoute au fichier).
 

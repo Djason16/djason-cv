@@ -20,7 +20,7 @@ const lang = useLang()
 const { getTranslation: t } = lang
 const { envVars, fetchEnvVars, updateEnvVars } = useEnv()
 
-// Variables by part, in the order of .env.example (mode, site, database, admin, emails, payments, bank, translation)
+// Variables by part, in the order of .env.example (mode, site, database, admin, emails, payments, bank, translation, area)
 const envCategories = {
     mode: ['NODE_ENV'],
     site: ['NUXT_PUBLIC_FRONTEND_DOMAIN'],
@@ -30,6 +30,7 @@ const envCategories = {
     payments: ['STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET'],
     bank: ['BANK_IBAN', 'BANK_BIC'],
     translation: ['MYMEMORY_EMAIL'],
+    area: ['GOOGLE_MAPS_API_KEY'],
 }
 const known = new Set(Object.values(envCategories).flat())
 

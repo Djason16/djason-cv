@@ -10,7 +10,7 @@ In the style of the site (its ink, light texts, mint labels): Archivo titles, Ba
 
         <!-- Like the opening of a section: a mint label, a large title, the dates -->
         <header class="bd-head">
-            <p class="bd-label bd-label--mint">{{ t(kindKey) }} — {{ doc.number || t('billDraft') }}</p>
+            <p class="bd-label bd-label--mint">{{ t(kindKey) }} · {{ doc.number || t('billDraft') }}</p>
             <h1 class="bd-title">{{ doc.title || t(kindKey) }}</h1>
             <dl class="bd-dates">
                 <div><dt class="bd-label">{{ t('billIssued') }}</dt><dd>{{ date(doc.issueDate) }}</dd></div>

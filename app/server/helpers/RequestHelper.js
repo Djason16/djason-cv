@@ -1,4 +1,6 @@
 /**
+ * dc-scaffold: adapted (Nitro: h3 event, JavaScript; extras used by the site, see Architecture de référence)
+ *
  * Reads incoming data the same way in every controller (DC Scaffold convention: https://github.com/Djason16/dc-scaffold).
  */
 export const RequestHelper = {

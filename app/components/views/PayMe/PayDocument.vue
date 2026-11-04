@@ -11,7 +11,7 @@
 
         <template v-else>
             <div class="pay-document__card">
-                <p class="eyebrow">{{ t(doc.type === 'quote' ? 'billQuote' : `billInvoice_${doc.kind || 'standard'}`) }} — {{ doc.number }}</p>
+                <p class="eyebrow">{{ t(doc.type === 'quote' ? 'billQuote' : `billInvoice_${doc.kind || 'standard'}`) }} · {{ doc.number }}</p>
                 <h3 class="pay-document__title text-display-s">{{ doc.title || doc.number }}</h3>
                 <p v-if="doc.client" class="pay-document__client text-body-s">{{ t('payDocFor', { name: doc.client }) }}</p>
                 <dl class="pay-document__amounts">

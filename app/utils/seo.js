@@ -68,7 +68,7 @@ const seoConfig = {
 
 // Generates SEO metadata for a page ("site" = useSite(), like the buildSeo of DC Scaffold (https://github.com/Djason16/dc-scaffold))
 export const seoMetaData = (pageKey, lang, site) => {
-    const { name, url: baseUrl, email, phone, tva: tvaNumber, linkedin, github, malt, instagram } = site
+    const { name, url: baseUrl, email, phone, tva: tvaNumber, linkedin, github, malt, instagram, area } = site
 
     const {
         url = "",
@@ -117,10 +117,10 @@ export const seoMetaData = (pageKey, lang, site) => {
             "@type": "Country",
             name: "France"
         },
+        // The region only (admin > My info: area), never the town
         address: {
             "@type": "PostalAddress",
-            addressLocality: "Thourotte",
-            addressRegion: "Hauts-de-France",
+            ...(area && area.includes(',') ? { addressRegion: area.split(',')[0].trim() } : {}),
             addressCountry: "FR"
         },
         sameAs: [linkedin, github, malt, instagram].filter(Boolean),
