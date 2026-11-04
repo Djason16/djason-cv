@@ -11,6 +11,7 @@
         <Transition name="floating-controls">
             <div v-show="!userPreferences.bannerOpen" class="floating-controls">
                 <BackToTop />
+                <BackToTop end />
                 <ChangeLanguageButton />
             </div>
         </Transition>
@@ -114,7 +115,9 @@ onMounted(async () => {
     transform: translateX(50%);
     display: flex;
     flex-direction: column;
-    gap: 1vh;
+    /* Space between the buttons, also read by the arrows that fold (floating-button.css) */
+    --floating-gap: 1vh;
+    gap: var(--floating-gap);
     z-index: 10;
 }
 
@@ -142,7 +145,7 @@ onMounted(async () => {
     .floating-controls {
         right: 12px;
         bottom: 16px;
-        gap: 6px;
+        --floating-gap: 6px;
     }
 }
 </style>

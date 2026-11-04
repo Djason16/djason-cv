@@ -86,20 +86,22 @@
     transition: transform var(--motion-base) var(--ease);
 }
 
+/* The same list of transforms in both states (a move, then a turn): the browser blends each value, the lines never
+   wobble on their way to the cross and back (two different lists are blended as matrices) */
 .header-top .header-top__burger span:first-child {
-    transform: translateY(-0.3rem);
+    transform: translateY(-0.3rem) rotate(0deg);
 }
 
 .header-top .header-top__burger span:last-child {
-    transform: translateY(0.3rem);
+    transform: translateY(0.3rem) rotate(0deg);
 }
 
 .header-top .header-top__burger.is-open span:first-child {
-    transform: rotate(45deg);
+    transform: translateY(0) rotate(45deg);
 }
 
 .header-top .header-top__burger.is-open span:last-child {
-    transform: rotate(-45deg);
+    transform: translateY(0) rotate(-45deg);
 }
 
 /* Tablets and phones: logo on the left, "Menu" on the right; the links are in the full screen menu */

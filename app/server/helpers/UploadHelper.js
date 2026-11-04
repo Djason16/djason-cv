@@ -6,6 +6,7 @@ import { DatabaseHelper } from './DatabaseHelper.js'
  * Images uploaded from the admin: the photos of the projects and the photo of "About me".
  *   Stored in the database (dc_uploads): a new deployment of the site never loses them, and they are in the database backups.
  *   URL: /upload/images/<name> saved in dc_projects.img, served by /api/upload/images/<name>
+ *   A project photo can have a small copy for the grid (640 px, made by the browser): /upload/images/thumb-<name>
  */
 
 // Accepted and served types: raster images only (an SVG can carry scripts)
@@ -34,6 +35,11 @@ const PUBLIC_PREFIX = '/upload/images/'
 
 // Name of an image in its public path ("/upload/images/abc.jpg" -> "abc.jpg"), null for anything else
 const nameOf = publicPath => publicPath?.startsWith(PUBLIC_PREFIX) ? publicPath.slice(PUBLIC_PREFIX.length) : null
+const THUMB = 'thumb-'
+
+// One file in dc_uploads, its type read from its own extension
+const insert = (name, file) => DatabaseHelper.insert('INSERT INTO dc_uploads (name, mime_type, data) VALUES (?, ?, ?)',
+    [name, MIME_TYPES[extname(file.filename).toLowerCase()], file.data])
 
 export const UploadHelper = {
     /**
@@ -48,18 +54,27 @@ export const UploadHelper = {
     },
     MAX_BYTES,
 
-    /** Saves an uploaded image under a random name and returns its public path (/upload/images/...). */
-    async saveImage(file) {
-        const extension = extname(file.filename).toLowerCase()
-        const name = `${Date.now()}-${randomBytes(4).toString('hex')}${extension}`
-        await DatabaseHelper.insert('INSERT INTO dc_uploads (name, mime_type, data) VALUES (?, ?, ?)', [name, MIME_TYPES[extension], file.data])
+    /**
+     * Saves an uploaded image under a random name and returns its public path (/upload/images/...).
+     * Its thumbnail, when there is one and it is a real image, is saved under the same name with "thumb-" before it.
+     */
+    async saveImage(file, thumb = null) {
+        const name = `${Date.now()}-${randomBytes(4).toString('hex')}${extname(file.filename).toLowerCase()}`
+        await insert(name, file)
+        if (thumb && this.isAcceptedImage(thumb)) await insert(THUMB + name, thumb)
         return `${PUBLIC_PREFIX}${name}`
     },
 
-    /** Removes a previously uploaded image (ignored for static images). */
+    /** Public path of the thumbnail of an image ("/upload/images/a.webp" -> "/upload/images/thumb-a.webp"). */
+    thumbOf: publicPath => nameOf(publicPath) ? `${PUBLIC_PREFIX}${THUMB}${nameOf(publicPath)}` : null,
+
+    /** SQL test "this photo has a thumbnail", for a column holding its public path (no file content read). */
+    hasThumbSql: column => `EXISTS (SELECT 1 FROM dc_uploads u WHERE u.name = CONCAT('${THUMB}', SUBSTRING_INDEX(${column}, '/', -1)))`,
+
+    /** Removes a previously uploaded image and its thumbnail (ignored for static images). */
     async removeImage(publicPath) {
         const name = nameOf(publicPath)
-        if (name) await DatabaseHelper.execute('DELETE FROM dc_uploads WHERE name = ?', [name])
+        if (name) await DatabaseHelper.execute('DELETE FROM dc_uploads WHERE name IN (?, ?)', [name, THUMB + name])
     },
 
     /** Content and type of an uploaded image ("images/<name>"), or null when it does not exist. */

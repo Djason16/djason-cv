@@ -2,7 +2,7 @@ import { computed } from 'vue'
 import { useLang } from './useLang.js'
 import { projects as staticProjects } from '@/data/projects.js'
 import { api } from '@/utils/api.js'
-import { compressImage } from '@/utils/compressImage.js'
+import { compressImage, THUMB_SIDE } from '@/utils/compressImage.js'
 import { todayIso } from '@/utils/display.js'
 
 /*
@@ -20,6 +20,8 @@ export const useProjects = () => {
         id: p.id ?? p.name,
         name: p.name || '',
         img: fromApi && p.img ? `api${p.img}` : p.img || '',
+        // Small copy for the grid (640 px); none for the static projects and the photos sent before it existed
+        thumb: fromApi && p.thumb ? `api${p.thumb}` : null,
         link: p.link || null,
         skills: Array.isArray(p.skills) ? p.skills : [],
         date: p.date || todayIso(),
@@ -42,12 +44,17 @@ export const useProjects = () => {
         else console.warn('Projects of the API not loaded:', res.error)
     }
 
-    // Project -> form data sent to the API (with its image file)
-    const createFormData = (project, imageFile = null) => {
+    // Project -> form data sent to the API, with its photo made light (1920 px) and its thumbnail (640 px).
+    // No thumbnail when the browser can't make it lighter than the photo itself (a GIF, a small image)
+    const createFormData = async (project, imageFile = null) => {
         const fd = new FormData()
         ;['id', 'name', 'short_fr', 'short_en', 'link', 'date'].forEach(k => project[k] && fd.append(k, project[k]))
         if (project.skills) fd.append('skills', Array.isArray(project.skills) ? JSON.stringify(project.skills) : project.skills)
-        if (imageFile) fd.append('image', imageFile)
+        if (imageFile) {
+            const [image, thumb] = await Promise.all([compressImage(imageFile), compressImage(imageFile, THUMB_SIDE)])
+            fd.append('image', image)
+            if (thumb !== imageFile && thumb.size < image.size) fd.append('thumb', thumb)
+        }
         return fd
     }
 
@@ -58,8 +65,8 @@ export const useProjects = () => {
 
     // Adds a project from the admin page
     const addProject = async (project, imageFile = null) => {
-        const res = await api.post('/projects', createFormData(project, await compressImage(imageFile)))
-        if (res.success) apiProjects.value = [...apiProjects.value, { ...project, id: res.id, img: res.imagePath || project.img }]
+        const res = await api.post('/projects', await createFormData(project, imageFile))
+        if (res.success) apiProjects.value = [...apiProjects.value, { ...project, id: res.id, img: res.imagePath || project.img, thumb: res.thumbPath }]
         else console.error('Project creation failed', res.error)
         return res
     }
@@ -68,8 +75,8 @@ export const useProjects = () => {
     const updateProject = async (id, updates = {}, imageFile = null) => {
         let res = { success: false, error: 'Nothing to update' }
         if (imageFile) {
-            res = await api.post(`/projects/${id}/image`, createFormData({}, await compressImage(imageFile)))
-            if (res.success) patch(id, { img: res.imagePath })
+            res = await api.post(`/projects/${id}/image`, await createFormData({}, imageFile))
+            if (res.success) patch(id, { img: res.imagePath, thumb: res.thumbPath })
         }
         if (Object.keys(updates).length) {
             res = await api.put(`/projects/${id}`, updates)

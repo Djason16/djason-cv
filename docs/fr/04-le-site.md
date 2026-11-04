@@ -93,7 +93,7 @@ Le choix est dans `stores/userPreferences.js` (Pinia). Nom et durée du cookie :
 ## 04 — Cadre des pages (AppShell)
 
 `components/layout/AppShell/AppShell.vue` entoure chaque page, page d'erreur comprise :
-loader, en-tête, page, pied de page, boutons flottants (retour en haut, langues) et bandeau cookies.
+loader, en-tête, page, pied de page, boutons flottants (retour en haut, aller en bas, langues) et bandeau cookies.
 
 - **En-tête** : `components/layout/Header/`
 - **Pied de page** (réseaux sociaux, liens légaux, gestion des cookies, connexion) : `components/layout/Footer/`
