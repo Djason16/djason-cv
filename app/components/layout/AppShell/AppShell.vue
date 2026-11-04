@@ -10,8 +10,7 @@
         <!-- Hidden while the cookie banner is open -->
         <Transition name="floating-controls">
             <div v-show="!userPreferences.bannerOpen" class="floating-controls">
-                <BackToTop />
-                <BackToTop end />
+                <ScrollButtons />
                 <ChangeLanguageButton />
             </div>
         </Transition>
@@ -32,7 +31,7 @@ import { useLang } from '@/composables/useLang.js'
 import { onMounted, onUnmounted, ref } from 'vue'
 import Footer from '@/components/layout/Footer/Footer.vue'
 import Header from '@/components/layout/Header/Header.vue'
-import BackToTop from '@/components/ui/Button/BackToTop.vue'
+import ScrollButtons from '@/components/ui/Button/ScrollButtons.vue'
 import ChangeLanguageButton from '@/components/ui/Button/ChangeLanguageButton.vue'
 import Loader from '@/components/ui/Loader/Loader.vue'
 import AppDialog from '@/components/ui/Dialog/AppDialog.vue'
@@ -106,7 +105,7 @@ onMounted(async () => {
     background: var(--ink-800);
 }
 
-/* Back to top and language buttons, stacked at the bottom right */
+/* Arrows (back to top, to the bottom) and language buttons, stacked at the bottom right */
 .floating-controls {
     position: fixed;
     bottom: 24px;
@@ -115,7 +114,7 @@ onMounted(async () => {
     transform: translateX(50%);
     display: flex;
     flex-direction: column;
-    /* Space between the buttons, also read by the arrows that fold (floating-button.css) */
+    /* Space between the buttons, also between the two arrows (ScrollButtons.vue) */
     --floating-gap: 1vh;
     gap: var(--floating-gap);
     z-index: 10;

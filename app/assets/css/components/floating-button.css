@@ -33,21 +33,6 @@
     transform: translateY(0.75rem);
 }
 
-/* The arrows (back to top, to the bottom): their place folds while they leave and opens while they come, so the
-   buttons above them slide instead of jumping (the stack is held by its bottom) */
-.floating-btn.floating-btn--fold.floating-btn-enter-active,
-.floating-btn.floating-btn--fold.floating-btn-leave-active {
-    overflow: hidden;
-    transition: opacity var(--motion-base) var(--ease), transform var(--motion-base) var(--ease),
-        height var(--motion-base) var(--ease), margin var(--motion-base) var(--ease);
-}
-
-.floating-btn.floating-btn--fold.floating-btn-enter-from,
-.floating-btn.floating-btn--fold.floating-btn-leave-to {
-    height: 0;
-    margin-bottom: calc(-1 * var(--floating-gap, 0px));
-}
-
 /* Hover: fully visible */
 @media (hover: hover) and (min-width: 1025px) {
     .floating-btn:hover {
