@@ -20,14 +20,15 @@
     font-size: 12.8px !important;
 }
 
-/* Appears and leaves: fades with a small rise */
-.floating-btn-enter-active,
-.floating-btn-leave-active {
+/* Appears and leaves: fades with a small rise. Two classes, so the opacity of the touch screens below never wins
+   over it (with one class the button stayed visible, then vanished at once) */
+.floating-btn.floating-btn-enter-active,
+.floating-btn.floating-btn-leave-active {
     transition: opacity var(--motion-base) var(--ease), transform var(--motion-base) var(--ease);
 }
 
-.floating-btn-enter-from,
-.floating-btn-leave-to {
+.floating-btn.floating-btn-enter-from,
+.floating-btn.floating-btn-leave-to {
     opacity: 0;
     transform: translateY(0.75rem);
 }

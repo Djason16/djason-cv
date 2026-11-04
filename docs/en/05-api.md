@@ -62,7 +62,7 @@ separate from the files of the site: a new deployment never touches it.
 - **See and edit the data**: phpMyAdmin, http://localhost:8081 locally, from the Infomaniak Manager online
 - **Tables**: `server/helpers/DatabaseSchema.js` (`CREATE TABLE IF NOT EXISTS`, safe on an existing database)
 - **Default rows and admin account**: `server/plugins/init-database.js`, run on each start
-- **Images of the projects**: stored in the `dc_uploads` table (not as files), served by `/api/upload/images/{name}`
+- **Images of the projects**: stored in the `dc_uploads` table (not as files), served by `/api/upload/images/{name}`. The admin sends them in WebP (1920 px at most) with a 640 px thumbnail for the grid of the home page (`thumb-{name}`, deleted with the photo); a photo sent before the thumbnails is shown in full
 - **Changing an existing table** needs its own `ALTER TABLE`: never drop or recreate a table that holds data
 - **Backups**: export from phpMyAdmin; online, Infomaniak also keeps automatic backups
 

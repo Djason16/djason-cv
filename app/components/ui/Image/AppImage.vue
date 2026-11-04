@@ -28,9 +28,12 @@ const props = defineProps({
 const current = ref(props.src)
 watch(() => props.src, src => { current.value = src })
 
-// Missing image: the default image, once (no loop if the default image is missing too)
+// Missing image: the fallback, then the default image when the fallback fails too (no loop if it is missing as well)
+const DEFAULT = '/images/default_image.jpg'
 const useFallback = () => {
-    if (props.fallback && current.value !== props.fallback) current.value = props.fallback
+    if (!props.fallback) return
+    if (current.value !== props.fallback) current.value = props.fallback
+    else if (current.value !== DEFAULT) current.value = DEFAULT
 }
 
 // An image of the server page can fail before the browser takes over the page (no error event then): checked once

@@ -7,9 +7,8 @@
 </template>
 
 <script setup>
-import { nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { scrollToSection } from '@/utils/scroll.js'
+import { goToSection } from '@/utils/scroll.js'
 
 const props = defineProps({
     // id of the section of the home page
@@ -22,9 +21,5 @@ const props = defineProps({
 const router = useRouter()
 
 // Goes to the home page if needed, then scrolls to the section (in the page once it is rendered)
-const handleClick = async () => {
-    if (router.currentRoute.value.path !== '/') await router.push('/')
-    await nextTick()
-    scrollToSection(props.id)
-}
+const handleClick = () => goToSection(router, props.id)
 </script>

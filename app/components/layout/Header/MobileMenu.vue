@@ -42,12 +42,12 @@
 
 <script setup>
 import { padIndex } from '@/utils/display.js'
-import { nextTick, onUnmounted, watch } from 'vue'
+import { onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLang } from '@/composables/useLang.js'
 import { useSite } from '@/composables/useSite.js'
 import { withTrailingSlash } from '@/utils/pathHelpers.js'
-import { scrollToSection } from '@/utils/scroll.js'
+import { goToSection } from '@/utils/scroll.js'
 
 const props = defineProps({
     open: { type: Boolean, default: false },
@@ -61,11 +61,9 @@ const site = useSite()
 const router = useRouter()
 
 // Closes, goes to the home page if needed, then to the section
-const goTo = async id => {
+const goTo = id => {
     emit('close')
-    if (router.currentRoute.value.path !== '/') await router.push('/')
-    await nextTick()
-    scrollToSection(id)
+    return goToSection(router, id)
 }
 
 // While it is open: Escape closes it, the page behind does not scroll. The lock waits for the end of the animations:

@@ -10,7 +10,8 @@
                 :style="{ '--reveal-delay': `calc(var(--reveal-stagger) * ${i % 6})` }">
                 <button type="button" class="grid-card project-card__box" :aria-label="`${project.name} - ${t('viewMore')}`"
                     :title="project.name" @click="open(i, $event)">
-                    <AppImage :src="project.img || '/images/default_image.jpg'" :alt="project.name" width="960" height="640" />
+                    <AppImage :src="project.thumb || project.img || '/images/default_image.jpg'" :fallback="project.thumb ? project.img : undefined"
+                        :alt="project.name" width="960" height="640" />
                     <span class="grid-card__top">
                         <span class="grid-card__code eyebrow">{{ padIndex(i, 'PR') }}</span>
                     </span>

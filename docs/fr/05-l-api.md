@@ -62,7 +62,7 @@ séparée des fichiers du site : une nouvelle mise en ligne n'y touche jamais.
 - **Voir et modifier les données** : phpMyAdmin, http://localhost:8081 en local, depuis le Manager Infomaniak en ligne
 - **Tables** : `server/helpers/DatabaseSchema.js` (`CREATE TABLE IF NOT EXISTS`, sans risque sur une base existante)
 - **Lignes par défaut et compte admin** : `server/plugins/init-database.js`, lancé à chaque démarrage
-- **Images des projets** : gardées dans la table `dc_uploads` (pas en fichiers), servies par `/api/upload/images/{name}`
+- **Images des projets** : gardées dans la table `dc_uploads` (pas en fichiers), servies par `/api/upload/images/{name}`. L'admin les envoie en WebP (1920 px au plus) avec une miniature de 640 px pour la grille de l'accueil (`thumb-{name}`, supprimée avec la photo) ; une photo envoyée avant les miniatures s'affiche en entier
 - **Modifier une table existante** demande son propre `ALTER TABLE` : ne supprime ou ne recrée jamais une table qui contient des données
 - **Sauvegardes** : export depuis phpMyAdmin ; en ligne, Infomaniak garde aussi des sauvegardes automatiques
 

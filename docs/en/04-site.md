@@ -93,7 +93,7 @@ The choice lives in `stores/userPreferences.js` (Pinia). Cookie name and lifetim
 ## 04 — App shell
 
 `components/layout/AppShell/AppShell.vue` frames every page, the error page included:
-loader, header, page, footer, floating buttons (back to top, languages) and cookie banner.
+loader, header, page, footer, floating buttons (back to top, to the bottom, languages) and cookie banner.
 
 - **Header**: `components/layout/Header/`
 - **Footer** (social links, legal links, cookie settings, login): `components/layout/Footer/`

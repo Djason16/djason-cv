@@ -10,7 +10,7 @@
             <!-- Sections of the home page -->
             <nav class="footer-column" :aria-label="t('footerNavTitle')">
                 <p class="eyebrow footer-column__title">{{ t('footerNavTitle') }}</p>
-                <a v-for="item in sections" :key="item.id" :href="`/#${item.id}`" :title="t(item.translationKey)" @click.prevent="goToSection(item.id)">{{ t(item.translationKey) }}</a>
+                <a v-for="item in sections" :key="item.id" :href="`/#${item.id}`" :title="t(item.translationKey)" @click.prevent="goTo(item.id)">{{ t(item.translationKey) }}</a>
                 <NuxtLink :to="withTrailingSlash('/pay-me')" :title="t('payMe')">{{ t('payMe') }}</NuxtLink>
             </nav>
 
@@ -52,14 +52,14 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth.js'
 import { useLang } from '@/composables/useLang.js'
 import { useSite } from '@/composables/useSite.js'
 import { useUserPreferencesStore } from '@/stores/userPreferences.js'
 import { withTrailingSlash } from '@/utils/pathHelpers.js'
-import { scrollToSection } from '@/utils/scroll.js'
+import { goToSection } from '@/utils/scroll.js'
 
 const { getTranslation: t } = useLang()
 const site = useSite()
@@ -81,12 +81,8 @@ const sections = [
     { id: 'contact', translationKey: 'contactLabel' },
 ]
 
-// Goes to the home page if needed, then to the section
-const goToSection = async id => {
-    if (router.currentRoute.value.path !== '/') await router.push('/')
-    await nextTick()
-    scrollToSection(id)
-}
+// Goes to the home page if needed, then to the section (utils/scroll.js)
+const goTo = id => goToSection(router, id)
 
 // Social links filled in (admin > My info)
 const socials = computed(() => [
@@ -260,11 +256,14 @@ const legalLinks = [
         padding-bottom: 1.75rem;
     }
 
+    /* Last line a little smaller and tighter than on a computer */
     .footer-bar {
         grid-template-columns: 1fr;
         justify-items: center;
-        gap: 1rem;
+        gap: 0.6rem;
         text-align: center;
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
     }
 
     .footer-bar p:last-child {
@@ -275,7 +274,7 @@ const legalLinks = [
     .footer-bar__links {
         flex-direction: column;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.2rem;
     }
 }
 </style>

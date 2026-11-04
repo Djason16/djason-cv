@@ -2,15 +2,17 @@
  * Photo picked in the admin, made light before it is sent (recette T-024): at most MAX_SIDE pixels on its longest side,
  * saved in WebP. A GIF (maybe animated) or a file the browser can't read is sent as it is.
  *   const file = await compressImage(input.files[0])
+ *   const thumb = await compressImage(input.files[0], THUMB_SIDE)   small copy for the cards of the grid
  */
 const MAX_SIDE = 1920
+export const THUMB_SIDE = 640
 const QUALITY = 0.82
 
-export const compressImage = async file => {
+export const compressImage = async (file, maxSide = MAX_SIDE) => {
     if (!file || !/^image\/(jpeg|png|webp|avif)$/.test(file.type)) return file
     try {
         const bitmap = await createImageBitmap(file)
-        const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height))
+        const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height))
         const canvas = document.createElement('canvas')
         canvas.width = Math.round(bitmap.width * scale)
         canvas.height = Math.round(bitmap.height * scale)

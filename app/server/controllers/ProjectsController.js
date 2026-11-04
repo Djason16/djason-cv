@@ -2,9 +2,10 @@ import { todayIso } from '~/utils/display.js'
 /*
  * Projects shown on the home page (in addition to data/projects.js):
  *   GET    /api/projects              public list
- *   POST   /api/projects              multipart form: name, short_fr, short_en, link, skills, date, image
+ *   POST   /api/projects              multipart form: name, short_fr, short_en, link, skills, date, image, thumb
  *   PUT    /api/projects/{id}         JSON: any of name, short_fr, short_en, link, skills, date
- *   POST   /api/projects/{id}/image   multipart form: image (replaces the previous one)
+ *   POST   /api/projects/{id}/image   multipart form: image, thumb (replace the previous ones)
+ *   thumb: optional small copy of the image for the grid of the home page (640 px), in the list as "thumb"
  *   DELETE /api/projects/{id}
  * Images are stored by server/helpers/UploadHelper.js and served by /api/upload/...
  */
@@ -22,14 +23,18 @@ const parseSkills = value => {
     }
 }
 
+// Path of the thumbnail just saved with an image (null without one)
+const thumbPath = (imagePath, thumb) => imagePath && thumb && UploadHelper.isAcceptedImage(thumb) ? UploadHelper.thumbOf(imagePath) : null
+
 export default class ProjectsController extends Controller {
     static publicActions = ['getAll']
 
     static routes = { updateImage: ['POST', '/{id}/image'] }
 
     async getAll(event) {
-        const rows = await this.fetchAll('SELECT id, name, short_fr, short_en, img, link, skills, date, created_at FROM dc_projects ORDER BY date DESC')
-        const projects = rows.map(p => ({ ...p, skills: parseSkills(p.skills) }))
+        const rows = await this.fetchAll(`SELECT id, name, short_fr, short_en, img, link, skills, date, created_at,
+            ${UploadHelper.hasThumbSql('img')} AS has_thumb FROM dc_projects ORDER BY date DESC`)
+        const projects = rows.map(({ has_thumb, ...p }) => ({ ...p, skills: parseSkills(p.skills), thumb: has_thumb ? UploadHelper.thumbOf(p.img) : null }))
         return ResponseHelper.success(event, { projects })
     }
 
@@ -40,14 +45,14 @@ export default class ProjectsController extends Controller {
         if (files.image && !UploadHelper.isAcceptedImage(files.image))
             return ResponseHelper.validationError(event, 'Image must be a JPG, PNG, GIF, WEBP or AVIF file')
 
-        const imagePath = files.image ? await UploadHelper.saveImage(files.image) : null
+        const imagePath = files.image ? await UploadHelper.saveImage(files.image, files.thumb) : null
         const id = DatabaseHelper.newId()
         await this.insert(
             'INSERT INTO dc_projects (id, name, short_fr, short_en, img, link, skills, date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
             [id, fields.name, fields.short_fr, fields.short_en, imagePath, fields.link || null,
                 JSON.stringify(parseSkills(fields.skills)), fields.date || todayIso()]
         )
-        return ResponseHelper.success(event, { id, imagePath }, 201)
+        return ResponseHelper.success(event, { id, imagePath, thumbPath: thumbPath(imagePath, files.thumb) }, 201)
     }
 
     // Only the fields present in the body are changed
@@ -71,10 +76,10 @@ export default class ProjectsController extends Controller {
         if (!UploadHelper.isAcceptedImage(files.image))
             return ResponseHelper.validationError(event, 'Image must be a JPG, PNG, GIF, WEBP or AVIF file')
 
-        const imagePath = await UploadHelper.saveImage(files.image)
+        const imagePath = await UploadHelper.saveImage(files.image, files.thumb)
         await this.execute('UPDATE dc_projects SET img = ? WHERE id = ?', [imagePath, args.id])
         await UploadHelper.removeImage(project.img)
-        return ResponseHelper.success(event, { id: args.id, imagePath })
+        return ResponseHelper.success(event, { id: args.id, imagePath, thumbPath: thumbPath(imagePath, files.thumb) })
     }
 
     async delete(event, args) {
