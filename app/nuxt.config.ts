@@ -206,6 +206,8 @@ export default defineNuxtConfig({
     bankBic: process.env.BANK_BIC,
     // Machine translation of the admin (server/helpers/TranslateHelper.js): an email raises the free daily quota
     mymemoryEmail: process.env.MYMEMORY_EMAIL,
+    // Region of an address outside France shown on the site (server/helpers/AreaHelper.js); empty: only its country
+    googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
     public: {
       frontendDomain: process.env.NUXT_PUBLIC_FRONTEND_DOMAIN,
     },

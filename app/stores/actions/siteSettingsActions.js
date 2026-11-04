@@ -22,6 +22,12 @@ export const siteSettingsActions = {
         return res
     },
 
+    // Area shown on the site for an address (worked out by the server); null when no service answered
+    async areaOf(address) {
+        const res = await api.get(`/settings/area?address=${encodeURIComponent(address)}`)
+        return res.success ? res.area : null
+    },
+
     // Photo of "About me": a new image (File), or null to go back to the photo of the site
     async savePhoto(file) {
         let res

@@ -18,7 +18,7 @@
                 <p class="eyebrow footer-column__title">{{ t('footerContactTitle') }}</p>
                 <a v-if="site.email" :href="`mailto:${site.email}`" :title="site.email">{{ site.email }}</a>
                 <a v-if="site.phone" :href="`tel:${site.phone.replace(/\s+/g, '')}`" :title="site.phone">{{ site.phone }}</a>
-                <p v-if="site.address">{{ site.address }}</p>
+                <p v-if="site.area">{{ site.area }}</p>
             </div>
 
             <!-- Social links (admin > My info), only the ones filled in -->

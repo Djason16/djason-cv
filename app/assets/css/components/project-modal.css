@@ -183,10 +183,12 @@
         overflow-y: auto;
     }
 
+    /* The whole width of the modal; its height that of a 16/10 photo, at most 40 % of the screen (a ratio with a
+       max-height would make it narrower instead: the photo covers its box either way) */
     .project-modal .project-modal__media {
+        width: 100%;
         min-height: 0;
-        aspect-ratio: 16 / 10;
-        max-height: 40vh;
+        height: min(58vw, 40vh);
     }
 
     .project-modal .project-modal__body {
@@ -217,7 +219,7 @@
     }
 
     .project-modal .project-modal__media {
-        max-height: 30dvh;
+        height: min(58vw, 30dvh);
     }
 }
 

@@ -46,6 +46,7 @@ cp .env.example .env
 | `BANK_IBAN`, `BANK_BIC` | Printed on invoices and contracts |
 | **Translation** (MyMemory, free, no key) | |
 | `MYMEMORY_EMAIL` | Optional. Empty: about 5,000 translated characters a day; an email: about 50,000 |
+| `GOOGLE_MAPS_API_KEY` | Google Geocoding API key (server side): the region of an address outside France, shown on the site instead of the town. In France: the public service geo.api.gouv.fr. Empty: the country only |
 
 The order is the one of `.env.example` and of admin → Environment (a missing variable shows empty there: filling it adds it to the file).
 

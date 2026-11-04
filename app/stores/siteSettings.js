@@ -21,6 +21,10 @@ export const useSiteSettingsStore = defineStore('siteSettings', {
             tva: '',
             address: '',
             invoiceAddress: '',
+            // Area shown on the public pages ("Hauts-de-France, France"), worked out from the address by the server
+            area: '',
+            // '1': the address is the town and country of the billing address
+            sameAddress: '',
             // Social links of the footer
             linkedin: '',
             github: '',
