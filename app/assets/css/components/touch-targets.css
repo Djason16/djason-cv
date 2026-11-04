@@ -1,22 +1,42 @@
 /*
- * Touch screens: every link and button can be hit with a finger (recette T-015).
- * At least 44 px high for the controls (menu, buttons of the site), the links of the footer and of the cookie banner
- * get the same height; the look stays the same with a mouse (hover: hover).
+ * Touch screens (recette T-015): every link and button can be hit with a finger, 24 px at least (WCAG 2.2 AA).
+ * The buttons of the site keep 44 px; the menu button is 36 px, and the text links (footer, cookie banner) 30 to 32 px
+ * with less space between them, so the lists are not stretched (44 px made them far too spread out).
+ * The look stays the same with a mouse.
  */
 @media (pointer: coarse) {
-    .header-top .header-top__menu,
     .custom-button {
         min-height: 44px;
     }
 
-    .footer-column a,
+    .header-top .header-top__menu {
+        min-height: 36px;
+    }
+
+    /* Footer columns: 32 px per link, the gap between links goes down so a list keeps about its height */
+    .footer-column {
+        gap: 0.25rem;
+    }
+
+    .footer-column a {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        /* A short word (« Malt ») still 24 px wide to touch; the text stays where it is */
+        min-width: 24px;
+    }
+
+    /* Last line of the footer (cookies, login): smaller letters, 28 px */
     .footer-bar__links a,
-    .footer-bar__links .footer-link,
+    .footer-bar__links .footer-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+    }
+
     .cookie-banner__link {
         display: inline-flex;
         align-items: center;
-        min-height: 44px;
-        /* Icon links (social networks) as wide as they are high */
-        min-width: 44px;
+        min-height: 30px;
     }
 }

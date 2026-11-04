@@ -256,11 +256,14 @@ const legalLinks = [
         padding-bottom: 1.75rem;
     }
 
+    /* Last line a little smaller and tighter than on a computer */
     .footer-bar {
         grid-template-columns: 1fr;
         justify-items: center;
-        gap: 1rem;
+        gap: 0.6rem;
         text-align: center;
+        font-size: 0.72rem;
+        letter-spacing: 0.16em;
     }
 
     .footer-bar p:last-child {
@@ -271,7 +274,7 @@ const legalLinks = [
     .footer-bar__links {
         flex-direction: column;
         align-items: center;
-        gap: 0.6rem;
+        gap: 0.2rem;
     }
 }
 </style>
