@@ -1,5 +1,5 @@
 ﻿# Launcher for my-cv-project (Nuxt  ·  Nitro  ·  MySQL in Docker)
-# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A
+# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|K|O
 # Every option adapts to what the project contains (docker-compose.yml, backend/, frontend/).
 param([string]$Action)
 
@@ -132,6 +132,8 @@ if (-not $Action) {
         Write-MenuItem 'R' 'Rebuild' 'Rebuild Docker images (no cache)'
     }
     Write-MenuItem 'I' 'Install' 'Install / update dependencies (Composer / npm)'
+    Write-MenuItem 'K' 'Backup' 'Local database into backups/ (npm run db:backup)'
+    Write-MenuItem 'O' 'Restore' 'Put back the latest backup of backups/ (npm run db:restore)'
     Write-Host ''
     if ($AppScripts.ContainsKey('generate:prod')) { Write-MenuItem 'G' 'Generate' 'Static front with .env.production' }
     if ($FrontBuild) { Write-MenuItem 'B' 'Build front' "npm run $FrontBuild" }
@@ -148,5 +150,11 @@ switch ($Action.ToUpper()) {
     'G' { Start-Window $AppDir 'Front generate (production)' 'npm run generate:prod' }
     'B' { if ($FrontBuild) { Start-Window $AppDir 'Front build (production)' "npm run $FrontBuild" } }
     'A' { Start-Window $ApiDir 'API build (production)' 'npm run build' }
+    # Backup and restore of the database (app/scripts/db-backup.mjs, db-restore.mjs); online: docs/en/08-deployment.md
+    'K' { Invoke-In $AppDir { & $Npm run db:backup } | Out-Null }
+    'O' {
+        $Latest = Get-ChildItem (Join-Path $Root 'backups') -Filter '*.sql' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1
+        if ($Latest) { Invoke-In $AppDir { & $Npm run db:restore -- $Latest.FullName } | Out-Null } else { Write-Fail 'No backup in backups/.' }
+    }
     default { Write-Fail 'Invalid choice.' }
 }
