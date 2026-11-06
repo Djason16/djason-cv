@@ -5,8 +5,8 @@
             <!-- Logo linking to home -->
             <div class="header-top__title">
                 <NuxtLink to="/" class="header-top__logo-link"
-                    :title="`${site.name} - ${t('home')}`">
-                    <AppImage :src="logoPath" :alt="site.name" :title="`${site.name} - ${t('home')}`"
+                    :title="`${siteName} - ${t('home')}`">
+                    <AppImage :src="logoPath" :alt="siteName" :title="`${siteName} - ${t('home')}`"
                         class="header-top__logo" width="200" height="80" priority :fallback="''" />
                 </NuxtLink>
             </div>
@@ -52,6 +52,8 @@ const router = useRouter()
 const site = useSite()
 
 const logoPath = '/images/main_logo_light.png'
+// Name of the logo, also while the settings of the site are not loaded yet (or the API cannot be reached)
+const siteName = computed(() => site.name || 'Djason CHERY')
 
 // Only show homepage links on the root route
 const isHomePage = computed(() => router.currentRoute.value.path === '/')
