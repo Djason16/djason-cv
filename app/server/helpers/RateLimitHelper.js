@@ -50,6 +50,14 @@ export const RateLimitHelper = {
             )
             locked ||= Boolean(lockedUntil)
         }
+        // From time to time (1 failure in 20), counters untouched for a day are removed: the table never grows
+        if (Math.random() < 0.05) {
+            const day = new Date(now() - 86400 * 1000).toISOString()
+            await DatabaseHelper.execute(
+                'DELETE FROM dc_rate_limits WHERE window_start < ? AND (locked_until IS NULL OR locked_until < ?)',
+                [day, new Date().toISOString()]
+            )
+        }
         return locked
     },
 
