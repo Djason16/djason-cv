@@ -156,6 +156,10 @@ html {
 /* A tap on a phone: no blue or grey flash of the browser (every link and button of the site shows its own change) */
 html {
     -webkit-tap-highlight-color: transparent;
+    /* Phones never enlarge texts on their own (Android, iPhone): the A4 sheets of the quotes, invoices and contracts keep
+       the same sizes on every screen, like their PDF */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
 }
 
 /* Selected text: the mint of the site, the ink as text (instead of the blue of the browser) */

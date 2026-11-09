@@ -14,7 +14,7 @@ import { createApp, nextTick } from 'vue'
 // The sheet as one A4 column: no ground of its own (the PDF draws the ink on each page), no room above and under it
 // (each page of the PDF has its own), never shorter or longer than its content
 const LAYOUT_CSS = `
-    html, body { margin: 0; padding: 0; background: #111417; }
+    html, body { margin: 0; padding: 0; background: #111417; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     .billing-document, .contract-container {
         background: transparent !important;
         width: 210mm !important;
