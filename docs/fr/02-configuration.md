@@ -4,7 +4,7 @@
 
 **DOC-02** &nbsp;·&nbsp; [← Documentation](README.md)
 
-Les réglages sont dans des fichiers `.env` dans `app/` : seulement ce qui est **secret ou technique** (base de données, Stripe, SMTP, compte admin, banque, adresse du site).
+Les réglages sont dans des fichiers `.env` dans `frontend/` : seulement ce qui est **secret ou technique** (base de données, Stripe, SMTP, compte admin, banque, adresse du site).
 Ton nom, ton contact, tes mentions légales et tes réseaux sociaux se modifient dans **admin → Mes infos** (gardés dans la base, appliqués tout de suite).
 Les textes vus par les visiteurs (accueil, pages légales, bandeau cookies, SEO, page Payez-moi, et les textes imprimés sur les devis, factures et contrats) se modifient dans **admin → Textes du site** : le site change tout de suite, sans nouveau build.
 

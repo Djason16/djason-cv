@@ -11,7 +11,7 @@ Email and password, then a one-time code sent by email. The forgotten password f
 
 ## 02 — Protected routes
 
-The session is checked by the API router (`server/api/[...path].js`) on the route that was matched,
+The session is checked by the API router (`server/api/[...path].ts`) on the route that was matched,
 so `/api/env`, `/api/env/` and `/api//env` are the same protected route.
 Only the actions listed in a controller's `publicActions` are public ([every route](05-api.md#04--every-route)).
 

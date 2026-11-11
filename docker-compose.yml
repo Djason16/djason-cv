@@ -1,7 +1,7 @@
 # Local database of the site (DC Scaffold: https://github.com/Djason16/dc-scaffold), started by start.bat -> D
 #   MySQL       localhost:3306
 #   phpMyAdmin  http://localhost:8081 (user root)
-# Values read from the .env of the site (start.bat passes it to Docker; by hand: docker compose --env-file app/.env up -d):
+# Values read from the .env of the site (start.bat passes it to Docker; by hand: docker compose --env-file frontend/.env up -d):
 #   DB_PASS = password of root (the user of the site), DB_NAME = the database, DB_PORT = the port of MySQL
 # Data kept in ./database (not sent to Git). Online, the site uses the MySQL database of the host instead.
 name: djason-cv

@@ -1,3 +1,6 @@
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
 # Shell scripts run in Linux containers (mysql/entrypoint.sh): always LF, even on Windows
 *.sh text eol=lf
 

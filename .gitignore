@@ -31,3 +31,6 @@ env/
 .env
 .env.*
 !.env.example
+
+# Qualif (start.bat then Q): ready to upload, never in Git
+/qualif/

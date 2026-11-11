@@ -50,7 +50,7 @@ Requires **Node.js 22.16+** (24 LTS recommended) and **Docker Desktop** (local M
 
 ```bash
 git clone https://github.com/Djason16/djason-cv.git
-cd djason-cv/app
+cd djason-cv/frontend
 cp .env.example .env   # then fill in your values
 docker compose --project-directory .. --env-file .env up -d   # MySQL + phpMyAdmin
 npm install

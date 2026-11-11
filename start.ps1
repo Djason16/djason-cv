@@ -1,5 +1,5 @@
-﻿# Launcher for my-cv-project (Nuxt  ·  Nitro  ·  MySQL in Docker)
-# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|K|O
+﻿# Launcher for djason-chery.dev (Nuxt  ·  Nitro, API inside the site  ·  MySQL 9.7)
+# Usage: start.bat (menu) or .\start.ps1 -Action D|S|R|I|G|B|A|Q|K|O|P
 # Every option adapts to what the project contains (docker-compose.yml, backend/, frontend/).
 param([string]$Action)
 
@@ -8,13 +8,16 @@ $Root = $PSScriptRoot
 
 $Shell = if (Test-Command 'pwsh') { 'pwsh' } else { 'powershell' }
 $ApiDir = Join-Path $Root 'backend'
-$AppDir = Join-Path $Root 'app'
+$AppDir = Join-Path $Root 'frontend'
 $HasDocker = Test-Path (Join-Path $Root 'docker-compose.yml')
-
 # .env of the site, also read by Docker for the local MySQL (DB_NAME, DB_PASS, DB_PORT)
 $EnvFile = @(Join-Path $AppDir '.env') | Where-Object { Test-Path $_ } | Select-Object -First 1
 $ComposeEnv = if ($EnvFile) { @('--env-file', $EnvFile) } else { @() }
 $ComposeEnvText = if ($EnvFile) { "--env-file '$($EnvFile.Replace("'", "''"))'" } else { '' }
+# Database and files sent from the site, kept by the backups (scripts/data.ps1)
+. (Join-Path $Root 'scripts\data.ps1')
+$Data = Get-ProjectData $Root
+$HasData = [bool]($Data.MySql -or $Data.Sqlite.Count -or $Data.Uploads)
 
 # ---------------------------------------------------------------------------
 # Project detection
@@ -32,7 +35,18 @@ function Get-NpmScripts([string]$Path) {
 
 $ApiScripts = Get-NpmScripts $ApiDir
 $AppScripts = Get-NpmScripts $AppDir
-$FrontBuild = if ($AppScripts.ContainsKey('build:prod')) { 'build:prod' } elseif ($AppScripts.ContainsKey('build')) { 'build' } else { $null }
+# Production of the front: "generate" (static site, Nuxt with a separate API or none) or "build".
+# Only one of them is offered: the one that fits the project.
+$FrontGenerate = $AppScripts.ContainsKey('generate:prod')
+$FrontBuild = if ($FrontGenerate) { $null } elseif ($AppScripts.ContainsKey('build:prod')) { 'build:prod' } elseif ($AppScripts.ContainsKey('build')) { 'build' } else { $null }
+# The front builds a Node.js server with the API inside (Nuxt + Nitro), otherwise a static site to upload
+$FrontServer = 'true' -eq 'true'
+# Site without build (HTML / CSS / JS): only its sitemap.xml and robots.txt to write before uploading it
+$FrontSitemap = -not $FrontGenerate -and -not $FrontBuild -and (Test-Path (Join-Path $AppDir 'scripts\sitemap.mjs'))
+# Qualif: the site shown to the client before it goes online, built with .env.preprod (scripts/qualif.ps1)
+$HasQualif = $AppScripts.ContainsKey('generate:qualif') -or $AppScripts.ContainsKey('build:qualif') -or (Test-Path (Join-Path $AppDir 'scripts\qualif.mjs'))
+# Design of the site: the DC Scaffold design, a blank site, or start from zero (frontend/scripts/design.ps1)
+$HasDesign = Test-Path (Join-Path $AppDir 'dc-scaffold.config.js')
 
 # ---------------------------------------------------------------------------
 # Actions
@@ -106,12 +120,11 @@ function Start-Dev {
     Write-Host ''
     Write-Ok 'Started in separate windows.'
     Write-Host ''
-    $lines = @(
+    Write-Box -Color Green @(
         'Front       http://localhost:3000'
         'API         http://localhost:3000/api'
+        'phpMyAdmin  http://localhost:8081'
     )
-    if ($HasDocker) { $lines += 'phpMyAdmin  http://localhost:8081' }
-    Write-Box -Color Green $lines
 }
 
 # ---------------------------------------------------------------------------
@@ -122,8 +135,8 @@ if (-not $Action) {
     Clear-Host
     Write-Host ''
     Write-Box @(
-        'my-cv-project'
-        'Nuxt  ·  Nitro  ·  MySQL'
+        'djason-chery.dev'
+        'Nuxt  ·  Nitro, API inside the site  ·  MySQL 9.7'
     )
     Write-Host ''
     Write-MenuItem 'D' 'Development' 'Start everything'
@@ -132,13 +145,27 @@ if (-not $Action) {
         Write-MenuItem 'R' 'Rebuild' 'Rebuild Docker images (no cache)'
     }
     Write-MenuItem 'I' 'Install' 'Install / update dependencies (Composer / npm)'
-    Write-MenuItem 'K' 'Backup' 'Local database into backups/ (npm run db:backup)'
-    Write-MenuItem 'O' 'Restore' 'Put back the latest backup of backups/ (npm run db:restore)'
+    if ($HasData) {
+        Write-MenuItem 'K' 'Backup' 'Database and files sent, into backups/'
+        Write-MenuItem 'O' 'Restore' 'Put back a backup of backups/'
+    }
     Write-Host ''
-    if ($AppScripts.ContainsKey('generate:prod')) { Write-MenuItem 'G' 'Generate' 'Static front with .env.production' }
-    if ($FrontBuild) { Write-MenuItem 'B' 'Build front' "npm run $FrontBuild" }
+    if ($FrontGenerate) { Write-MenuItem 'G' 'Generate' 'Static site to upload (frontend/.output/public), with .env.production' }
+    if ($FrontBuild -and $FrontServer) { Write-MenuItem 'B' 'Build' 'Site + API in one Node.js server (then npm start, see the steps below)' }
+    elseif ($FrontBuild) { Write-MenuItem 'B' 'Build front' 'Static site to upload, with .env.production' }
+    elseif ($FrontSitemap) { Write-MenuItem 'B' 'Sitemap' 'sitemap.xml and robots.txt of production (.env.production), then upload frontend/' }
     if ($ApiScripts.ContainsKey('build')) { Write-MenuItem 'A' 'Build API' 'npm run build (backend/)' }
-    if ($FrontBuild -or $ApiScripts.ContainsKey('build')) { Write-Host '' }
+    if ($HasQualif) { Write-MenuItem 'Q' 'Qualif' 'Site shown to the client before going online, into qualif/ (.env.preprod)' }
+    if ($FrontGenerate -or $FrontBuild -or $FrontSitemap -or $ApiScripts.ContainsKey('build') -or $HasQualif) { Write-Host '' }
+    if ($HasDesign) {
+        Write-MenuItem 'P' 'Design' 'DC Scaffold design, blank site, or start from zero with your own design'
+        Write-Host ''
+    }
+    # How to put this project online (filled by DC Scaffold for the chosen front and back end)
+    Write-Host '  Online (details in README.md, "Going online"):' -ForegroundColor DarkGray
+    Write-Host '   1. Online settings in frontend/.env.production: the database of the server' -ForegroundColor DarkGray
+    Write-Host '   2. Site + API: start.bat then B (built together into frontend/.output), upload frontend/ to a Node.js 22.13+ host and run npm start' -ForegroundColor DarkGray
+    Write-Host ''
     $Action = Read-Default 'Choice' ''
 }
 
@@ -147,14 +174,15 @@ switch ($Action.ToUpper()) {
     'S' { if ($HasDocker) { Invoke-In $Root { docker compose @ComposeEnv down } | Out-Null } }
     'R' { if ($HasDocker) { Invoke-In $Root { docker compose @ComposeEnv build --no-cache } | Out-Null } }
     'I' { if (Install-Dependencies -All) { exit 0 } else { exit 1 } }
-    'G' { Start-Window $AppDir 'Front generate (production)' 'npm run generate:prod' }
-    'B' { if ($FrontBuild) { Start-Window $AppDir 'Front build (production)' "npm run $FrontBuild" } }
-    'A' { Start-Window $ApiDir 'API build (production)' 'npm run build' }
-    # Backup and restore of the database (app/scripts/db-backup.mjs, db-restore.mjs); online: docs/en/08-deployment.md
-    'K' { Invoke-In $AppDir { & $Npm run db:backup } | Out-Null }
-    'O' {
-        $Latest = Get-ChildItem (Join-Path $Root 'backups') -Filter '*.sql' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1
-        if ($Latest) { Invoke-In $AppDir { & $Npm run db:restore -- $Latest.FullName } | Out-Null } else { Write-Fail 'No backup in backups/.' }
+    'G' { if ($FrontGenerate) { Start-Window $AppDir 'Front generate (production)' 'npm run generate:prod' } }
+    'B' {
+        if ($FrontBuild) { Start-Window $AppDir 'Front build (production)' "npm run $FrontBuild" }
+        elseif ($FrontSitemap) { Invoke-In $AppDir { node scripts/sitemap.mjs . --pages pages --pages-only } | Out-Null }
     }
+    'A' { Start-Window $ApiDir 'API build (production)' 'npm run build' }
+    'Q' { if ($HasQualif) { & (Join-Path $Root 'scripts\qualif.ps1') -AppDir $AppDir -ApiDir $ApiDir } }
+    'K' { if ($HasData) { & (Join-Path $Root 'scripts\backup.ps1') } }
+    'O' { if ($HasData) { & (Join-Path $Root 'scripts\restore.ps1') } }
+    'P' { if ($HasDesign) { & (Join-Path $AppDir 'scripts\design.ps1') } }
     default { Write-Fail 'Invalid choice.' }
 }

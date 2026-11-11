@@ -1,0 +1,128 @@
+<template>
+    <!-- Contract (admin > Quotes & invoices, made from a quote): the live preview and the PDF (utils/pdf.js), one component per article -->
+    <div class="contract-container" :class="{ 'is-draft': isDraft }">
+        <div class="content">
+            <!-- Header -->
+            <ContractHeader :companyLogo="companyLogo" :contractYear="contractYear" :contractIndex="contractIndex"
+                :contractNumber="contractNumber" :quoteNumber="quoteNumber" :title="getServiceLabel(serviceType)" :websiteUrl="websiteUrl" />
+
+            <!-- Client & Provider Info -->
+            <GeneralInformation :providerInfo="providerInfo" :client="client" :hasTVA="hasTVA"
+                :formatFullAddress="formatFullAddress" :getClientTypeLabel="getClientTypeLabel"
+                :websiteUrl="websiteUrl" />
+
+            <!-- Contract object -->
+            <ContractObject :serviceType="serviceType" :getServiceLabel="getServiceLabel"
+                :contractObjectText="t('contractObjectText')"
+                :detailsInQuote="t('detailsInQuote')" />
+
+            <!-- Duration -->
+            <Duration :serviceType="serviceType" :getDurationText="getDurationText" />
+
+            <!-- Payment terms -->
+            <PaymentTerms :totalAmount="totalAmount" :deposit="deposit" :nbMensualites="nbMensualites"
+                :monthlyPayment="monthlyPayment" :isSubscription="isSubscription" :serviceType="serviceType" :formatPrice="formatPrice"
+                :websiteUrl="websiteUrl" :providerInfo="providerInfo" :steps="steps" />
+
+            <!-- Other contract sections -->
+            <LatePayment :interestRate="interestRate" :clientType="client?.type" :isSubscription="isSubscription" />
+            <DeliveryAndTransfer :serviceType="serviceType" :getDeliveryText="getDeliveryText" />
+            <IntellectualProperty :serviceType="serviceType"
+                :getIntellectualPropertyText="getIntellectualPropertyText" />
+            <TerminationAndSuspension :serviceType="serviceType" :getTerminationText="getTerminationText" />
+            <RightOfWithdrawal :serviceType="serviceType" :getRefundPolicyText="getRefundPolicyText"
+                :providerInfo="providerInfo" />
+            <Confidentiality :providerInfo="providerInfo" />
+            <WarrantiesAndMaintenance :serviceType="serviceType" :getWarrantyText="getWarrantyText" />
+            <Liability />
+            <Disputes :isSubscription="isSubscription" />
+            <TCIntegration :websiteUrl="websiteUrl" />
+
+            <!-- Signatures and footer -->
+            <Signatures :client="client" :providerInfo="providerInfo" :hasTVA="hasTVA" :contractDate="contractDate"
+                :providerCity="providerCity" :formatDate="formatDate" :websiteUrl="websiteUrl" />
+            <ContractFooter :providerInfo="providerInfo" :hasTVA="hasTVA" />
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+import type { PropType } from 'vue'
+import { useSite } from '@/composables/useSite'
+import { documentProvider, formatPrice as formatDocumentPrice } from '@/utils/documents'
+import { useLang } from '@/composables/useLang'
+import Confidentiality from './ContractContainer/Confidentiality.vue'
+import ContractFooter from './ContractContainer/ContractFooter.vue'
+import ContractHeader from './ContractContainer/ContractHeader.vue'
+import ContractObject from './ContractContainer/ContractObject.vue'
+import DeliveryAndTransfer from './ContractContainer/DeliveryAndTransfer.vue'
+import Disputes from './ContractContainer/Disputes.vue'
+import Duration from './ContractContainer/Duration.vue'
+import GeneralInformation from './ContractContainer/GeneralInformation.vue'
+import IntellectualProperty from './ContractContainer/IntellectualProperty.vue'
+import LatePayment from './ContractContainer/LatePayment.vue'
+import Liability from './ContractContainer/Liability.vue'
+import PaymentTerms from './ContractContainer/PaymentTerms.vue'
+import RightOfWithdrawal from './ContractContainer/RightOfWithdrawal.vue'
+import Signatures from './ContractContainer/Signatures.vue'
+import TCIntegration from './ContractContainer/TCIntegration.vue'
+import TerminationAndSuspension from './ContractContainer/TerminationAndSuspension.vue'
+import WarrantiesAndMaintenance from './ContractContainer/WarrantiesAndMaintenance.vue'
+
+const props = defineProps({
+    client: Object,
+    contractDate: { type: String, default: () => new Date().toISOString() },
+    contractYear: { type: Number, default: () => new Date().getFullYear() },
+    contractIndex: { type: String, default: '0001' },
+    serviceType: { type: String, default: 'web' },
+    totalAmount: { type: Number, default: 0 },
+    deposit: { type: Number, default: 0 },
+    nbMensualites: { type: Number, default: 0 },
+    monthlyPayment: { type: Number, default: 0 },
+    interestRate: { type: Number, default: null },
+    hasTVA: { type: Boolean, default: false },
+    bankInfo: { type: Object as PropType<Record<string, any>>, default: () => ({ iban: null, bic: null }) },
+    // Made from a quote (utils/contractDocument.js): its number, the quote, the steps of a free schedule, a draft
+    contractNumber: { type: String, default: '' },
+    quoteNumber: { type: String, default: '' },
+    steps: { type: Array as PropType<Record<string, any>[]>, default: () => [] },
+    isDraft: { type: Boolean, default: false },
+})
+
+// Language and owner of the site (admin > Settings)
+const lang = useLang()
+const { getTranslation: t } = lang
+const site = useSite()
+
+// Paid in monthly installments (Stripe subscription): the clauses about installments and subscriptions only apply then
+const isSubscription = props.nbMensualites > 0 && props.monthlyPayment > 0
+
+// Reactive provider info
+const providerInfo = documentProvider(site, props.bankInfo)
+
+// Static info
+const companyLogo = '/images/main_logo_light.png'
+const websiteUrl = site.url
+const providerCity = (String(providerInfo.address ?? '').split(',')[0] ?? '').trim()
+
+// Formatting helpers
+const formatFullAddress = (c: Record<string, any>) =>
+    [c.address, c.postal_code + ' ' + c.city].filter(Boolean).join(', ')
+const formatPrice = (v: unknown) => formatDocumentPrice(v, lang.current.value)
+const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString(
+        lang.current.value === 'fr' ? 'fr-FR' : 'en-US',
+        { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
+    )
+
+// Label getters using lang translations
+const getClientTypeLabel = (type: string) => lang.getTranslation(`clientType_${type}`)
+const getServiceLabel = (type: string) => lang.getTranslation(`service_${type}`)
+const getDurationText = (type: string) => lang.getTranslation(`duration_${type}`)
+const getDeliveryText = (type: string) => lang.getTranslation(`delivery_${type}`)
+const getIntellectualPropertyText = (type: string) => lang.getTranslation(`intellectualProperty_${type}`)
+// A web contract paid with a deposit has its own termination clause (no installments)
+const getTerminationText = (type: string) => lang.getTranslation(type === 'web' && !isSubscription ? 'termination_web_upfront' : `termination_${type}`)
+const getRefundPolicyText = (type: string) => lang.getTranslation(`refundPolicy_${type}`)
+const getWarrantyText = (type: string) => lang.getTranslation(`warranty_${type}`)
+</script>

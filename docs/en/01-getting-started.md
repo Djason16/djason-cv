@@ -23,7 +23,7 @@ Double-click `start.bat` at the project root, then choose:
 | --- | ------ | ---- |
 | `D` | Development | Installs what is missing, then starts MySQL + phpMyAdmin (Docker) and the site, each in a new window |
 | `S` | Stop | Stops MySQL and phpMyAdmin (`docker compose down`) |
-| `I` | Install | Installs or updates the npm dependencies of `app/` |
+| `I` | Install | Installs or updates the npm dependencies of `frontend/` |
 | `B` | Build front | `npm run build`: production build (site + API) |
 
 Direct choice from a terminal: `.\start.ps1 -Action D`.
@@ -33,7 +33,7 @@ Same launcher as [DC Scaffold](https://github.com/Djason16/dc-scaffold) (`start.
 
 ```bash
 git clone https://github.com/Djason16/djason-cv.git
-cd djason-cv/app
+cd djason-cv/frontend
 cp .env.example .env   # then fill in your values, see Configuration
 docker compose --project-directory .. --env-file .env up -d   # MySQL + phpMyAdmin
 npm install
@@ -44,17 +44,17 @@ npm run dev
 
 1. Install Node.js 22.16+
 2. Clone the repository
-3. Copy `app/.env.example` to `app/.env` and fill it in, with a long random `DB_PASS`: it also becomes the password of the local MySQL ([Configuration](02-configuration.md))
+3. Copy `frontend/.env.example` to `frontend/.env` and fill it in, with a long random `DB_PASS`: it also becomes the password of the local MySQL ([Configuration](02-configuration.md))
 4. Add your Stripe **test** keys
-5. Run `npm install` in `app/`, then `npm run dev` (or `start.bat` → `D`)
+5. Run `npm install` in `frontend/`, then `npm run dev` (or `start.bat` → `D`)
 
 | Service | URL |
 | ------- | --- |
 | Site | http://localhost:3000 |
 | API | http://localhost:3000/api |
-| phpMyAdmin | http://localhost:8081 (user `root`, password: `DB_PASS` of `app/.env`) |
+| phpMyAdmin | http://localhost:8081 (user `root`, password: `DB_PASS` of `frontend/.env`) |
 
-## 05 — npm scripts (in `app/`)
+## 05 — npm scripts (in `frontend/`)
 
 | Command | What it does |
 | ------- | ------------ |

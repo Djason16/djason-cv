@@ -18,4 +18,4 @@ Comment fonctionne le portfolio et comment le modifier. Pas besoin de tout lire 
 | `DOC-08` | [Mise en ligne](08-mise-en-ligne.md) | Construire et mettre le site en ligne (Infomaniak) |
 | `DOC-09` | [Dépannage](09-depannage.md) | Les problèmes courants et leur solution |
 
-Tous les chemins sont relatifs à `app/`, sauf ceux de la racine du projet (`start.bat`, `docs/`...).
+Tous les chemins sont relatifs à `frontend/`, sauf ceux de la racine du projet (`start.bat`, `docs/`...).

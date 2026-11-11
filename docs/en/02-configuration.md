@@ -4,7 +4,7 @@
 
 **DOC-02** &nbsp;·&nbsp; [← Documentation](README.md)
 
-Settings live in `.env` files inside `app/`: only what is **secret or technical** (database, Stripe, SMTP, admin account, bank details, address of the site).
+Settings live in `.env` files inside `frontend/`: only what is **secret or technical** (database, Stripe, SMTP, admin account, bank details, address of the site).
 Your name, contact, legal details and social links are edited in **admin → My info** (stored in the database, applied at once).
 The texts seen by visitors (home, legal pages, cookie banner, SEO, Pay me page, and the texts printed on the quotes, invoices and contracts) are edited in **admin → Site texts**: the site changes at once, without a new build.
 

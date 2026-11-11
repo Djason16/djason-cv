@@ -11,7 +11,7 @@ E-mail et mot de passe, puis un code à usage unique envoyé par e-mail. En cas 
 
 ## 02 — Routes protégées
 
-La session est vérifiée par le routeur de l'API (`server/api/[...path].js`) sur la route trouvée :
+La session est vérifiée par le routeur de l'API (`server/api/[...path].ts`) sur la route trouvée :
 `/api/env`, `/api/env/` et `/api//env` sont donc la même route protégée.
 Seules les actions listées dans `publicActions` d'un contrôleur sont publiques ([toutes les routes](05-l-api.md#04--toutes-les-routes)).
 

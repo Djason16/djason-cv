@@ -15,7 +15,7 @@ et tu la vois dans phpMyAdmin depuis le Manager.
 
 Pour avoir la base prête avant la mise en ligne : phpMyAdmin (la base à gauche) → **Importer** → `mysql/init/example.sql`.
 Il contient toutes les tables du site et leurs lignes par défaut (services, taux, agenda), sans donnée personnelle ; il est fait depuis
-`app/server/helpers/DatabaseSchema.js`. Le site crée de toute façon les mêmes tables à son démarrage, et Docker exécute ce fichier au premier
+`frontend/server/helpers/DatabaseSchema.ts`. Le site crée de toute façon les mêmes tables à son démarrage, et Docker exécute ce fichier au premier
 démarrage de la base locale. Il peut être importé de nouveau : une table existante est gardée, une ligne n'est jamais ajoutée deux fois.
 
 ## 02 — Construire
@@ -52,7 +52,7 @@ Remplis ensuite **admin → Mes infos** (nom, contact, mentions légales, résea
 
 Toute la base tient dans un fichier SQL : les tables, leurs lignes et les images envoyées depuis l'admin (`dc_uploads`).
 
-| Action | Commande, dans `app/` |
+| Action | Commande, dans `frontend/` |
 | ------ | --------------------- |
 | Sauvegarder la base locale | `npm run db:backup` |
 | Sauvegarder la base en ligne | `npm run db:backup -- --env .env.production` |

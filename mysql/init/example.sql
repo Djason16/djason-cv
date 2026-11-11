@@ -1,5 +1,5 @@
 -- Database of djason-chery.dev: every table of the site, then its default rows (no personal data).
--- Made from app/server/helpers/DatabaseSchema.js: the site makes the same tables at its start, so this file is never required,
+-- Made from frontend/server/helpers/DatabaseSchema.js: the site makes the same tables at its start, so this file is never required,
 -- it only lets the database be ready before (Docker runs it on the first start of the local database; online: phpMyAdmin > Import).
 -- Can be run again: a table that exists is kept, a default row never doubled.
 -- Do not change by hand: change DatabaseSchema.js, then make this file again.

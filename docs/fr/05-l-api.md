@@ -14,13 +14,13 @@ L'API tourne dans le même serveur Nuxt que le site, sous `/api`. Elle est organ
 { "success": false, "error": "message", "type": "NOT_FOUND" }   // avec le bon statut HTTP (400, 401, 404, 429, 500...)
 ```
 
-Côté site, chaque appel passe par `utils/api.js` (`api.get('/clients')`, `api.post(...)`...).
+Côté site, chaque appel passe par `utils/api.ts` (`api.get('/clients')`, `api.post(...)`...).
 Il ne lève jamais d'erreur et renvoie toujours ce format.
 Les messages d'erreur affichés au visiteur sont des clés de traduction (ex. `invalidCredentials`).
 
 ## 02 — Ajouter une route
 
-Crée `server/controllers/ProductsController.js`. Ses méthodes deviennent des routes toutes seules
+Crée `server/controllers/ProductsController.ts`. Ses méthodes deviennent des routes toutes seules
 (relance `npm run dev` si le fichier est nouveau) :
 
 | Méthode | Route |
@@ -51,17 +51,17 @@ export default class ProductsController extends Controller {
 }
 ```
 
-Les helpers de `server/helpers/` sont importés automatiquement partout dans `server/`.
+Les helpers de `server/utils/` (base de DC Scaffold) et de `server/helpers/` (ceux du site) sont importés automatiquement partout dans `server/`.
 
 ## 03 — Base de données
 
-MySQL avec `mysql2` (`server/helpers/DatabaseHelper.js`), avec les valeurs `DB_*` du `.env` ([Configuration](02-configuration.md)).
+MySQL avec `mysql2` (`server/utils/DatabaseHelper.ts`), avec les valeurs `DB_*` du `.env` ([Configuration](02-configuration.md)).
 En local, elle tourne dans Docker (`docker-compose.yml`, lancé par `start.bat` → `D`) ; en ligne, c'est la base MySQL d'Infomaniak,
 séparée des fichiers du site : une nouvelle mise en ligne n'y touche jamais.
 
 - **Voir et modifier les données** : phpMyAdmin, http://localhost:8081 en local, depuis le Manager Infomaniak en ligne
-- **Tables** : `server/helpers/DatabaseSchema.js` (`CREATE TABLE IF NOT EXISTS`, sans risque sur une base existante)
-- **Lignes par défaut et compte admin** : `server/plugins/init-database.js`, lancé à chaque démarrage
+- **Tables** : `server/helpers/DatabaseSchema.ts` (`CREATE TABLE IF NOT EXISTS`, sans risque sur une base existante)
+- **Lignes par défaut et compte admin** : `server/plugins/init-database.ts`, lancé à chaque démarrage
 - **Images des projets** : gardées dans la table `dc_uploads` (pas en fichiers), servies par `/api/upload/images/{name}`. L'admin les envoie en WebP (1920 px au plus) avec une miniature de 640 px pour la grille de l'accueil (`thumb-{name}`, supprimée avec la photo) ; une photo envoyée avant les miniatures s'affiche en entier
 - **Modifier une table existante** demande son propre `ALTER TABLE` : ne supprime ou ne recrée jamais une table qui contient des données
 - **Sauvegardes** : export depuis phpMyAdmin ; en ligne, Infomaniak garde aussi des sauvegardes automatiques
@@ -81,7 +81,7 @@ séparée des fichiers du site : une nouvelle mise en ligne n'y touche jamais.
 | Projets | 🔓 `GET /api/projects`, `POST /api/projects` (multipart), `PUT /api/projects/{id}`, `POST /api/projects/{id}/image`, `DELETE /api/projects/{id}` |
 | Compétences | 🔓 `GET /api/skills`, `POST /api/skills`, `PUT /api/skills/{id}`, `DELETE /api/skills/{id}` |
 | Versions | 🔓 `GET /api/versions` (`{ versions: { dc_skills: 4, ... } }` : les tables des pages publiques pour un visiteur, toutes les tables pour l'admin) |
-| Traduction | `POST /api/translate` (`{ text, from: 'fr', to: ['en'] }`, MyMemory : `server/helpers/TranslateHelper.js`) |
+| Traduction | `POST /api/translate` (`{ text, from: 'fr', to: ['en'] }`, MyMemory : `server/helpers/TranslateHelper.ts`) |
 | Calendrier | 🔓 `GET /api/calendar`, `PUT` / `PATCH /api/calendar/{id}`, `POST /api/calendar/send-agenda` |
 | Indisponibilités | 🔓 `GET /api/unavailability`, `POST /api/unavailability`, `PUT /api/unavailability/{id}`, `DELETE /api/unavailability/{id}` |
 | Disponibilité | 🔓 `GET /api/availability`, `PUT /api/availability/toggle` |

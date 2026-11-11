@@ -18,4 +18,4 @@ How the portfolio works and how to change it. No need to read everything: start 
 | `DOC-08` | [Deployment](08-deployment.md) | Build and put the site online (Infomaniak) |
 | `DOC-09` | [Troubleshooting](09-troubleshooting.md) | Common problems and their fix |
 
-All paths below are relative to `app/`, unless they start with the project root (`start.bat`, `docs/`...).
+All paths below are relative to `frontend/`, unless they start with the project root (`start.bat`, `docs/`...).

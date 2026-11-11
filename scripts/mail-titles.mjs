@@ -1,7 +1,7 @@
 /*
  * Titles of the emails drawn as images, in the font of the site (Archivo, expanded): Gmail and Outlook never load the fonts
- * of a site, an image keeps them. Writes app/public/images/mail/<name>.png (twice the size, sharp on every screen) and
- * app/server/templates/MailTitles.js (the list read by MailLayout: an email title found there is shown as its image).
+ * of a site, an image keeps them. Writes frontend/public/images/mail/<name>.png (twice the size, sharp on every screen) and
+ * frontend/server/templates/MailTitles.js (the list read by MailLayout: an email title found there is shown as its image).
  *
  * Run again after a title of an email changed (server/templates); each image goes inside the emails (no need of the site online):
  *   npx -y -p playwright-core node scripts/mail-titles.mjs
@@ -13,7 +13,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
-const APP = join(ROOT, 'app')
+const APP = join(ROOT, 'frontend')
 const OUT = join(APP, 'public', 'images', 'mail')
 const { chromium } = createRequire(join(process.cwd(), 'noop.js'))('playwright-core')
 
@@ -64,4 +64,4 @@ writeFileSync(join(APP, 'server', 'templates', 'MailTitles.js'), `/*
  */
 export const MailTitles = ${JSON.stringify(list, null, 4)}
 `)
-console.log(`${TITLES.length} titles drawn in app/public/images/mail/`)
+console.log(`${TITLES.length} titles drawn in frontend/public/images/mail/`)

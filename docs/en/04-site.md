@@ -8,13 +8,13 @@
 
 Same system as [DC Scaffold](https://github.com/Djason16/dc-scaffold). Every text is in `plugins/translations/`:
 
-- `common/`: texts of the whole site (`common.js`), the cookie banner (`preferences.js`), SEO (`seo.js`)
+- `common/`: texts of the whole site (`common.ts`), the cookie banner (`preferences.ts`), SEO (`seo.ts`)
 - `pages/`: one file per page, `pages/admin/` for the admin features
 
 Each file has an `fr` and an `en` block with the same keys. A key exists in one file only.
 
 ```js
-// plugins/translations/pages/about.js
+// plugins/translations/pages/about.ts
 export default {
     fr: { aboutTitle: 'À propos' },
     en: { aboutTitle: 'About' },
@@ -29,7 +29,7 @@ useLang().current.value                   // 'fr' or 'en'
 ```
 
 A missing text shows its key, easy to spot on the page.
-A new file is imported in `plugins/translations/translations.js` and added to `TRANSLATIONS`.
+A new file is imported in `plugins/translations/translations.ts` and added to `TRANSLATIONS`.
 
 The language chosen with the FR / EN buttons is remembered for the next visit **only if the visitor accepted functional cookies**.
 
@@ -51,14 +51,14 @@ How it behaves:
   optional cookies stay off and the banner comes back on the next visit
 - **Cookie settings** in the footer opens it again on the current choice
 
-The choice lives in `stores/userPreferences.js` (Pinia). Cookie name and lifetime: top of `stores/actions/userPreferencesActions.js`.
+The choice lives in `stores/userPreferences.ts` (Pinia). Cookie name and lifetime: top of `stores/actions/userPreferencesActions.ts`.
 
 **Adding an external tool** (analytics, Google Maps, YouTube...) needs its own category, otherwise the site is no longer GDPR compliant:
 
-1. in `stores/userPreferences.js`: add `maps: false` to `preferences` and `maps: { required: false }` to `categories`
-2. in `plugins/translations/common/preferences.js`: add `mapsLabel` and `mapsDescription` in both languages
+1. in `stores/userPreferences.ts`: add `maps: false` to `preferences` and `maps: { required: false }` to `categories`
+2. in `plugins/translations/common/preferences.ts`: add `mapsLabel` and `mapsDescription` in both languages
 3. in the code: only load the tool when `userPreferences.preferences.maps` is `true`
-4. update the cookie section of the privacy policy (`plugins/translations/pages/privacy.js`, section 8)
+4. update the cookie section of the privacy policy (`plugins/translations/pages/privacy.ts`, section 8)
 
 ## 03 — Styles
 
@@ -69,7 +69,7 @@ The choice lives in `stores/userPreferences.js` (Pinia). Cookie name and lifetim
 - **Sections**: colors given per section (`--fg`, `--fg-muted`, `--accent`, `--line`, `--panel`), see `section-layout.css` (home) and `page-layout.css` (text pages: OtherSectionLayout)
 - **One component's style**: `assets/css/components/<kebab-name>.css`, imported in `assets/css/main.css`
 - **Animations**: every duration and curve comes from `--motion-fast` / `--motion-base` / `--motion-slow` and `--ease`
-  (`assets/css/utils/variables.css`, read in JS with `utils/motion.js`). Elements appear with `v-reveal` (`plugins/reveal.js`, `reveal.css`):
+  (`assets/css/utils/variables.css`, read in JS with `utils/motion.ts`). Elements appear with `v-reveal` (`plugins/reveal.ts`, `reveal.css`):
   they rise from below when they come on screen and leave when they go out of it (`--reveal-delay` staggers a list); nothing moves with reduced motion.
   Page changes are a simple fade (`app.pageTransition`) on an ink ground that stays (AppShell), with the loader (`Loader.vue`) on the first visit and on every page change.
 - **Scroll bars**: thin, on the ink, in `base/global.css`
@@ -79,14 +79,14 @@ The choice lives in `stores/userPreferences.js` (Pinia). Cookie name and lifetim
 - **Card grid**: `card-grid.css` (`.card-grid`, `.card-grid--large`, `.grid-card`) is shared by the skills, the projects and the admin tools
 - **One animation per section, its header included** (`reveal.css`, `SectionHead` prop `reveal`): projects `'zoom-group'` + `'zoom'`, About me `'split'` + `'lift'` + `'slide'`, skills `'group'` + the default rise, services `'line'`, Contact `'drop'` + `'from-left'` + `'cascade'`
 - **Online withdrawal** (`/withdrawal`, art. L.221-21 of the French Consumer Code since 19 June 2026): a form sent to `/api/withdrawals`, kept in `dc_withdrawals`, an acknowledgement emailed to the consumer at once and a notice to you; linked from the footer, the payment page, the terms and the refund policy
-- **Address and area**: admin → My info. Tick "My personal address is the same" and only the billing address is typed: its town and country become the address of the legal pages (`utils/address.js`); untick it to type them apart. The **area shown on the site** is worked out from the address while it is typed: in France by the public service of the French towns with the postal code, outside France by Google (`GOOGLE_MAPS_API_KEY`; without a key, the country) ("Thourotte, France" gives "Hauts-de-France, France", geo.api.gouv.fr; outside France the country), editable. The home page, the footer and the data read by Google show the area only; the exact address stays in the legal notice, the privacy policy, the withdrawal form and the documents
+- **Address and area**: admin → My info. Tick "My personal address is the same" and only the billing address is typed: its town and country become the address of the legal pages (`utils/address.ts`); untick it to type them apart. The **area shown on the site** is worked out from the address while it is typed: in France by the public service of the French towns with the postal code, outside France by Google (`GOOGLE_MAPS_API_KEY`; without a key, the country) ("Thourotte, France" gives "Hauts-de-France, France", geo.api.gouv.fr; outside France the country), editable. The home page, the footer and the data read by Google show the area only; the exact address stays in the legal notice, the privacy policy, the withdrawal form and the documents
 - **Consumer mediator**: admin → My info (name, address, website), printed in the terms; the admin shows a reminder while it is empty
-- **Numbers of the lists**: `padIndex(i, 'PR')` of `utils/display.js` (`PR-01`, `02`...)
+- **Numbers of the lists**: `padIndex(i, 'PR')` of `utils/display.ts` (`PR-01`, `02`...)
 - **Payment**: the client pays exactly the amount asked, no card fee is added (forbidden for consumer cards, art. L.112-12 of the French monetary code) `will-change` only on elements that move (transform, opacity).
 - **Photo of "About me"**: changed from admin → My info (saved at once, stored like the project images in `dc_uploads`); empty: `public/images/about-me.jpg`
 - **No rounded corners** anywhere (the switches of the cookie banner, the availability dot and the loader stay round).
-- **Texts**: the defaults are in `plugins/translations/`; the visitor texts, and those printed on the quotes, invoices and contracts (`billingDocument.js`, `contracts.js`), can be changed from admin → Site texts (`stores/siteTexts.js`, table `dc_texts`), one part of the site at a time. A French text saved there fills the English that was never changed by hand (machine translation, to check).
-- **Skills**: the ones of `data/skills.js`, then the ones added from admin → Skills (table `dc_skills`, `composables/useSkills.js`), at the end of their category. They are also offered for the projects, which take any skill (typed and Enter)
+- **Texts**: the defaults are in `plugins/translations/`; the visitor texts, and those printed on the quotes, invoices and contracts (`billingDocument.ts`, `contracts.ts`), can be changed from admin → Site texts (`stores/siteTexts.ts`, table `dc_texts`), one part of the site at a time. A French text saved there fills the English that was never changed by hand (machine translation, to check).
+- **Skills**: the ones of `data/skills.ts`, then the ones added from admin → Skills (table `dc_skills`, `composables/useSkills.ts`), at the end of their category. They are also offered for the projects, which take any skill (typed and Enter)
 - **Hover effects**: only with a mouse and a screen wider than 1024px. Write every `:hover` rule inside
   `@media (hover: hover) and (min-width: 1025px) { ... }`: nothing to cancel for phones and tablets
 
@@ -102,19 +102,19 @@ loader, header, page, footer, floating buttons (back to top, to the bottom, lang
 
 1. `components/views/About/About.vue`: the content (one section = one component in the same folder)
 2. `pages/about.vue`: only displays `<About />` and calls `useSeo('about')`. The file name is the address (`/about/`)
-3. its texts in `plugins/translations/pages/about.js`, imported in `translations.js`
-4. its SEO entry in `utils/seo.js`, then `seoAboutTitle` / `seoAboutDescription` in `plugins/translations/common/seo.js`
+3. its texts in `plugins/translations/pages/about.ts`, imported in `translations.ts`
+4. its SEO entry in `utils/seo.ts`, then `seoAboutTitle` / `seoAboutDescription` in `plugins/translations/common/seo.ts`
 5. its address in `publicRoutes` of `nuxt.config.ts` (sitemap)
 
 ## 06 — SEO
 
-- Title, description and share image of each page: `utils/seo.js` + `plugins/translations/common/seo.js`
+- Title, description and share image of each page: `utils/seo.ts` + `plugins/translations/common/seo.ts`
 - `sitemap.xml` and `robots.txt` are generated from `publicRoutes` and `privateRoutes` of `nuxt.config.ts`
-- Addresses always end with a slash (`withTrailingSlash()` in `utils/pathHelpers.js`, `middleware/redirect.global.js`)
+- Addresses always end with a slash (`withTrailingSlash()` in `utils/pathHelpers.ts`, `middleware/redirect.global.ts`)
 
 ## 07 — Emails
 
-Every email follows the site (`server/templates/MailLayout.js`): its ink, mint links, the logo of the site online. Gmail and Outlook never load the fonts of a site: the **titles** are images drawn in Archivo (`public/images/mail/`, list and images in `server/templates/MailTitles.js`), put in the email itself (`cid:`, `MailHelper`): they show even before the site is online. The texts use a condensed font every device has. After changing or adding a title, draw them again:
+Every email follows the site (`server/templates/MailLayout.ts`): its ink, mint links, the logo of the site online. Gmail and Outlook never load the fonts of a site: the **titles** are images drawn in Archivo (`public/images/mail/`, list and images in `server/templates/MailTitles.ts`), put in the email itself (`cid:`, `MailHelper`): they show even before the site is online. The texts use a condensed font every device has. After changing or adding a title, draw them again:
 
 ```bash
 npx -y -p playwright-core node scripts/mail-titles.mjs

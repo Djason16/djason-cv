@@ -1,0 +1,159 @@
+<template>
+    <!-- Weekly schedule and timezone, sending of the agenda to the clients -->
+    <TableModal :show="show" :title="t('viewCalendar')" max-width="1200px" @close="close">
+        <EditableTable :items="formattedItems" :columns="columns" :show-actions="false" :item-key="'_rowId'"
+            :empty-message="t('calendarNoSchedule')" @update="handleUpdate" />
+
+        <MessageBox :message="translatedMessage" margin="0" />
+
+        <template #actions>
+            <HeroButton :label="sending ? t('sending') : t('sendAgenda')"
+                iconClass="fas fa-paper-plane" :disabled="sending" @click="handleSendAgenda" />
+        </template>
+    </TableModal>
+</template>
+
+<script setup lang="ts">
+import { useLang } from '@/composables/useLang'
+import { useModalData } from '@/composables/useLiveData'
+import { computed, ref } from 'vue'
+import HeroButton from '@/components/ui/Button/HeroButton.vue'
+import MessageBox from '@/components/ui/Message/MessageBox.vue'
+import EditableTable from '@/components/ui/Table/EditableTable.vue'
+import { getGMTOffset, useCalendar } from '@/composables/useCalendar'
+import { useMessage } from '@/composables/useMessage'
+import timezones from '@/utils/timezones'
+import TableModal from '@/components/ui/Modal/TableModal.vue'
+import { showFailure, showSuccess } from '@/utils/dialog'
+
+const props = defineProps({ show: Boolean })
+const emit = defineEmits(['close'])
+const lang = useLang()
+const { getTranslation: t } = lang
+const { settings, fetchSettings, updateSettings, sendAgenda } = useCalendar()
+const { translatedMessage, showMessage, clearMessage } = useMessage()
+
+const daysOfWeek = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+const sending = ref(false)
+
+// Translated name of the timezone and its GMT offset (plugins/translations/pages/admin/timezones*.js)
+const formatTimezoneLabel = (tz: string) => `${lang.getTranslation(tz)} (${getGMTOffset(tz)})`
+
+// Rows of the table: a title row, the timezone, a title row, then each day
+const formattedItems = computed(() => {
+    if (!settings.value) return []
+
+    const current = settings.value
+    const rows: Record<string, any>[] = [{ _rowId: 'section_timezone', _section: lang.getTranslation('timezone') }, {
+        _rowId: 'timezone', id: settings.value.id, field: lang.getTranslation('timezone'),
+        value: settings.value.timezone, displayValue: formatTimezoneLabel(settings.value.timezone),
+        status: '-', start: '-', end: '-', _type: 'timezone'
+    }, { _rowId: 'section_days', _section: lang.getTranslation('calendarWorkingDays') }]
+
+    daysOfWeek.forEach((day, i) => {
+        const sched = current.schedule?.[String(i)]
+        rows.push({
+            _rowId: `day_${i}`,
+            id: current.id,
+            field: lang.getTranslation(day),
+            value: '-',
+            status: sched ? 'yes' : 'no',
+            start: sched?.start || '09:00',
+            end: sched?.end || '18:00',
+            _type: 'day',
+            _dayIndex: i
+        })
+    })
+    return rows
+})
+
+// Table column definitions with dynamic enable/disable and formatting
+const columns = computed(() => [
+    { key: 'field', label: lang.getTranslation('field'), disabled: true, formatter: (item: Record<string, any>) => item.field },
+    {
+        key: 'value', label: lang.getTranslation('value'), type: 'select', mobile: 'plain',
+        disabled: (item: Record<string, any>) => item._type !== 'timezone',
+        options: timezones.map(tz => ({ value: tz, label: formatTimezoneLabel(tz) })),
+        editValue: (item: Record<string, any>) => item.value,
+        formatter: (item: Record<string, any>) => item._type === 'timezone' ? item.displayValue : item.value
+    },
+    {
+        key: 'status', label: lang.getTranslation('status'), type: 'select', mobile: 'tag',
+        disabled: (item: Record<string, any>) => item._type !== 'day',
+        options: [{ value: 'yes', label: lang.getTranslation('yes') }, { value: 'no', label: lang.getTranslation('no') }],
+        editValue: (item: Record<string, any>) => item.status,
+        formatter: (item: Record<string, any>) => item._type === 'day' ? (lang.getTranslation(item.status === 'yes' ? 'yes' : 'no')) : item.status
+    },
+    {
+        key: 'start', label: lang.getTranslation('start'), inputType: 'time', mobile: 'tag',
+        disabled: (item: Record<string, any>) => item._type !== 'day' || item.status === 'no',
+        editValue: (item: Record<string, any>) => item.start,
+        formatter: (item: Record<string, any>) => item._type === 'day' && item.status === 'yes' ? item.start : '-'
+    },
+    {
+        key: 'end', label: lang.getTranslation('end'), inputType: 'time', mobile: 'tag',
+        disabled: (item: Record<string, any>) => item._type !== 'day' || item.status === 'no',
+        editValue: (item: Record<string, any>) => item.end,
+        formatter: (item: Record<string, any>) => item._type === 'day' && item.status === 'yes' ? item.end : '-'
+    }
+])
+
+// Handles updates from the table: timezone or day fields
+const handleUpdate = async ({ item, field, value }: { item: Record<string, any>, field: string, value: any }) => {
+    if (!item?.id) return console.error('No item ID')
+    const payload: { timezone?: string, schedule?: Record<string, { start: string, end: string }> } = {}
+
+    if (item._type === 'timezone' && field === 'value') payload.timezone = value
+    else if (item._type === 'day' && item._dayIndex !== undefined) {
+        const dayStr = String(item._dayIndex)
+        const schedule: Record<string, { start: string, end: string }> = { ...settings.value?.schedule }
+        payload.schedule = schedule
+
+        if (field === 'status') {
+            value === 'yes' ? schedule[dayStr] = { start: item.start || '09:00', end: item.end || '18:00' } : delete schedule[dayStr]
+        } else if (field === 'start' || field === 'end') {
+            if (item.status === 'yes') schedule[dayStr] = { ...schedule[dayStr]!, [field]: value }
+            else return console.warn(`Attempted to update ${field} on inactive day ${dayStr}`)
+        }
+    }
+
+    try {
+        await updateSettings(item.id, payload)
+        await showSuccess(lang.getTranslation('saveSuccess'))
+    } catch {
+        await showFailure(lang.getTranslation('saveFailed'))
+    }
+}
+
+// Picks the right confirmation message key depending on override status vs. dated unavailability
+const resolveSentMessageKey = (res: Record<string, any>) => {
+    if (res.hasOverride && res.availabilityStatus === 'unavailable') return 'agendaSentOverrideUnavailable'
+    if (res.hasOverride && res.availabilityStatus === 'busy') return 'agendaSentOverrideBusy'
+    if (res.isCurrentlyUnavailable) return 'agendaSentUnavailable'
+    return 'agendaSent'
+}
+
+// Sends the current agenda to all active clients
+const handleSendAgenda = async () => {
+    clearMessage()
+    sending.value = true
+    try {
+        const res = await sendAgenda(lang.current.value)
+        if (res.sent === 0 && res.total === 0)
+            showMessage('error', 'noActiveClients', 0)
+        else {
+            const key = resolveSentMessageKey(res)
+            showMessage('success', lang.getTranslation(key, { count: res.sent }), 3000)
+        }
+    } catch (err) {
+        showMessage('error', (err as { data?: { message?: string } }).data?.message || (err as Error).message || 'errorSendingAgenda', 0)
+    } finally {
+        sending.value = false
+    }
+}
+
+// Fetches settings when modal opens
+// Loaded when it opens, and again while open when it changes elsewhere (another tab)
+useModalData(() => props.show, fetchSettings, ['dc_calendar_settings'])
+const close = () => { clearMessage(); emit('close') }
+</script>

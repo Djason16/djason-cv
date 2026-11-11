@@ -23,7 +23,7 @@ Double-clique sur `start.bat` à la racine du projet, puis choisis :
 | ------ | ------ | ----- |
 | `D` | Développement | Installe ce qui manque, puis lance MySQL + phpMyAdmin (Docker) et le site, chacun dans une nouvelle fenêtre |
 | `S` | Arrêter | Arrête MySQL et phpMyAdmin (`docker compose down`) |
-| `I` | Installer | Installe ou met à jour les modules npm de `app/` |
+| `I` | Installer | Installe ou met à jour les modules npm de `frontend/` |
 | `B` | Build | `npm run build` : version de production (site + API) |
 
 Choix direct depuis un terminal : `.\start.ps1 -Action D`.
@@ -33,7 +33,7 @@ Même lanceur que [DC Scaffold](https://github.com/Djason16/dc-scaffold) (`start
 
 ```bash
 git clone https://github.com/Djason16/djason-cv.git
-cd djason-cv/app
+cd djason-cv/frontend
 cp .env.example .env   # puis remplis tes valeurs, voir Configuration
 docker compose --project-directory .. --env-file .env up -d   # MySQL + phpMyAdmin
 npm install
@@ -44,17 +44,17 @@ npm run dev
 
 1. Installe Node.js 22.16+
 2. Clone le dépôt
-3. Copie `app/.env.example` en `app/.env` et remplis-le, avec un long `DB_PASS` aléatoire : il devient aussi le mot de passe du MySQL local ([Configuration](02-configuration.md))
+3. Copie `frontend/.env.example` en `frontend/.env` et remplis-le, avec un long `DB_PASS` aléatoire : il devient aussi le mot de passe du MySQL local ([Configuration](02-configuration.md))
 4. Ajoute tes clés Stripe **de test**
-5. Lance `npm install` dans `app/`, puis `npm run dev` (ou `start.bat` → `D`)
+5. Lance `npm install` dans `frontend/`, puis `npm run dev` (ou `start.bat` → `D`)
 
 | Service | Adresse |
 | ------- | ------- |
 | Site | http://localhost:3000 |
 | API | http://localhost:3000/api |
-| phpMyAdmin | http://localhost:8081 (utilisateur `root`, mot de passe : `DB_PASS` de `app/.env`) |
+| phpMyAdmin | http://localhost:8081 (utilisateur `root`, mot de passe : `DB_PASS` de `frontend/.env`) |
 
-## 05 — Scripts npm (dans `app/`)
+## 05 — Scripts npm (dans `frontend/`)
 
 | Commande | Ce qu'elle fait |
 | -------- | --------------- |

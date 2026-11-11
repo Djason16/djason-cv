@@ -1,0 +1,42 @@
+<template>
+    <!-- Confidentiality article of the contract, with the GDPR notice -->
+    <section class="section">
+        <h3 class="section-title text-large text-bold">10. {{ t('confidentiality') }}</h3>
+        <p class="section-text text-small">{{ t('confidentialityIntro') }}</p>
+        <p class="section-text text-small">{{ t('gdprCompliance') }}</p>
+
+        <p class="section-subtitle text-small text-bold"><strong>{{ t('paymentProcessing') }}</strong></p>
+        <p class="section-text text-small">{{ t('stripePartner') }}</p>
+        <p class="section-text text-small">{{ t('stripeCollects') }}:</p>
+        <ul class="bullet-list text-small">
+            <li>{{ t('stripeData1') }}</li>
+            <li>{{ t('stripeData2') }}</li>
+            <li>{{ t('stripeData3') }}</li>
+        </ul>
+        <p class="section-text text-small">
+            {{ t('stripeCompliance') }}<br />
+            {{ t('stripePrivacy') }}
+        </p>
+        <p class="section-text text-small">
+            {{ t('dataAccess', { email: providerInfo.email }) }}
+        </p>
+    </section>
+</template>
+
+<script setup lang="ts">
+import type { PropType } from 'vue'
+import { useLang } from '@/composables/useLang'
+
+const { getTranslation: t } = useLang()
+
+defineProps({
+    providerInfo: { type: Object as PropType<Record<string, any>>, required: true },
+})
+</script>
+
+<style scoped>
+.section-subtitle {
+    color: #7ee6a8;
+    margin: 16px 0 8px 0;
+}
+</style>

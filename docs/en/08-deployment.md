@@ -15,7 +15,7 @@ and you see it in phpMyAdmin from the Manager.
 
 To have the database ready before going online: phpMyAdmin (the database on the left) → **Import** → `mysql/init/example.sql`.
 It holds every table of the site and its default rows (services, rates, agenda), no personal data; it is made from
-`app/server/helpers/DatabaseSchema.js`. The site makes the same tables at its start anyway, and Docker runs this file on the first start of
+`frontend/server/helpers/DatabaseSchema.ts`. The site makes the same tables at its start anyway, and Docker runs this file on the first start of
 the local database. It can be imported again: a table that exists is kept, a row is never added twice.
 
 ## 02 — Build
@@ -52,7 +52,7 @@ Then fill in **admin → My info** (name, contact, legal details, social links).
 
 The whole database fits in one SQL file: the tables, their rows and the images uploaded from the admin (`dc_uploads`).
 
-| Action | Command, in `app/` |
+| Action | Command, in `frontend/` |
 | ------ | ------------------ |
 | Back up the local database | `npm run db:backup` |
 | Back up the online database | `npm run db:backup -- --env .env.production` |
