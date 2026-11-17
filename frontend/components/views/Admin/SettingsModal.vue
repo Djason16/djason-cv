@@ -87,6 +87,10 @@ const FIELD_ROWS: Field[][] = [
         { id: 'malt', label: 'Malt', placeholder: 'https://www.malt.fr/profile/...', type: 'url', autocomplete: 'off' },
         { id: 'instagram', label: 'Instagram', placeholder: 'https://www.instagram.com/...', type: 'url', autocomplete: 'off' },
     ],
+    [
+        { id: 'tiktok', label: 'TikTok', placeholder: 'https://www.tiktok.com/@...', type: 'url', autocomplete: 'off' },
+        { id: 'facebook', label: 'Facebook', placeholder: 'https://www.facebook.com/...', type: 'url', autocomplete: 'off' },
+    ],
     [{ id: 'whatsapp', label: 'WhatsApp', placeholder: 'https://wa.me/33...', type: 'url', autocomplete: 'off' }],
     // Consumer mediator: required as soon as you work for individuals, printed in the terms (CGV)
     [

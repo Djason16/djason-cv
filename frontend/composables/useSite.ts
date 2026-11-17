@@ -6,7 +6,7 @@ import { useSiteSettingsStore } from '@/stores/siteSettings'
  *   const site = useSite()
  *   site.url, site.name, site.email, site.phone, site.birthDate, site.siret, site.tva, site.address, site.invoiceAddress,
  *   site.area (the area of the public pages, never the exact address: "Hauts-de-France, France"),
- *   site.linkedin, site.github, site.malt, site.instagram, site.whatsapp
+ *   site.linkedin, site.github, site.malt, site.instagram, site.tiktok, site.facebook, site.whatsapp
  * Every value follows the admin changes at once.
  */
 export const useSite = () => {

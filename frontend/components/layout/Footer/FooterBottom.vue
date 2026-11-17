@@ -91,6 +91,8 @@ const socials = computed(() => [
     { label: 'GitHub', link: site.github },
     { label: 'Malt', link: site.malt },
     { label: 'Instagram', link: site.instagram },
+    { label: 'TikTok', link: site.tiktok },
+    { label: 'Facebook', link: site.facebook },
     { label: 'WhatsApp', link: site.whatsapp },
 ].filter(social => social.link))
 

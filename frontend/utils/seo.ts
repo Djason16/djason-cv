@@ -85,7 +85,7 @@ const seoConfig: Record<string, { url: string, image?: string, keywords?: string
 
 // Generates SEO metadata for a page ("site" = useSite(), like the buildSeo of DC Scaffold (https://github.com/Djason16/dc-scaffold))
 export const seoMetaData = (pageKey: string, lang: { current: { value: string }, getTranslation: (key: string, values?: Record<string, string | number>) => string }, site: Record<string, string>) => {
-    const { name, url: baseUrl, email, phone, tva: tvaNumber, linkedin, github, malt, instagram, area } = site
+    const { name, url: baseUrl, email, phone, tva: tvaNumber, linkedin, github, malt, instagram, tiktok, facebook, area } = site
 
     const {
         url = "",
@@ -140,7 +140,7 @@ export const seoMetaData = (pageKey: string, lang: { current: { value: string },
             ...(area && area.includes(',') ? { addressRegion: (area.split(',')[0] ?? '').trim() } : {}),
             addressCountry: "FR"
         },
-        sameAs: [linkedin, github, malt, instagram].filter(Boolean),
+        sameAs: [linkedin, github, malt, instagram, tiktok, facebook].filter(Boolean),
         serviceType: [
             "Web Development",
             "SEO",

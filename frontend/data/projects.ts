@@ -7,7 +7,7 @@ export const projects = [
         img: "images/banner_portfolio.webp",
         // Square copies for the card of the home page grid (srcset, like the photos sent from the admin)
         squares: { 320: "images/banner_portfolio-320.webp", 640: "images/banner_portfolio-640.webp" },
-        skills: ["nuxt", "nitro", "infomaniak", "github", "responsive", "figma", "photoshop"],
+        skills: ["nuxt", "nitro", "TypeScript", "Pinia", "MySQL", "stripe", "WebRTC", "Google APIs", "docker", "infomaniak", "Playwright", "Lighthouse", "responsive", "figma", "photoshop", "git", "github"],
         date: "2024-12-05",
     },
 ];

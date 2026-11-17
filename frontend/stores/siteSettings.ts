@@ -32,6 +32,8 @@ export const useSiteSettingsStore = defineStore('siteSettings', {
             github: '',
             malt: '',
             instagram: '',
+            tiktok: '',
+            facebook: '',
             whatsapp: '',
             // Photo of "About me" uploaded from the admin (empty: public/images/about-me.webp)
             aboutPhoto: '',

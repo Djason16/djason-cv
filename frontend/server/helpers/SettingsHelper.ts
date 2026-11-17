@@ -19,7 +19,7 @@ export const SETTING_KEYS = [
     'area',
     // '1': the address (town, country) is the one of the billing address (utils/address.js)
     'sameAddress',
-    'linkedin', 'github', 'malt', 'instagram', 'whatsapp',
+    'linkedin', 'github', 'malt', 'instagram', 'tiktok', 'facebook', 'whatsapp',
     // Photo of "About me" uploaded from the admin (/upload/images/...), empty: public/images/about-me.webp
     'aboutPhoto',
     // Consumer mediator (required with consumers, art. L.612-1 and R.616-1 of the French Consumer Code): printed in the terms
